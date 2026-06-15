@@ -19,6 +19,8 @@ groups/*/attachments/
 
 # Claude Code per-project state
 .claude/agent-memory/
+.claude/settings.json
+# (settings.local.json is also ignored via ~/.config/git/ignore — matches Claude Code convention)
 
 # TypeScript incremental build cache (regenerated on every tsc run)
 *.tsbuildinfo
