@@ -70,13 +70,32 @@ The base capabilities still exist in the codebase; Phase 1 simply does not lead 
   we **"fledge fully"** — unlock the complete `crm-azteca` functionality for Azteca.
 - Acceptance criteria / decision owner: **TBD** (business gate).
 
-## 8. Open dependencies / questions
+## 8. Working model (operator-confirmed 2026-06-15)
 
-1. **Aura methodology transfer** — form (doc / deck / framework / worked examples) + ETA.
-   Drives when the argument engine can be authored.
-2. **Interface surface** — run through the existing WhatsApp agent (scoped to
-   Gerente/Director personas), or a leaner dedicated surface?
-3. **Retrieval base for closing arguments** — lean on existing crm-azteca account /
-   proposal / relationship / inventory data first, deferring new connectors? What does an
-   Aura closing argument need to draw on?
-4. **Acceptance criteria** for the §7 gate.
+Azteca-Aura is a **coaching agent, not a document generator**. It runs an
+**interactive, step-by-step Aura-methodology dialogue** — asking guiding questions and
+**co-building the account's story + closing arguments turn by turn**.
+
+- **Engagement = BOTH on-demand and proactive:**
+  - On-demand: the manager pulls it in WhatsApp ("ayúdame a cerrar la cuenta X").
+  - Proactive: it watches deals nearing close and nudges the manager to start a session.
+- **Grounding = hybrid:** the existing CRM data we already hold (account, proposal/deal,
+  relationship, inventory) **+** the specifics the manager supplies mid-dialogue.
+- **Output = the coached dialogue itself** (turn-by-turn), not a one-shot brief.
+
+### Build implications (all pluggable around the pending Aura method)
+
+1. **Aura encodes as a guided dialogue flow** — a coaching state machine (questions →
+   co-build), not a prompt template. This is the core IP slot.
+2. **Proactive trigger** needs a deal-stage / "near-close" signal — reuse the inherited
+   pipeline `etapa` + an overnight-style scan.
+3. **Delivery reuses the existing WhatsApp agent**, scoped to Ger/Dir, with the coaching
+   flow as a mode.
+4. **Retrieval** leans on the inherited schema (no new live connectors required for
+   Phase 1) + in-dialogue rep input.
+
+## 9. Still open
+
+1. **Aura methodology content** — form (framework / steps / worked examples) + ETA. The
+   substantive blocker; everything above is built around it.
+2. **Acceptance criteria** for the §7 gate (what makes reps + VP say yes).
