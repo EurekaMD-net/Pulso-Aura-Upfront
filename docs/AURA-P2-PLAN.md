@@ -3,6 +3,16 @@
 > Prereq: P0–P1 done (`AURA-KB-OPERATIONALIZATION.md`). P2 wires `aura-kb/knowledge/` into the
 > engine's existing hybrid RAG so the closing slice can retrieve brand intelligence under the
 > firewall + RBAC + epistemic-tier rules. P2 is where engine **code + tests** land.
+>
+> **STATUS: IMPLEMENTED 2026-06-18.** Built: schema governance columns + `marca_norm`,
+> `aura-kb-sync.ts` ingester (`npm run sync:aura-kb`), `aura-rbac.ts` clearance lattice, and
+> `searchAuraKb` (firewall + RBAC in SQL at recall); the Drive RAG now excludes `source='aura-kb'`
+> so VP's unfiltered search can't bypass governance. qa-auditor pass: **2 Criticals found + fixed**
+> — (C1) the firewall trusted the operator-supplied `aislado` flag, now it gates on brand presence
+> via a case/diacritic-folded `marca_norm`; (C2) ungoverned files (READMEs / no `rol_minimo`) were
+> indexable, now skipped. Tests green (typecheck clean; 1240 in the `--changed` set). **Deferred:**
+> metadata-filtered KNN _within_ a brand (mitigated by a large over-fetch + in-query FTS filtering);
+> wiring `searchAuraKb` to an agent tool is **P3** (surfacing). The steps below are the as-built spec.
 
 ## Target surface (what already exists)
 

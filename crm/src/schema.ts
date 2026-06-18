@@ -449,7 +449,7 @@ export function createCrmSchema(db: Database.Database): void {
     -- 14. CRM_DOCUMENTS (document metadata for RAG pipeline)
     CREATE TABLE IF NOT EXISTS crm_documents (
       id TEXT PRIMARY KEY,
-      source TEXT NOT NULL CHECK(source IN ('drive','email','manual')),
+      source TEXT NOT NULL CHECK(source IN ('drive','email','manual','aura-kb')),
       source_id TEXT,
       persona_id TEXT REFERENCES persona(id),
       titulo TEXT NOT NULL,
@@ -458,10 +458,22 @@ export function createCrmSchema(db: Database.Database): void {
       chunk_count INTEGER DEFAULT 0,
       fecha_sync TEXT DEFAULT (datetime('now')),
       fecha_modificacion TEXT,
-      tamano_bytes INTEGER
+      tamano_bytes INTEGER,
+      -- Aura KB governance (NULL for drive/email/manual docs; see aura-kb-sync.ts)
+      marca TEXT,
+      marca_norm TEXT,
+      rol_minimo TEXT,
+      sensibilidad TEXT,
+      aislado_por_cliente INTEGER DEFAULT 0,
+      cuerpo TEXT,
+      estabilidad TEXT,
+      tier_evidencia TEXT
     );
     CREATE INDEX IF NOT EXISTS idx_crm_docs_persona ON crm_documents(persona_id);
     CREATE INDEX IF NOT EXISTS idx_crm_docs_source ON crm_documents(source, source_id);
+    CREATE INDEX IF NOT EXISTS idx_crm_docs_marca ON crm_documents(marca);
+    CREATE INDEX IF NOT EXISTS idx_crm_docs_marca_norm ON crm_documents(marca_norm);
+    CREATE INDEX IF NOT EXISTS idx_crm_docs_rolmin ON crm_documents(rol_minimo);
 
     -- 15. CRM_EMBEDDINGS (document chunk embeddings for RAG search)
     CREATE TABLE IF NOT EXISTS crm_embeddings (
@@ -777,5 +789,89 @@ export function createCrmSchema(db: Database.Database): void {
   // Migration: add template_version to actividad
   if (!colNames.has("template_version")) {
     db.exec("ALTER TABLE actividad ADD COLUMN template_version TEXT");
+  }
+
+  // -- Phase 12 (Aura): aura-kb governance columns + source CHECK on crm_documents --
+  // Fresh DBs get these from the CREATE TABLE above; existing DBs are migrated here.
+  const docCols = db.prepare("PRAGMA table_info(crm_documents)").all() as {
+    name: string;
+  }[];
+  const docColNames = new Set(docCols.map((c) => c.name));
+  const auraDocCols: [string, string][] = [
+    ["marca", "TEXT"],
+    ["marca_norm", "TEXT"],
+    ["rol_minimo", "TEXT"],
+    ["sensibilidad", "TEXT"],
+    ["aislado_por_cliente", "INTEGER DEFAULT 0"],
+    ["cuerpo", "TEXT"],
+    ["estabilidad", "TEXT"],
+    ["tier_evidencia", "TEXT"],
+  ];
+  for (const [col, ddl] of auraDocCols) {
+    if (!docColNames.has(col)) {
+      db.exec(`ALTER TABLE crm_documents ADD COLUMN ${col} ${ddl}`);
+    }
+  }
+  db.exec(
+    "CREATE INDEX IF NOT EXISTS idx_crm_docs_marca ON crm_documents(marca)",
+  );
+  db.exec(
+    "CREATE INDEX IF NOT EXISTS idx_crm_docs_marca_norm ON crm_documents(marca_norm)",
+  );
+  db.exec(
+    "CREATE INDEX IF NOT EXISTS idx_crm_docs_rolmin ON crm_documents(rol_minimo)",
+  );
+
+  // Migrate the source CHECK to include 'aura-kb' (SQLite can't ALTER CHECK).
+  // Runs only if an existing crm_documents was created before this value existed.
+  // Governance ALTERs above run first, so the SELECT below sees those columns.
+  const docSql = (
+    db
+      .prepare(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='crm_documents'",
+      )
+      .get() as { sql: string } | undefined
+  )?.sql;
+  if (docSql && !docSql.includes("'aura-kb'")) {
+    db.pragma("foreign_keys = OFF");
+    db.exec("DROP TABLE IF EXISTS crm_documents_new");
+    db.exec(`
+      CREATE TABLE crm_documents_new (
+        id TEXT PRIMARY KEY,
+        source TEXT NOT NULL CHECK(source IN ('drive','email','manual','aura-kb')),
+        source_id TEXT,
+        persona_id TEXT REFERENCES persona(id),
+        titulo TEXT NOT NULL,
+        tipo_doc TEXT,
+        contenido_hash TEXT,
+        chunk_count INTEGER DEFAULT 0,
+        fecha_sync TEXT DEFAULT (datetime('now')),
+        fecha_modificacion TEXT,
+        tamano_bytes INTEGER,
+        marca TEXT, marca_norm TEXT, rol_minimo TEXT, sensibilidad TEXT,
+        aislado_por_cliente INTEGER DEFAULT 0,
+        cuerpo TEXT, estabilidad TEXT, tier_evidencia TEXT
+      )
+    `);
+    db.exec(
+      `INSERT INTO crm_documents_new (id,source,source_id,persona_id,titulo,tipo_doc,contenido_hash,chunk_count,fecha_sync,fecha_modificacion,tamano_bytes,marca,marca_norm,rol_minimo,sensibilidad,aislado_por_cliente,cuerpo,estabilidad,tier_evidencia)
+       SELECT id,source,source_id,persona_id,titulo,tipo_doc,contenido_hash,chunk_count,fecha_sync,fecha_modificacion,tamano_bytes,marca,marca_norm,rol_minimo,sensibilidad,aislado_por_cliente,cuerpo,estabilidad,tier_evidencia
+       FROM crm_documents`,
+    );
+    db.exec("DROP TABLE crm_documents");
+    db.exec("ALTER TABLE crm_documents_new RENAME TO crm_documents");
+    db.exec(
+      "CREATE INDEX IF NOT EXISTS idx_crm_docs_persona ON crm_documents(persona_id)",
+    );
+    db.exec(
+      "CREATE INDEX IF NOT EXISTS idx_crm_docs_source ON crm_documents(source, source_id)",
+    );
+    db.exec(
+      "CREATE INDEX IF NOT EXISTS idx_crm_docs_marca ON crm_documents(marca)",
+    );
+    db.exec(
+      "CREATE INDEX IF NOT EXISTS idx_crm_docs_rolmin ON crm_documents(rol_minimo)",
+    );
+    db.pragma("foreign_keys = ON");
   }
 }

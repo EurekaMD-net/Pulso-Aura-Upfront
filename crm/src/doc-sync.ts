@@ -18,6 +18,7 @@ import { getDatabase } from "./db.js";
 import { embedBatch, embedText } from "./embedding.js";
 import { isWorkspaceEnabled, getProvider } from "./workspace/provider.js";
 import { logger } from "./logger.js";
+import { clearedFloors, normalizeMarca } from "./aura-rbac.js";
 
 // ---------------------------------------------------------------------------
 // Text chunking
@@ -95,13 +96,27 @@ export function chunkText(
 // Document storage
 // ---------------------------------------------------------------------------
 
+/**
+ * Governance metadata for an Aura KB finding. Omitted for drive/email/manual docs.
+ */
+export interface AuraGovernance {
+  marca: string | null;
+  rolMinimo: string | null;
+  sensibilidad: string | null;
+  aisladoPorCliente: boolean;
+  cuerpo: string | null;
+  estabilidad: string | null;
+  tier: string | null;
+}
+
 export async function storeDocument(
-  personaId: string,
-  source: "drive" | "email" | "manual",
+  personaId: string | null,
+  source: "drive" | "email" | "manual" | "aura-kb",
   sourceId: string | null,
   titulo: string,
   tipoDoc: string | null,
   text: string,
+  governance?: AuraGovernance,
 ): Promise<{ docId: string; chunkCount: number }> {
   const db = getDatabase();
   const contentHash = crypto.createHash("sha256").update(text).digest("hex");
@@ -136,8 +151,8 @@ export async function storeDocument(
   const embeddings = await embedBatch(chunks.map((c) => c.content));
 
   const insertDoc = db.prepare(`
-    INSERT INTO crm_documents (id, source, source_id, persona_id, titulo, tipo_doc, contenido_hash, chunk_count, fecha_sync, tamano_bytes)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO crm_documents (id, source, source_id, persona_id, titulo, tipo_doc, contenido_hash, chunk_count, fecha_sync, tamano_bytes, marca, marca_norm, rol_minimo, sensibilidad, aislado_por_cliente, cuerpo, estabilidad, tier_evidencia)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const insertChunk = db.prepare(`
@@ -167,6 +182,14 @@ export async function storeDocument(
       chunks.length,
       now,
       text.length,
+      governance?.marca ?? null,
+      governance?.marca ? normalizeMarca(governance.marca) : null,
+      governance?.rolMinimo ?? null,
+      governance?.sensibilidad ?? null,
+      governance ? (governance.aisladoPorCliente ? 1 : 0) : 0,
+      governance?.cuerpo ?? null,
+      governance?.estabilidad ?? null,
+      governance?.tier ?? null,
     );
 
     for (let i = 0; i < chunks.length; i++) {
@@ -279,6 +302,7 @@ async function searchDocumentsVector(
     FROM crm_embeddings e
     JOIN crm_documents d ON e.document_id = d.id
     WHERE e.rowid IN (${placeholders})
+      AND d.source != 'aura-kb'
   `;
   const params: unknown[] = [...rowids];
 
@@ -340,6 +364,7 @@ export function searchDocumentsKeyword(
       JOIN crm_embeddings e ON e.rowid = fts.rowid
       JOIN crm_documents d ON e.document_id = d.id
       WHERE crm_fts_embeddings MATCH ?
+        AND d.source != 'aura-kb'
     `;
     const params: unknown[] = [ftsQuery];
 
@@ -450,6 +475,237 @@ export async function searchDocuments(
   }
 
   return reciprocalRankFusion([vectorResults, keywordResults], limite);
+}
+
+// ---------------------------------------------------------------------------
+// Aura KB retrieval (firewall + RBAC at recall)
+// ---------------------------------------------------------------------------
+//
+// The Aura corpus (source='aura-kb', persona_id NULL) is retrieved on a separate
+// path from the persona-scoped Drive RAG above. Two governance rules are enforced
+// IN SQL, not in the prompt:
+//   - Firewall: a finding marked aislado_por_cliente=1 only surfaces when its marca
+//     equals the session's active brand (all 969 brand findings are isolated).
+//   - RBAC: the finding's rol_minimo must be within the caller role's cleared floors.
+// Fail-closed: no active brand -> no results.
+
+export interface AuraSearchResult {
+  titulo: string;
+  fragmento: string;
+  similitud: number;
+  marca: string | null;
+  cuerpo: string | null;
+  rol_minimo: string | null;
+}
+
+interface AuraRanked {
+  rowid: number;
+  contenido: string;
+  titulo: string;
+  marca: string | null;
+  cuerpo: string | null;
+  rol_minimo: string | null;
+}
+
+function auraGovernanceClause(clearedRoles: string[]): {
+  clause: string;
+  bind: (marca: string) => unknown[];
+} {
+  const rolePh = clearedRoles.map(() => "?").join(",");
+  // Firewall: a finding that HAS a brand is locked to that brand regardless of the
+  // (operator-supplied, therefore untrusted) aislado_por_cliente flag — gating on
+  // marca presence means a mislabeled aislado=0 brand finding still cannot leak. Only
+  // a truly general doc (no brand AND not isolated) is cross-brand. marca_norm folds
+  // case + diacritics so accented brands match (SQLite LOWER() is ASCII-only).
+  const clause = `
+      AND d.source = 'aura-kb'
+      AND ((d.marca_norm IS NULL AND d.aislado_por_cliente = 0) OR d.marca_norm = ?)
+      AND d.rol_minimo IN (${rolePh})`;
+  return {
+    clause,
+    bind: (marca: string) => [normalizeMarca(marca), ...clearedRoles],
+  };
+}
+
+async function searchAuraKbVector(
+  query: string,
+  marca: string,
+  clearedRoles: string[],
+  limite: number,
+): Promise<AuraRanked[]> {
+  const db = getDatabase();
+  const queryEmbedding = await embedQueryCached(query);
+  // Over-fetch generously: this KNN runs over the whole embeddings table and the
+  // firewall/RBAC filter is applied AFTER, so a low-volume brand's own chunks must
+  // land inside the window. The FTS branch (which filters in-query) covers the rest.
+  const overFetchK = Math.max(limite * 40, 400);
+
+  const vecRows = db
+    .prepare(
+      `SELECT rowid, distance FROM crm_vec_embeddings
+       WHERE embedding MATCH ? ORDER BY distance LIMIT ?`,
+    )
+    .all(queryEmbedding, overFetchK) as {
+    rowid: number | bigint;
+    distance: number;
+  }[];
+  if (vecRows.length === 0) return [];
+
+  const rowids = vecRows.map((r) => Number(r.rowid));
+  const placeholders = rowids.map(() => "?").join(",");
+  const gov = auraGovernanceClause(clearedRoles);
+  const sql = `
+    SELECT e.rowid as rid, e.contenido, d.titulo, d.marca, d.cuerpo, d.rol_minimo
+    FROM crm_embeddings e
+    JOIN crm_documents d ON e.document_id = d.id
+    WHERE e.rowid IN (${placeholders})${gov.clause}
+  `;
+  const rows = db.prepare(sql).all(...rowids, ...gov.bind(marca)) as {
+    rid: number | bigint;
+    contenido: string;
+    titulo: string;
+    marca: string | null;
+    cuerpo: string | null;
+    rol_minimo: string | null;
+  }[];
+
+  const distanceMap = new Map(
+    vecRows.map((r) => [Number(r.rowid), r.distance]),
+  );
+  return rows
+    .map((row) => ({
+      rowid: Number(row.rid),
+      contenido: row.contenido,
+      titulo: row.titulo,
+      marca: row.marca,
+      cuerpo: row.cuerpo,
+      rol_minimo: row.rol_minimo,
+      _distance: distanceMap.get(Number(row.rid)) ?? Infinity,
+    }))
+    .sort((a, b) => a._distance - b._distance)
+    .map(({ _distance, ...rest }) => rest);
+}
+
+function searchAuraKbKeyword(
+  query: string,
+  marca: string,
+  clearedRoles: string[],
+  limite: number,
+): AuraRanked[] {
+  try {
+    const db = getDatabase();
+    const words = query.split(/\s+/).filter((w) => w.length >= 2);
+    if (words.length === 0) return [];
+    const ftsQuery = words.map((w) => `"${w.replace(/"/g, "")}"`).join(" ");
+    const overFetchK = Math.max(limite * 3, 30);
+    const gov = auraGovernanceClause(clearedRoles);
+
+    const sql = `
+      SELECT e.rowid as rid, e.contenido, d.titulo, d.marca, d.cuerpo, d.rol_minimo
+      FROM crm_fts_embeddings fts
+      JOIN crm_embeddings e ON e.rowid = fts.rowid
+      JOIN crm_documents d ON e.document_id = d.id
+      WHERE crm_fts_embeddings MATCH ?${gov.clause}
+      ORDER BY fts.rank LIMIT ?
+    `;
+    const rows = db
+      .prepare(sql)
+      .all(ftsQuery, ...gov.bind(marca), overFetchK) as {
+      rid: number | bigint;
+      contenido: string;
+      titulo: string;
+      marca: string | null;
+      cuerpo: string | null;
+      rol_minimo: string | null;
+    }[];
+
+    return rows.map((row) => ({
+      rowid: Number(row.rid),
+      contenido: row.contenido,
+      titulo: row.titulo,
+      marca: row.marca,
+      cuerpo: row.cuerpo,
+      rol_minimo: row.rol_minimo,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function auraFusion(
+  lists: AuraRanked[][],
+  limite: number,
+  k = 60,
+): AuraSearchResult[] {
+  const scores = new Map<number, number>();
+  const metadata = new Map<number, AuraRanked>();
+  for (const list of lists) {
+    for (let rank = 0; rank < list.length; rank++) {
+      const item = list[rank];
+      scores.set(
+        item.rowid,
+        (scores.get(item.rowid) ?? 0) + 1 / (k + rank + 1),
+      );
+      if (!metadata.has(item.rowid)) metadata.set(item.rowid, item);
+    }
+  }
+  const maxPossible = lists.length / (k + 1);
+  return Array.from(scores.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limite)
+    .map(([rowid, score]) => {
+      const item = metadata.get(rowid)!;
+      return {
+        titulo: item.titulo,
+        fragmento: truncateFragment(item.contenido),
+        similitud: Math.round((score / maxPossible) * 100) / 100,
+        marca: item.marca,
+        cuerpo: item.cuerpo,
+        rol_minimo: item.rol_minimo,
+      };
+    });
+}
+
+function auraToResult(r: AuraRanked): AuraSearchResult {
+  return {
+    titulo: r.titulo,
+    fragmento: truncateFragment(r.contenido),
+    similitud: 1,
+    marca: r.marca,
+    cuerpo: r.cuerpo,
+    rol_minimo: r.rol_minimo,
+  };
+}
+
+/**
+ * Hybrid retrieval over the Aura KB, governed by the firewall + RBAC.
+ *
+ * @param query  the search text
+ * @param opts.marca  the session's active brand (firewall key). Required: a null/blank
+ *   brand returns [] (fail-closed — all brand findings are client-isolated).
+ * @param opts.role   the caller's CRM role (ae/gerente/director/vp); gates rol_minimo.
+ */
+export async function searchAuraKb(
+  query: string,
+  opts: { marca: string | null; role: string; limite?: number },
+): Promise<AuraSearchResult[]> {
+  const limite = opts.limite ?? 5;
+  if (!opts.marca || !opts.marca.trim()) return [];
+  const clearedRoles = clearedFloors(opts.role) as string[];
+
+  const [vectorResults, keywordResults] = await Promise.all([
+    searchAuraKbVector(query, opts.marca, clearedRoles, limite),
+    Promise.resolve(
+      searchAuraKbKeyword(query, opts.marca, clearedRoles, limite),
+    ),
+  ]);
+
+  if (vectorResults.length === 0 && keywordResults.length === 0) return [];
+  if (keywordResults.length === 0)
+    return vectorResults.slice(0, limite).map(auraToResult);
+  if (vectorResults.length === 0)
+    return keywordResults.slice(0, limite).map(auraToResult);
+  return auraFusion([vectorResults, keywordResults], limite);
 }
 
 // ---------------------------------------------------------------------------

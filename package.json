@@ -14,6 +14,7 @@
     "test": "vitest run",
     "bootstrap": "tsx scripts/bootstrap.sh",
     "register-team": "tsx scripts/register-hierarchy.ts",
+    "sync:aura-kb": "tsx scripts/sync-aura-kb.ts",
     "simulate": "tsx scripts/simulator/index.ts",
     "simulate:regression": "tsx scripts/simulator/index.ts --mode regression",
     "simulate:morning": "tsx scripts/simulator/index.ts --mode morning",

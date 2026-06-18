@@ -91,8 +91,12 @@ Delivery reuses the existing WhatsApp surface scoped to Gerente/Director.
 - **P0 — Acquire** ✅ corpus in `aura-kb/`, verified 320/969/19, zip gitignored.
 - **P1 — Governance + taxonomy as code** ✅ taxonomy reconciled, naming fixed, router reconciled,
   role-clearance lattice defined (§4). See §7.
-- **P2 — Index `knowledge/` into the hybrid RAG** with §4 filters at recall; confirm firewall +
-  role-clearance filters; wire the CRM↔KB role map.
+- **P2 — Index `knowledge/` into the hybrid RAG** ✅ **BUILT 2026-06-18** — schema governance
+  columns + `marca_norm`, `aura-kb-sync.ts` ingester (`npm run sync:aura-kb`), `aura-rbac.ts`
+  clearance lattice, `searchAuraKb` firewall+RBAC at recall; the Drive path excludes `source='aura-kb'`
+  so VP's unfiltered search can't bypass it. Detail + audit fixes in `AURA-P2-PLAN.md`.
+  **Deploy-time:** point `EMBEDDING_MODEL` at a live 1024-dim provider, then
+  `npm run sync:aura-kb -- --reindex` to embed the 969 findings.
 - **P3 — Closing slice as a coaching mode**: encode `aura-amn` PREVENTA → ARMAGEDDON → DARK →
   STAKEHOLDERS using the SKILL.md bodies; light up for Gerente/Director; rest dormant behind the
   acceptance gate.
