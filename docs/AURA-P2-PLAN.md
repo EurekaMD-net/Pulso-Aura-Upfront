@@ -26,12 +26,21 @@
 
 ## Step 0 — Preconditions (verify before bulk work)
 
-1. **Embedding provider is live.** Memory notes DashScope deprecated the operator's paid plan
-   (inference moved to Fireworks). Confirm the _embedding_ endpoint (`embedding.ts`) still answers
-   before embedding 969 findings — bulk embedding is the one irreversible cost. If DashScope embed
-   is dead, point `embedding.ts` at a live 1024-dim provider (and re-embed must use one model).
-2. **Estimate cost/volume:** 969 findings + doctrine/catalog, ~N chunks each → one-time embed batch.
-   Print the chunk count before embedding.
+1. **Embedding provider — ✅ RESOLVED (2026-06-18): Fireworks `qwen3-embedding-8b`.** Verified
+   against Fireworks docs: the OpenAI-compatible endpoint `https://api.fireworks.ai/inference/v1/embeddings`
+   accepts a `dimensions` parameter ("Only supported in `nomic-ai/nomic-embed-text-v1.5` and later
+   models"); `accounts/fireworks/models/qwen3-embedding-8b` is **serverless / pay-per-token**
+   ($0.10 / 1M input tokens), native **4096** dim with MRL "user-defined output dimensions ranging
+   from 32 to 4096" → **1024 is in range**. nomic-embed-text-v1.5 was rejected: 768-native, can only
+   Matryoshka-_down_, so it can't fill the float[1024] `vec0` table. Qwen3 is also multilingual
+   (better for the Spanish corpus) and reuses the existing Fireworks key. `embedding.ts` already
+   sends `dimensions: 1024`, so it is drop-in. **Operator sets in `.env`:**
+   `EMBEDDING_MODEL=accounts/fireworks/models/qwen3-embedding-8b` (and `EMBEDDING_URL=https://api.fireworks.ai/inference/v1`
+   unless `INFERENCE_PRIMARY_URL` is already Fireworks, in which case it inherits; key inherits
+   `INFERENCE_PRIMARY_KEY`).
+2. **Cost/volume:** ~969 findings × ~1k tokens ≈ ~1M tokens → **~$0.10 one-time** for the full
+   ingest. `syncAuraKb` already prints `{files, indexed, skipped, failed}`; the script warns if it
+   silently fell back to the non-semantic local hash (provider unreachable).
 
 ## Step 1 — Schema migration (`crm/src/schema.ts`)
 
