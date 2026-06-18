@@ -3,6 +3,7 @@ dist/
 store/
 data/
 .env
+.env.bak.*
 .DS_Store
 *.log
 
