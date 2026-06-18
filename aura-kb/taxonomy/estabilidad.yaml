@@ -1,0 +1,8 @@
+# Cada cuánto caduca / política de re-indexado
+dimension: estabilidad
+valores:
+  fija: Refresco anual. Doctrina.
+  semi_estable: Por temporada. Catálogos.
+  ciclica: Patrón estacional recurrente (temporalidades).
+  caduca: Refresco trimestral. Mercado / plataforma / tesis.
+  estable: General. Estable entre refrescos del KB; inteligencia de marca de base (uso mayoritario).

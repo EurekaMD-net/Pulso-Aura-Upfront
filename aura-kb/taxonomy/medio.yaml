@@ -1,0 +1,8 @@
+# Medio del ecosistema AMN
+dimension: medio
+valores:
+  tv_lineal: TV abierta (Azteca Uno, Azteca 7, adn40, A+).
+  ctv:       CTV / streaming con publicidad (Pluto, Tubi, Disney+).
+  radio:     "Audio (Prisa W, Los 40, Ke Buena)."
+  digital:   Azteca Digital, programática, social, DOOH.
+  ooh:       Out of Home (Grupo Vallas).

@@ -1,0 +1,6 @@
+# Qué tan delicado es el contenido
+dimension: sensibilidad
+valores:
+  baja:  Research; puede circular ampliamente.
+  media: Inteligencia competitiva; circulación comercial.
+  alta:  Interno/estratégico; nunca cara al cliente.

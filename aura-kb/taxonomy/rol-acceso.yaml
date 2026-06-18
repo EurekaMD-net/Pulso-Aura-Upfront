@@ -1,0 +1,8 @@
+# Rol mínimo que puede leer el activo (RBAC)
+dimension: rol_minimo
+valores:
+  transversal:        Todos los vendedores.
+  comercial_kam:      Comercial / KAM.
+  estrategia_research: Estrategia / Research.
+  restringido_senior: Vendedor senior; material de guerra, nunca al cliente.
+  direccion_clevel:   Dirección / C-level.

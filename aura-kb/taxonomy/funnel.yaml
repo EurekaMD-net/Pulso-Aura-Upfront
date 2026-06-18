@@ -1,0 +1,7 @@
+# Etapa de funnel que atiende el activo o la táctica
+dimension: funnel
+valores:
+  awareness:           Construir alcance/notoriedad.
+  consideracion:       Construir relevancia/consideración.
+  conversion:          Activar venta/respuesta.
+  recomendacion_smot:  Segundo momento de la verdad / recomendación.

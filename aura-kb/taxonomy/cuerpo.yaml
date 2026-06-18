@@ -1,0 +1,11 @@
+# Cuerpos internos de un dosier de inteligencia de marca (C1–C6) + cuerpos derivados de los 4 findings del KB
+dimension: cuerpo
+valores:
+  diagnostico_9fuentes: C1 · Diagnóstico estructural (9 Fuentes de Venta).
+  temporalidades: C2 · Seasonality Map.
+  buyer_personas: C3 · Buyer personas estratégicos.
+  tablas_duras_marca: C4 · Tablas duras del anunciante (precios SKU, financieros).
+  tesis_oportunidad: C5 · Tesis de oportunidad.
+  argumentario_amn: C6 · Argumentario "Nuestro Ecosistema" AMN (interno).
+  campanas_temporalidades: Campañas y temporalidades (salida de campaignmap; alias amplio de C2/temporalidades).
+  inteligencia_social: Inteligencia social / voz orgánica del consumidor (salida de socialmap).

@@ -1,0 +1,9 @@
+# Qué tipo de pieza es (define si se indexa como conocimiento o se ejecuta como capacidad)
+dimension: tipo_activo
+valores:
+  doctrina:               Principio estable que no caduca; la "constitución".
+  inteligencia_aplicada:  Análisis sobre una marca/categoría/mercado; suele caducar.
+  andamiaje_estructurado: Catálogo o mapa (p. ej. taxonomía de formatos, sin precio).
+  especialista_sintetico: Un skill (persona/receta con criterio).
+  orquestador:            Skill que coordina otros y produce entregables.
+  motor_plantilla:        Código o estructura de salida; NO se indexa como conocimiento.

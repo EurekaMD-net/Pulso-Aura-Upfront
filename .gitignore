@@ -24,3 +24,6 @@ groups/*/attachments/
 
 # TypeScript incremental build cache (regenerated on every tsc run)
 *.tsbuildinfo
+
+# Aura KB raw import archive (content lives unpacked in aura-kb/)
+aura-kb-import.zip
