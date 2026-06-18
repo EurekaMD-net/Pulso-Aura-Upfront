@@ -4,6 +4,12 @@
 
 ---
 
+> **Active deployment — Azteca-Aura (Upfront 2027).** TV Azteca runs a Phase-1 _closing companion_
+> on this codebase. The Aura methodology corpus lives in [`aura-kb/`](aura-kb/) (320 brands / 969
+> findings / 19 skills); operationalization design in
+> [`docs/AURA-KB-OPERATIONALIZATION.md`](docs/AURA-KB-OPERATIONALIZATION.md), next step
+> [`docs/AURA-P2-PLAN.md`](docs/AURA-P2-PLAN.md).
+
 ## What Pulso Is
 
 The cognitive exoskeleton for B2B sales teams. AI agents embedded in WhatsApp that do the CRM work so your team can focus on selling.
@@ -31,13 +37,13 @@ The original [`kosm1x/crm-azteca`](https://github.com/kosm1x/crm-azteca) was pur
 
 This fork decouples those layers:
 
-| Layer | Original (kosm1x) | This fork (EurekaMD-net) |
-|---|---|---|
-| **Industry** | Broadcast ad sales | Any B2B vertical |
-| **Schema vocab** | `contrato`, `inventario`, `descarga` | Generalized + vertical config |
-| **Overnight analyzers** | Media mix, holding groups, sell-out | Pluggable by vertical |
-| **Persona prompts** | TV/radio context | Vertical-aware system prompt |
-| **Role labels** | AE / Gerente / Director / VP | Configurable per deployment |
+| Layer                   | Original (kosm1x)                    | This fork (EurekaMD-net)      |
+| ----------------------- | ------------------------------------ | ----------------------------- |
+| **Industry**            | Broadcast ad sales                   | Any B2B vertical              |
+| **Schema vocab**        | `contrato`, `inventario`, `descarga` | Generalized + vertical config |
+| **Overnight analyzers** | Media mix, holding groups, sell-out  | Pluggable by vertical         |
+| **Persona prompts**     | TV/radio context                     | Vertical-aware system prompt  |
+| **Role labels**         | AE / Gerente / Director / VP         | Configurable per deployment   |
 
 The engine (NanoClaw), tool registry (71 tools), WhatsApp multi-group routing, Hindsight memory, hybrid RAG, and escalation cascade are **unchanged**.
 
@@ -45,18 +51,18 @@ The engine (NanoClaw), tool registry (71 tools), WhatsApp multi-group routing, H
 
 ## Target Verticals
 
-| Vertical | Key fit |
-|---|---|
-| **Media & Advertising** | Native — the original use case |
-| **Healthcare / Hospital Sales** | Long cycles, multi-stakeholder, quota pressure |
-| **Distribution / Field Sales** | Mobile-first, geo coverage, sell-out tracking |
-| **Real Estate (B2B)** | Relationship warmth, long pipeline, package deals |
-| **Financial Services** | Compliance-aware logging, executive relationships |
-| **Private Education** | Admissions pipeline, 5-8 month cycles |
-| **Events & Sponsorships** | Multi-contact deals, holding group overlap |
-| **Logistics / 3PL** | Key account management, geo routing |
-| **B2B SaaS / Tech** | Multi-stakeholder, technical + exec tracks |
-| **Construction / Infra** | Field teams, project-level pipeline |
+| Vertical                        | Key fit                                           |
+| ------------------------------- | ------------------------------------------------- |
+| **Media & Advertising**         | Native — the original use case                    |
+| **Healthcare / Hospital Sales** | Long cycles, multi-stakeholder, quota pressure    |
+| **Distribution / Field Sales**  | Mobile-first, geo coverage, sell-out tracking     |
+| **Real Estate (B2B)**           | Relationship warmth, long pipeline, package deals |
+| **Financial Services**          | Compliance-aware logging, executive relationships |
+| **Private Education**           | Admissions pipeline, 5-8 month cycles             |
+| **Events & Sponsorships**       | Multi-contact deals, holding group overlap        |
+| **Logistics / 3PL**             | Key account management, geo routing               |
+| **B2B SaaS / Tech**             | Multi-stakeholder, technical + exec tracks        |
+| **Construction / Infra**        | Field teams, project-level pipeline               |
 
 ---
 
@@ -111,26 +117,26 @@ WhatsApp → engine (NanoClaw) → Direct tools (71 CRM tools via inference adap
 
 ### Tools by Role
 
-| Role     | Tools | Capabilities |
-| -------- | ----- | ------------ |
-| AE       | 51    | Log activities, manage deals, send emails, set reminders, search docs, web search, analytics, cross-sell, memory, user profile, approval requests, view insights/drafts |
+| Role     | Tools | Capabilities                                                                                                                                                                  |
+| -------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AE       | 51    | Log activities, manage deals, send emails, set reminders, search docs, web search, analytics, cross-sell, memory, user profile, approval requests, view insights/drafts       |
 | Manager  | 55    | Team pipeline, quota rollups, coaching briefings, email, docs, web search, analytics, cross-sell, swarm analysis, approve/reject registrations, team insights, memory, Jarvis |
-| Director | 66    | All manager tools + relationship intelligence (warmth, milestones, interactions), team pattern analysis, cross-agent insights, Drive creation (docs, sheets, slides), Jarvis |
-| VP       | 64    | Executive dashboards, org-wide visibility, relationship intelligence, cross-agent patterns, strategic insights, Drive creation, full analytics, Jarvis |
+| Director | 66    | All manager tools + relationship intelligence (warmth, milestones, interactions), team pattern analysis, cross-agent insights, Drive creation (docs, sheets, slides), Jarvis  |
+| VP       | 64    | Executive dashboards, org-wide visibility, relationship intelligence, cross-agent patterns, strategic insights, Drive creation, full analytics, Jarvis                        |
 
 71 unique tools total across activity logging, pipeline management, Google Workspace (Gmail, Drive, Calendar, Slides, Sheets), event tracking, document search (hybrid RAG), web search, historical analytics, cross-sell recommendations, parallel swarm analysis, follow-up reminders, long-term memory, approval workflows, commercial insights, pattern detection, package building, feedback tracking, user profiles, relationship intelligence, and Jarvis strategic analysis.
 
 ### Proactive Workflows
 
-| Workflow             | Schedule                                         | Roles |
-| -------------------- | ------------------------------------------------ | ----- |
-| Morning briefing     | Weekdays (VP 8:45, Dir 8:52, Mgr 9:00, AE 9:10) | All |
-| Weekly summary       | Friday 4pm                                       | AE |
-| Follow-up reminders  | Hourly 9-6 weekdays                              | AE |
-| Alert evaluation     | Every 2 hours                                    | All (8 evaluators incl. event countdown) |
-| Document sync        | Daily 3am                                        | All (Google Drive → RAG index) |
-| Overnight analysis   | Nightly                                          | All (6 commercial analyzers + cross-agent patterns) |
-| Warmth recomputation | Daily 4am                                        | Dir/VP (executive relationship scores) |
+| Workflow             | Schedule                                        | Roles                                               |
+| -------------------- | ----------------------------------------------- | --------------------------------------------------- |
+| Morning briefing     | Weekdays (VP 8:45, Dir 8:52, Mgr 9:00, AE 9:10) | All                                                 |
+| Weekly summary       | Friday 4pm                                      | AE                                                  |
+| Follow-up reminders  | Hourly 9-6 weekdays                             | AE                                                  |
+| Alert evaluation     | Every 2 hours                                   | All (8 evaluators incl. event countdown)            |
+| Document sync        | Daily 3am                                       | All (Google Drive → RAG index)                      |
+| Overnight analysis   | Nightly                                         | All (6 commercial analyzers + cross-agent patterns) |
+| Warmth recomputation | Daily 4am                                       | Dir/VP (executive relationship scores)              |
 
 ### Escalation Cascade
 
