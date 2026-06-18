@@ -32,6 +32,7 @@ import { crear_evento_calendario, consultar_agenda } from "./calendar.js";
 import { establecer_recordatorio } from "./seguimiento.js";
 import { consultar_eventos, consultar_inventario_evento } from "./eventos.js";
 import { buscar_documentos } from "./rag.js";
+import { buscar_inteligencia_marca } from "./aura.js";
 import { buscar_emails, leer_email, crear_borrador_email } from "./gmail.js";
 import {
   listar_archivos_drive,
@@ -858,6 +859,43 @@ const TOOL_BUSCAR_DOCUMENTOS: ToolDefinition = {
         },
       },
       required: ["consulta"],
+    },
+  },
+};
+
+const TOOL_BUSCAR_INTELIGENCIA_MARCA: ToolDefinition = {
+  type: "function",
+  function: {
+    name: "buscar_inteligencia_marca",
+    description:
+      "Recupera la INTELIGENCIA DE MARCA del KB de Aura (metodología de efectividad, conocimiento " +
+      "curado y exógeno — el CÓMO): diagnóstico de 9 fuentes, buyer personas, campañas y " +
+      "temporalidades, inteligencia social, tesis de oportunidad y material de cierre. Distinto de " +
+      "buscar_documentos (corpus INTERNO de la empresa — el QUÉ).\n\n" +
+      "USAR al trabajar el CIERRE / PREVENTA de una marca y necesitas su inteligencia estratégica: " +
+      "'¿qué sabemos de Coca-Cola?', 'oportunidades de temporada de Bonafont', 'cómo abrir el comité'.\n\n" +
+      "La marca se resuelve por nombre; si es ambigua (p. ej. 'Bonafont' → varias presentaciones) " +
+      "la herramienta devuelve OPCIONES para que preguntes al vendedor cuál. El acceso respeta el " +
+      "rol: el material sensible de cierre solo aparece para roles autorizados.",
+    parameters: {
+      type: "object",
+      properties: {
+        marca: {
+          type: "string",
+          description:
+            "Nombre de la marca como lo dice el vendedor (p. ej. 'Coca Cola', 'bonafont').",
+        },
+        consulta: {
+          type: "string",
+          description:
+            "Qué buscar dentro de esa marca (p. ej. 'oportunidades de temporada', 'buyer personas', 'cómo entrar al comité').",
+        },
+        limite: {
+          type: "number",
+          description: "Número máximo de hallazgos (default 6, max 20).",
+        },
+      },
+      required: ["marca", "consulta"],
     },
   },
 };
@@ -2307,6 +2345,7 @@ const APPROVAL_TOOLS: ToolDefinition[] = [
 ];
 
 const GERENTE_TOOLS: ToolDefinition[] = [
+  TOOL_BUSCAR_INTELIGENCIA_MARCA,
   TOOL_CONSULTAR_PIPELINE,
   TOOL_CONSULTAR_CUENTA,
   TOOL_CONSULTAR_CUENTAS,
@@ -2364,6 +2403,7 @@ const RELATIONSHIP_TOOLS: ToolDefinition[] = [
 ];
 
 const DIRECTOR_TOOLS: ToolDefinition[] = [
+  TOOL_BUSCAR_INTELIGENCIA_MARCA,
   TOOL_CONSULTAR_PIPELINE,
   TOOL_CONSULTAR_CUENTA,
   TOOL_CONSULTAR_CUENTAS,
@@ -2504,6 +2544,7 @@ const TOOL_HANDLERS: Record<string, ToolHandler> = {
   leer_archivo_drive,
   crear_documento_drive,
   buscar_documentos,
+  buscar_inteligencia_marca,
   buscar_web,
   consultar_clima,
   convertir_moneda,

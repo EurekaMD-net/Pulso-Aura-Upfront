@@ -248,6 +248,7 @@ No todas las herramientas estan disponibles para todos los roles.
 ### Documentos (RAG)
 
 - _buscar_documentos_ -- Busqueda semantica en documentos sincronizados (Drive, email). Respeta jerarquia de acceso.
+- _buscar_inteligencia_marca_ -- Inteligencia de marca CURADA del KB de Aura (diagnostico, buyer personas, campanas, social, oportunidades, material de cierre). Para preventa/cierre de una marca. Distinto de buscar_documentos (corpus interno). Respeta el rol; si la marca es ambigua devuelve opciones para preguntar.
 
 ### Web
 
