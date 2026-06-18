@@ -1,7 +1,7 @@
 ---
 id: kb-brand-pampers-pa-u00f1ales-bebes-diagnostico-9fuentes
-titulo: "Pampers Pa#U00f1ales Bebes · Diagnóstico 9 Fuentes"
-marca: "Pampers Pa#U00f1ales Bebes"
+titulo: "Pampers Pañales Bebes · Diagnóstico 9 Fuentes"
+marca: "Pampers Pañales Bebes"
 categoria: por_definir
 mercado: MX
 cuerpo: diagnostico_9fuentes
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: brandmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Pampers Pa#U00f1ales Bebes Mx.docx"
+archivo_origen: "Pampers Pañales Bebes Mx.docx"
 ---
 **Inteligencia de mercado, perfilamiento estratégico y mapeo de marca: Pampers en México**
 

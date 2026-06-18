@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Bubaloo Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Bubaloo Campañas & Temporalidades 2025.docx"
 ---
 **Advertising & Seasonality Intelligence Pack: El Sistema de Crecimiento de Bubbaloo en el Mercado de Snacks Dulces en México**
 

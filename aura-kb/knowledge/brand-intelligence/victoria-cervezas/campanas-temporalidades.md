@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Victoria Cerveza Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Victoria Cerveza Campañas & Temporalidades 2025.docx"
 ---
 **Sistema integral de inteligencia de mercado, campañas y temporalidades para Cerveza Victoria: Estrategia de crecimiento y dominio cultural en México (Ciclo 2024-2027)**
 

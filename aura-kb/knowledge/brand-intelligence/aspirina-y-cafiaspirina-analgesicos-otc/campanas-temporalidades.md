@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Aspirina Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Aspirina Mx Campañas & Temporalidades 2026.docx"
 ---
 **Analisis de Inteligencia de Mercado: Aspirina y Cafiaspirina en el Segmento de Analgesicos OTC en Mexico**
 

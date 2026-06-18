@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Home Depot Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Home Depot Campañas & Temporalidades 2025.docx"
 ---
 **Estrategia de inteligencia de mercado y ecosistema de comunicación de The Home Depot México: Análisis prospectivo 2025-2026**
 

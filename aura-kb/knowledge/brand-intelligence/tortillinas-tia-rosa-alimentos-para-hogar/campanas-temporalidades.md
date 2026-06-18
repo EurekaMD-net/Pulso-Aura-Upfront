@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Tortillinas Tia Rosa Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Tortillinas Tia Rosa Campañas & Temporalidades 2025.docx"
 ---
 **Informe Integral de Inteligencia de Marketing: Tortillinas Tía Rosa México – Ciclo 2024-2025**
 

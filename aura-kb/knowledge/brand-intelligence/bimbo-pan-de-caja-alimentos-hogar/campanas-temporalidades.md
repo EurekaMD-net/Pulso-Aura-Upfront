@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Bimbo Pan Caja Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "Bimbo Pan Caja Campañas y Temporalidades 2025.docx"
 ---
 **Análisis Prospectivo y Evolutivo de la Industria de Panificación en México: El Ecosistema de Alimentos para el Hogar de Grupo Bimbo (2024-2026)**
 

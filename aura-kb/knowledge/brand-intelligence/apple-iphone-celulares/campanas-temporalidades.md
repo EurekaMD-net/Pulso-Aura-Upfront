@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Apple Iphone Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "Apple Iphone Campañas y Temporalidades 2025.docx"
 ---
 **Análisis Integral de Mercado: Estrategias de Comercialización, Temporalidades y Narrativas Multimedia de Apple iPhone en el Mercado Mexicano (2024-2026)**
 

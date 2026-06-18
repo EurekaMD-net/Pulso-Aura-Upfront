@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Emperador Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Emperador Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de mercado y arquitectura de campañas para Emperador (Gamesa): Estrategia de marca, mapeo de medios e innovaciones de portafolio**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Aderogyl Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Aderogyl Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Estrategia de Campañas para Aderogyl en México: Análisis de Portafolio, Competencia, Canales y Audiencias en el Sector OTC**
 

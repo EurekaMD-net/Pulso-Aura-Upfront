@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Coppel Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Coppel Campañas & Temporalidades 2025.docx"
 ---
 **Sistema de Inteligencia Estratégica y Omnicanalidad: Análisis de Madurez, Campañas y Temporalidades de Grupo Coppel en el Mercado Mexicano (2024-2025)**
 

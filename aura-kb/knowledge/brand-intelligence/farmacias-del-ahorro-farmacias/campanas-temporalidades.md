@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Farmacias de Ahorro Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Farmacias de Ahorro Campañas & Temporalidades.docx"
 ---
 **Inteligencia de mercado y análisis estratégico integral de Farmacias del Ahorro en el sector farmacéutico mexicano**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Histiacil Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Histiacil Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Estrategia de Campañas: Histiacil y el Segmento OTC Respiratorio en México**
 

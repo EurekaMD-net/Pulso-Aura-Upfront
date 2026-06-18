@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Oppo Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Oppo Campañas & Temporalidades 2025.docx"
 ---
 **Auditoría Estratégica de Mercado y Sistema de Inteligencia Competitiva para Oppo México: Ciclo 2024-2026**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Pedigree Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Pedigree Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de Mercado y Análisis Exhaustivo de Pedigree Alimentos para Mascotas en México: Un Horizonte Estratégico hacia 2025-2030**
 

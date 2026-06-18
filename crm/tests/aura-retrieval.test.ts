@@ -1,10 +1,10 @@
 /**
- * Aura KB retrieval tests — the firewall + RBAC enforced IN SQL by searchAuraKb,
- * plus the regression that the persona-scoped Drive RAG never leaks aura-kb docs.
+ * Aura KB retrieval tests — the firewall + RBAC enforced IN SQL by searchAuraKb (now keyed on
+ * brand_key = the folder slug, not the free-text marca), plus the regression that the
+ * persona-scoped Drive RAG never leaks aura-kb docs.
  *
- * Embeddings use the deterministic local fallback; with a tiny corpus the vector
- * over-fetch returns every chunk, so what we are exercising is the governance
- * filtering, not embedding quality.
+ * Embeddings use the deterministic local fallback; with a tiny corpus the vector over-fetch
+ * returns every chunk, so what we exercise is the governance filtering, not embedding quality.
  */
 
 import Database from "better-sqlite3";
@@ -48,9 +48,17 @@ function setupDb() {
 }
 beforeEach(setupDb);
 
-function gov(marca: string, rol: string, aislado = true): AuraGovernance {
+// brandKey is the firewall key (folder slug); marca is just display metadata and may vary
+// across a brand's findings.
+function gov(
+  brandKey: string,
+  marca: string,
+  rol: string,
+  aislado = true,
+): AuraGovernance {
   return {
     marca,
+    brandKey,
     rolMinimo: rol,
     sensibilidad: "baja",
     aisladoPorCliente: aislado,
@@ -61,6 +69,7 @@ function gov(marca: string, rol: string, aislado = true): AuraGovernance {
 }
 
 function ingest(
+  brandKey: string,
   marca: string,
   rol: string,
   titulo: string,
@@ -70,28 +79,31 @@ function ingest(
   return storeDocument(
     null,
     "aura-kb",
-    `${marca}::${titulo}`,
+    `${brandKey}::${titulo}`,
     titulo,
     "aura-finding",
     `${titulo}\n\n${body}`,
-    gov(marca, rol, aislado),
+    gov(brandKey, marca, rol, aislado),
   );
 }
 
 async function seedBrands() {
   await ingest(
+    "coca-cola",
     "Coca Cola",
     "comercial_kam",
     "Coca Diag",
     "Diagnostico de Coca Cola con television abierta horario estelar campana refrescos.",
   );
   await ingest(
+    "coca-cola",
     "Coca Cola",
     "restringido_senior",
     "Coca Dark",
     "Sala invisible comite negociacion estrategia de cierre para Coca Cola.",
   );
   await ingest(
+    "pepsi",
     "Pepsi",
     "comercial_kam",
     "Pepsi Diag",
@@ -99,12 +111,12 @@ async function seedBrands() {
   );
 }
 
-describe("searchAuraKb — firewall", () => {
+describe("searchAuraKb — firewall (keyed on brand_key)", () => {
   beforeEach(seedBrands);
 
-  it("a Coca Cola session never surfaces Pepsi findings", async () => {
+  it("a coca-cola session never surfaces pepsi findings", async () => {
     const results = await searchAuraKb("refrescos campana television", {
-      marca: "Coca Cola",
+      brand: "coca-cola",
       role: "gerente",
     });
     expect(results.length).toBeGreaterThan(0);
@@ -112,22 +124,51 @@ describe("searchAuraKb — firewall", () => {
     expect(results.some((r) => r.marca === "Pepsi")).toBe(false);
   });
 
-  it("matches brand case-insensitively", async () => {
-    const results = await searchAuraKb("refrescos", {
-      marca: "coca cola",
-      role: "gerente",
-    });
-    expect(results.length).toBeGreaterThan(0);
-    expect(results.every((r) => r.marca === "Coca Cola")).toBe(true);
-  });
-
   it("fails closed when no active brand is set", async () => {
     expect(
-      await searchAuraKb("refrescos", { marca: null, role: "gerente" }),
+      await searchAuraKb("refrescos", { brand: null, role: "gerente" }),
     ).toEqual([]);
     expect(
-      await searchAuraKb("refrescos", { marca: "  ", role: "gerente" }),
+      await searchAuraKb("refrescos", { brand: "  ", role: "gerente" }),
     ).toEqual([]);
+  });
+});
+
+describe("searchAuraKb — completeness under one brand_key (THE FIX)", () => {
+  it("retrieves ALL of a brand's findings even when marca strings differ (typos/variants)", async () => {
+    // One brand folder, three findings tagged with three different marca strings — exactly the
+    // real-corpus pathology (incl. the 'Lievité' typo). Old marca-keyed firewall would have
+    // returned only the findings matching the queried marca; brand_key returns all three.
+    await ingest(
+      "bonafont-levite",
+      "Bonafont Levite",
+      "comercial_kam",
+      "BL Diag",
+      "Diagnostico bonafont levite agua saborizada campana refrescos.",
+    );
+    await ingest(
+      "bonafont-levite",
+      "Lievité",
+      "comercial_kam",
+      "BL Camp",
+      "Campanas y temporalidades de levite agua saborizada refrescos.",
+    );
+    await ingest(
+      "bonafont-levite",
+      "Levité Aguas Saborizadas",
+      "comercial_kam",
+      "BL Social",
+      "Inteligencia social levite conversacion agua refrescos.",
+    );
+
+    const results = await searchAuraKb("agua saborizada campana refrescos", {
+      brand: "bonafont-levite",
+      role: "gerente",
+    });
+    const titulos = results.map((r) => r.titulo);
+    expect(titulos).toContain("BL Diag");
+    expect(titulos).toContain("BL Camp");
+    expect(titulos).toContain("BL Social");
   });
 });
 
@@ -136,7 +177,7 @@ describe("searchAuraKb — RBAC", () => {
 
   it("AE cannot retrieve restringido_senior war-room material", async () => {
     const results = await searchAuraKb("sala invisible comite negociacion", {
-      marca: "Coca Cola",
+      brand: "coca-cola",
       role: "ae",
     });
     expect(results.every((r) => r.titulo !== "Coca Dark")).toBe(true);
@@ -147,7 +188,7 @@ describe("searchAuraKb — RBAC", () => {
 
   it("Gerente can retrieve restringido_senior material for the active brand", async () => {
     const results = await searchAuraKb("sala invisible comite negociacion", {
-      marca: "Coca Cola",
+      brand: "coca-cola",
       role: "gerente",
     });
     expect(results.some((r) => r.titulo === "Coca Dark")).toBe(true);
@@ -157,7 +198,6 @@ describe("searchAuraKb — RBAC", () => {
 describe("Drive RAG isolation", () => {
   it("VP Drive search (empty persona filter) never returns aura-kb docs", async () => {
     await seedBrands();
-    // Also store a real Drive doc so the search has a legitimate hit.
     await storeDocument(
       null,
       "manual",
@@ -175,23 +215,24 @@ describe("Drive RAG isolation", () => {
 });
 
 describe("searchAuraKb — firewall does not trust the aislado flag (C1)", () => {
-  it("a branded finding with aislado=0 still cannot leak to another brand", async () => {
-    // Mislabeled: real brand 'Pepsi' but flagged not-isolated.
+  it("a finding with a brand_key + aislado=0 still cannot leak to another brand", async () => {
     await ingest(
+      "pepsi",
       "Pepsi",
       "comercial_kam",
       "Pepsi Mislabeled",
       "Diagnostico Pepsi refrescos television campana.",
-      false,
+      false, // mislabeled not-isolated
     );
     await ingest(
+      "coca-cola",
       "Coca Cola",
       "comercial_kam",
       "Coca Diag",
       "Diagnostico Coca Cola refrescos television campana.",
     );
     const results = await searchAuraKb("refrescos television campana", {
-      marca: "Coca Cola",
+      brand: "coca-cola",
       role: "gerente",
     });
     expect(results.some((r) => r.titulo === "Pepsi Mislabeled")).toBe(false);
@@ -199,26 +240,10 @@ describe("searchAuraKb — firewall does not trust the aislado flag (C1)", () =>
   });
 });
 
-describe("searchAuraKb — accented brand matching (W3)", () => {
-  it("matches across case + diacritics (ENSUEÑO ↔ ensueño)", async () => {
-    await ingest(
-      "Ensueño",
-      "comercial_kam",
-      "Ensueno Diag",
-      "Diagnostico de Ensueno suavizante hogar campana.",
-    );
-    const results = await searchAuraKb("suavizante campana", {
-      marca: "ENSUEÑO",
-      role: "gerente",
-    });
-    expect(results.length).toBeGreaterThan(0);
-    expect(results.every((r) => r.marca === "Ensueño")).toBe(true);
-  });
-});
-
 describe("searchAuraKb — RBAC estrategia_research boundary (W4)", () => {
   beforeEach(async () => {
     await ingest(
+      "coca-cola",
       "Coca Cola",
       "estrategia_research",
       "Coca Research",
@@ -228,7 +253,7 @@ describe("searchAuraKb — RBAC estrategia_research boundary (W4)", () => {
 
   it("AE (comercial_kam ceiling) cannot read estrategia_research", async () => {
     const results = await searchAuraKb("investigacion audiencias journeys", {
-      marca: "Coca Cola",
+      brand: "coca-cola",
       role: "ae",
     });
     expect(results.every((r) => r.titulo !== "Coca Research")).toBe(true);
@@ -236,7 +261,7 @@ describe("searchAuraKb — RBAC estrategia_research boundary (W4)", () => {
 
   it("Gerente can read estrategia_research", async () => {
     const results = await searchAuraKb("investigacion audiencias journeys", {
-      marca: "Coca Cola",
+      brand: "coca-cola",
       role: "gerente",
     });
     expect(results.some((r) => r.titulo === "Coca Research")).toBe(true);

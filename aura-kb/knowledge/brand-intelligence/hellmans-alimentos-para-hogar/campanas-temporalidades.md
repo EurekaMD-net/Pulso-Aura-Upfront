@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Hellmans Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Hellmans Campañas & Temporalidades 2025.docx"
 ---
 **Advertising & Seasonality Intelligence Pack: Análisis Estratégico de Hellmann's México (2024-2025)**
 

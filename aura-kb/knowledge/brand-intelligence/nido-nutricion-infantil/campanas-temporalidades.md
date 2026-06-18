@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Nido Campa#U00f1as & Temporalidades Mx 2026.docx"
+archivo_origen: "Nido Campañas & Temporalidades Mx 2026.docx"
 ---
 **Inteligencia de Mercado y Estrategia Omnicanal de Comunicación para NIDO en México: Análisis de Portafolio, Competencia y Modelos de Campaña para 2026**
 

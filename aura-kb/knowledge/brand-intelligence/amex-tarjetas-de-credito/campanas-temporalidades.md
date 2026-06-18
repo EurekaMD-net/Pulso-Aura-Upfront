@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "AMEX Tarjetas de Credito Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "AMEX Tarjetas de Credito Campañas y Temporalidades 2025.docx"
 ---
 **Advertising & Seasonality Intelligence Pack: Análisis Estratégico de American Express México (Noviembre 2024 - Febrero 2026)**
 

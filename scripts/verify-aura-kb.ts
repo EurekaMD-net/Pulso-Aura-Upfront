@@ -43,11 +43,18 @@ const chunks = (
     .get() as { c: number }
 ).c;
 
+const brands = (
+  db
+    .prepare(
+      "SELECT COUNT(DISTINCT brand_key) c FROM crm_documents WHERE source = 'aura-kb' AND brand_key IS NOT NULL",
+    )
+    .get() as { c: number }
+).c;
 console.log(
-  `aura-kb docs: ${total} | distinct marca strings: ${marcaStrings} (normalized: ${marcaNorm}) | embedding chunks: ${chunks}`,
+  `aura-kb docs: ${total} | brands (brand_key): ${brands} | marca strings: ${marcaStrings} (norm ${marcaNorm}) | chunks: ${chunks}`,
 );
 console.log(
-  "  note: the corpus has 320 brand FOLDERS; marca strings > 320 because the marca field is inconsistent within folders (see AURA-P2-PLAN.md brand-key note).",
+  "  firewall keys on brand_key (folder slug); marca strings > brands because marca is inconsistent within a brand (see AURA-P2-PLAN.md).",
 );
 
 if (total === 0) {
@@ -57,24 +64,46 @@ if (total === 0) {
   process.exit(1);
 }
 
-// Pick the two highest-volume brands for a realistic firewall test.
+// Pick the two highest-volume brands (by brand_key) for a realistic firewall test.
 const top = db
   .prepare(
-    "SELECT marca, COUNT(*) c FROM crm_documents WHERE source='aura-kb' AND marca IS NOT NULL GROUP BY marca ORDER BY c DESC LIMIT 1",
+    "SELECT brand_key, COUNT(*) c FROM crm_documents WHERE source='aura-kb' AND brand_key IS NOT NULL GROUP BY brand_key ORDER BY c DESC LIMIT 1",
   )
-  .get() as { marca: string; c: number };
+  .get() as { brand_key: string; c: number };
 const other = db
   .prepare(
-    "SELECT marca FROM crm_documents WHERE source='aura-kb' AND marca IS NOT NULL AND marca != ? GROUP BY marca ORDER BY COUNT(*) DESC LIMIT 1",
+    "SELECT brand_key FROM crm_documents WHERE source='aura-kb' AND brand_key IS NOT NULL AND brand_key != ? GROUP BY brand_key ORDER BY COUNT(*) DESC LIMIT 1",
   )
-  .get(top.marca) as { marca: string } | undefined;
+  .get(top.brand_key) as { brand_key: string } | undefined;
 
-// Query with the brand name only: FTS surfaces that brand's findings on the keyword
-// path, so the firewall check holds even without a live embedding provider (e.g. a
-// standalone `npm run verify:aura-kb` with no .env). Semantic recall isn't tested here.
-const query = top.marca;
+// FTS-friendly query: a representative marca for this brand (its display name is in the
+// content), so the firewall check holds on the keyword path even without a live embedding
+// provider (e.g. a standalone `npm run verify:aura-kb` with no .env).
+const repr = (
+  db
+    .prepare(
+      "SELECT marca FROM crm_documents WHERE source='aura-kb' AND brand_key=? AND marca IS NOT NULL LIMIT 1",
+    )
+    .get(top.brand_key) as { marca: string } | undefined
+)?.marca;
+const query = repr ?? top.brand_key.replace(/-/g, " ");
 
-const hits = await searchAuraKb(query, { marca: top.marca, role: "gerente" });
+// Titulos that legitimately belong to the top brand — anything else in the results is a leak.
+// (Results carry marca, which varies within a brand, so we check membership by titulo.)
+const topTitulos = new Set(
+  (
+    db
+      .prepare(
+        "SELECT titulo FROM crm_documents WHERE source='aura-kb' AND brand_key=?",
+      )
+      .all(top.brand_key) as { titulo: string }[]
+  ).map((r) => r.titulo),
+);
+
+const hits = await searchAuraKb(query, {
+  brand: top.brand_key,
+  role: "gerente",
+});
 if (isEmbeddingDegraded()) {
   console.log(
     "  note: no embedding provider in env — firewall checked via the keyword (FTS) path only;",
@@ -83,30 +112,30 @@ if (isEmbeddingDegraded()) {
     "        run ./scripts/deploy-aura-kb-p2.sh (sources .env) for a full semantic check.",
   );
 }
-const leak = hits.filter((r) => r.marca !== top.marca);
+const leak = hits.filter((r) => !topTitulos.has(r.titulo));
 
-const failClosed = await searchAuraKb(query, { marca: null, role: "gerente" });
+const failClosed = await searchAuraKb(query, { brand: null, role: "gerente" });
 
 let crossOk = true;
 if (other) {
   const cross = await searchAuraKb(query, {
-    marca: other.marca,
+    brand: other.brand_key,
     role: "gerente",
   });
-  crossOk = cross.every((r) => r.marca === other.marca);
+  crossOk = cross.every((r) => !topTitulos.has(r.titulo));
   console.log(
-    `retrieval[${other.marca}, gerente]: ${cross.length} hits (must not contain ${top.marca})`,
+    `retrieval[${other.brand_key}, gerente]: ${cross.length} hits (must not contain ${top.brand_key} findings)`,
   );
 }
 
 console.log(
-  `retrieval[${top.marca}, gerente]: ${hits.length} hits | cross-brand leak: ${leak.length} | fail-closed(null marca): ${failClosed.length}`,
+  `retrieval[${top.brand_key}, gerente]: ${hits.length} hits | cross-brand leak: ${leak.length} | fail-closed(null brand): ${failClosed.length}`,
 );
 
 const checks: [string, boolean][] = [
-  [`retrieval returns results for ${top.marca}`, hits.length > 0],
+  [`retrieval returns results for ${top.brand_key}`, hits.length > 0],
   ["firewall: zero cross-brand leak", leak.length === 0],
-  ["fail-closed: null marca returns nothing", failClosed.length === 0],
+  ["fail-closed: null brand returns nothing", failClosed.length === 0],
   ["firewall holds for a second brand", crossOk],
 ];
 

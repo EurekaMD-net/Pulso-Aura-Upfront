@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Wapas Papas Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Wapas Papas Mx Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Estrategia de Campañas de Wapas en México**
 

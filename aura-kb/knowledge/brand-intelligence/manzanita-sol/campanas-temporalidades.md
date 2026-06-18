@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Manzanita Sol Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Manzanita Sol Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Arquitectura Estratégica: Análisis Integral de Manzanita Sol en el Sector de Bebidas Saborizadas en México**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Andrea Ventas por Catalogo Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Andrea Ventas por Catalogo Campañas & Temporalidades 2025.docx"
 ---
 **Análisis Estratégico de Inteligencia de Mercados y Evolución de Marca: El Ecosistema Andrea en México (2024-2026)**
 

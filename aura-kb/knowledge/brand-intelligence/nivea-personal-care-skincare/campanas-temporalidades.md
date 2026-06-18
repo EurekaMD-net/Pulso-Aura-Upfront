@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Nivea Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Nivea Mx Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Diagnóstico Estratégico de NIVEA en México: Análisis Multidimensional de las Categorías de Cuidado Corporal y Protección Solar**
 

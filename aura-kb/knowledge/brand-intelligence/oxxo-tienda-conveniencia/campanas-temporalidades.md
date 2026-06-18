@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Oxxo Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Oxxo Campañas & Temporalidades 2026.docx"
 ---
 **Reporte de Inteligencia de Mercado: OXXO México (Advertising & Seasonality Intelligence Pack)**
 

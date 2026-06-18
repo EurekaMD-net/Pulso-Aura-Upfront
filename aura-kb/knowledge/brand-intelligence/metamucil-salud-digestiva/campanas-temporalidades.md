@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Metamucil Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Metamucil Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado, Mapeo de Campañas y Análisis de Riesgo Regulatorio para Metamucil Salud Digestiva en México**
 

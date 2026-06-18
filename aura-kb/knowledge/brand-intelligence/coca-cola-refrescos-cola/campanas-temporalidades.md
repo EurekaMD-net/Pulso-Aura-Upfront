@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Coca Cola Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "Coca Cola Campañas y Temporalidades 2025.docx"
 ---
 **Pack de Inteligencia de Publicidad y Estacionalidad: Coca-Cola México 2024-2025**
 

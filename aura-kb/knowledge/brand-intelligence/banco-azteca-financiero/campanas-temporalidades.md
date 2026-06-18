@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Banco Azteca Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Banco Azteca Campañas & Temporalidades 2025.docx"
 ---
 **Informe de Inteligencia Estratégica Integral: Dinámicas de Campaña, Temporalidad y Competitividad en el Ecosistema Financiero Mexicano (2023-2025)**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Saba Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Saba Campañas & Temporalidades 2025.docx"
 ---
 **Análisis Estratégico e Inteligencia de Mercado de Saba Femcare en México: Hacia el Horizonte 2025-2027**
 

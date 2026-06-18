@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Carls Jr Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Carls Jr Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Planificación Estratégica de Comunicación Omnicanal para Carl's Jr. en México**
 

@@ -1,7 +1,7 @@
 ---
 id: kb-brand-san-u00cdssimo-inteligencia-social
-titulo: "SAN#U00cdSSIMO · Inteligencia Social"
-marca: "SAN#U00cdSSIMO"
+titulo: "SANÍSSIMO · Inteligencia Social"
+marca: "SANÍSSIMO"
 categoria: por_definir
 mercado: MX
 cuerpo: inteligencia_social
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: socialmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "SAN#U00cdSSIMO Inteligencia Social Mexico 2026.docx"
+archivo_origen: "SANÍSSIMO Inteligencia Social Mexico 2026.docx"
 vigencia_hasta: 2026-12-31
 ---
 REPORTE DE INTELIGENCIA SOCIAL (SIA)

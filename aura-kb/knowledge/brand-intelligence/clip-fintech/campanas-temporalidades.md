@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Clip Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Clip Campañas & Temporalidades 2025.docx"
 ---
 **Informe de Inteligencia de Mercado: Ecosistema Publicitario, Estacionalidad y Estrategia Competitiva de Clip México (2024-2025)**
 

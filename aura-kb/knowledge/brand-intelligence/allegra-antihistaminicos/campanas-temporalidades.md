@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-18
-archivo_origen: "Allegra campa#U00f1as temporalidades.docx"
+archivo_origen: "Allegra campañas temporalidades.docx"
 ---
 **El Mercado de Antihistamínicos en México: Análisis de Portafolio, Estacionalidad y Estrategia de Medios de Allegra**
 

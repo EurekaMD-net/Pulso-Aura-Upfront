@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Sabadell Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Sabadell Campañas & Temporalidades 2025.docx"
 ---
 **Análisis Integral de Inteligencia Estratégica: Banco Sabadell en el Ecosistema Financiero y Publicitario de México**
 

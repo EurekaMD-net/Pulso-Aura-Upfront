@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Knorr Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Knorr Campañas & Temporalidades.docx"
 ---
 **Estrategia de Dominio de Mercado y Transformación de Marca: Inteligencia Competitiva de Knorr en México 2024-2026**
 

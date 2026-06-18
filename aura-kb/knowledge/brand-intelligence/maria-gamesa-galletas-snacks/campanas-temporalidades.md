@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Gamesa Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Gamesa Campañas & Temporalidades 2025.docx"
 ---
 **Pack de Inteligencia de Publicidad y Estacionalidad: Gamesa Galletas y Snacks México (2024–2025)**
 

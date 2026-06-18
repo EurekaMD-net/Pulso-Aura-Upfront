@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-18
-archivo_origen: "amex seguros campa#U00f1as temporalidades.docx"
+archivo_origen: "amex seguros campañas temporalidades.docx"
 ---
 **Análisis Estratégico de Prime Video en México: Posicionamiento de Mercado, Campañas de Alto Impacto, Modelos Publicitarios y Sinergias de Distribución**
 

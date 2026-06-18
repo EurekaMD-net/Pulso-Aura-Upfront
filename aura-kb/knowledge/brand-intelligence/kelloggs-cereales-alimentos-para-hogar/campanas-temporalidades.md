@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Kelloggs Cereales Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Kelloggs Cereales Campañas & Temporalidades.docx"
 ---
 **Inteligencia Estratégica de Publicidad y Estacionalidad: Kellogg's Cereales México (2024-2026)**
 

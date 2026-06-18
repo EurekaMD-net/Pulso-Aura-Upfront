@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Silk Leche Vegetal Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Silk Leche Vegetal Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de Mercado y Estrategia Competitiva de Silk en el Sector de Bebidas Vegetales en México: Un Análisis Multicanal hacia 2027**
 

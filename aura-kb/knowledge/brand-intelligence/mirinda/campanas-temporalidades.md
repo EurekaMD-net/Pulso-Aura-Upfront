@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Mirinda Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Mirinda Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Estrategia de Medios: Análisis Exhaustivo de Mirinda en el Sector de Refrescos de Sabor en México**
 

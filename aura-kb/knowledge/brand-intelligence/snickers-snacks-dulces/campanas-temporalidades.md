@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Snickers Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Snickers Campañas & Temporalidades 2025.docx"
 ---
 **Advertising & Seasonality Intelligence Pack: Snickers México (2025-2026)**
 

@@ -43,17 +43,23 @@
    $0.10/1M. Dry-run indexed **971 / skipped 2 / failed 0** (the 2 skips are `knowledge/README.md`
    - `platform-intelligence/README.md` — ungoverned, correctly excluded). `syncAuraKb` prints
      `{files, indexed, skipped, failed}`; the script warns if it fell back to the local hash.
-3. **⚠️ KNOWN DEFECT — firewall under-retrieves (verified 2026-06-18).** The corpus has **320 brand
-   folders** but **684 distinct `marca` strings** (629 normalized), and **254/320 folders (79%)
-   disagree on `marca` across their own findings** — not just case: typos (`Lievité`), dropped
-   accents (`Levite`), mojibake (`Levit#U00e9`), and wording (`Bonafont` vs `Bonafont Agua Natural`).
-   The firewall keys on `marca_norm`, which folds case/accent but NOT wording/typos — so a single
-   brand's findings are split across 2–4 `marca_norm` values and a session scoped to one value
-   **silently misses 50–75% of that brand's intelligence**. Secure (zero leak) but INCOMPLETE.
-   **Fix (not yet applied):** derive the firewall key from the **folder slug** (one folder = one
-   brand, always consistent) at ingest instead of the free-text `marca` — yields 320 clean keys and
-   simplifies P3's brand→key resolution. Lesson: never use a per-document free-text field as a
-   security/scoping key; key on the stable structural fact (the folder).
+3. **✅ FIXED 2026-06-18 — firewall now keyed on `brand_key` (folder slug).** The defect: the corpus
+   has **320 brand folders** but **684 distinct `marca` strings** (629 normalized), with **254/320
+   folders (79%) disagreeing on `marca` across their own findings** — not just case: typos (`Lievité`),
+   accents (`Levite`), mojibake (`Levit#U00e9`), wording (`Bonafont` vs `Bonafont Agua Natural`).
+   Keying on `marca_norm` split a brand across 2–4 values → a session missed 50–75% of its own brand.
+   **Fix:** the ingester derives `brand_key` from the **brand-intelligence folder slug** (one folder =
+   one brand) and the firewall keys on it (`searchAuraKb({ brand, role })`). Result: **320 clean brand
+   keys**, complete per-brand retrieval (regression test: a folder with 3 different marca strings now
+   returns all 3). Applied to the live DB via `backfillBrandKeys()` — a pure UPDATE, **no re-embedding**.
+   Also fixed the latent migration-ordering bug it exposed (governance-column indexes were in the
+   CREATE block, which runs before the ALTER on existing DBs → moved to the migration). Lesson: never
+   use a per-document free-text field as a security/scoping key; key on the stable structural fact.
+
+   **Mojibake (`#UXXXX`) cleaned in source** (257 files; `Levit#U00e9 → Levité`). It was 99% in the
+   non-indexed `archivo_origen` field; only 12 indexed `titulo`s were affected, so live retrieval
+   quality was barely impacted. The cleaned `titulo`s reach the live index on the next `--reindex`
+   re-deploy (the brand_key fix is already live; content cleanup is a cheap refresh, not urgent).
 
 ## Step 1 — Schema migration (`crm/src/schema.ts`)
 

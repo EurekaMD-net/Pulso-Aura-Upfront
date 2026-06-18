@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "La Lechera Campa#U00f1as & Temporalidades Mx 2026.docx"
+archivo_origen: "La Lechera Campañas & Temporalidades Mx 2026.docx"
 ---
 **Reporte de Inteligencia de Mercado: La Lechera Lácteos y Repostería en México – Advertising & Seasonality Intelligence Pack**
 

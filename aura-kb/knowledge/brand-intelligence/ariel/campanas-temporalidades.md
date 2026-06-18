@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Ariel Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Ariel Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Campañas y Temporalidades: Cuidado de la Ropa Ariel México (2025-2026)**
 

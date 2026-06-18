@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Ruffles Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Ruffles Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado, Arquitectura de Marca y Estrategia Omnicanal: Análisis Exhaustivo de Ruffles en el Sector de Botanas Saladas en México (2025-2026)**
 

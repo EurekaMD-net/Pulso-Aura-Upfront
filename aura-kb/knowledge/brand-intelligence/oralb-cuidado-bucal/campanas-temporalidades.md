@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Oral B Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Oral B Campañas & Temporalidades 2026.docx"
 ---
 **Reporte de Inteligencia Estratégica: Advertising, Brand Strategy y Growth para Oral-B México 2024-2026**
 

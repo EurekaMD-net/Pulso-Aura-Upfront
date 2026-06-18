@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Mercado Libre Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Mercado Libre Campañas & Temporalidades 2025.docx"
 ---
 **Informe Estratégico de Inteligencia de Mercado: Ecosistema, Campañas y Temporalidad de Mercado Libre México (2024-2025)**
 

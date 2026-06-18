@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Naturella Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Naturella Campañas & Temporalidades 2026.docx"
 ---
 **Mapeo de tipologías de campaña de marca y mensajes estratégicos**
 

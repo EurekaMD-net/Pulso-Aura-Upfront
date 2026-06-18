@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Finish Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Finish Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado, Arquitectura de Campañas y Planificación Estratégica de Medios: Finish Lavavajillas en México**
 

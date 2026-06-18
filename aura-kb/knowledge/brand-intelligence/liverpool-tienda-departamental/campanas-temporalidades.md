@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Liverpool Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Liverpool Campañas & Temporalidades.docx"
 ---
 **Estrategia Integral de Inteligencia de Mercado, Comunicación Omnicanal y Posicionamiento de Marca de El Puerto de Liverpool en el Contexto del Retail Mexicano**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Samsung Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Samsung Campañas & Temporalidades 2025.docx"
 ---
 **Análisis Estratégico e Inteligencia de Mercado de Samsung Electronics en México: Hacia la Hegemonía de la Inteligencia Artificial y la Convergencia de Ecosistemas (2024-2027)**
 

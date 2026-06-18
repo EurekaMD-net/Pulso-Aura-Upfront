@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Lievit#U00e9 Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Lievité Campañas & Temporalidades.docx"
 ---
 **Inteligencia de Mercado y Estrategia de Comunicación para Levité de Bonafont en México: Análisis Integral 2025**
 

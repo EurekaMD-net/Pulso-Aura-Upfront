@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Pantene Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Pantene Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Estrategia de Marca: Pantene Hair Care México 2025-2026**
 

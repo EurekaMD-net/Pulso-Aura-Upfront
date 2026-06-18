@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-18
-archivo_origen: "Gansito Campa#U00f1as Temporalidades.docx"
+archivo_origen: "Gansito Campañas Temporalidades.docx"
 ---
 **Inteligencia de Mercado e Investigación Estratégica de Gansito en México**
 

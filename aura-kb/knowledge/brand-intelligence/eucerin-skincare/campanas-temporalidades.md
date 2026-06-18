@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Eucerin Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Eucerin Campañas & Temporalidades 2025.docx"
 ---
 **Eucerin México Advertising & Seasonality Intelligence Pack (2025-2026)**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Kia Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Kia Campañas & Temporalidades.docx"
 ---
 **Inteligencia de Mercado y Estrategia de Comunicación Integral de Kia México: Análisis de Campañas, Audiencias y Estacionalidad**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Halls Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Halls Mx Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Mapeo de Campañas para Halls México: Estrategia Multicanal en Confitería Funcional**
 

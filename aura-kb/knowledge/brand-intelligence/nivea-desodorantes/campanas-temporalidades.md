@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Nivea Desodorantes Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Nivea Desodorantes Campañas & Temporalidades.docx"
 ---
 **Reporte de Inteligencia Estratégica: Ecosistema de Desodorantes Nivea en México (2024–2026)**
 

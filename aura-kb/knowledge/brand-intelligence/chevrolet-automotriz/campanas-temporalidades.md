@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Chevrolet Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Chevrolet Campañas & Temporalidades 2025.docx"
 ---
 **Sistema de Inteligencia de Mercado, Campañas y Temporalidades: Estrategia de Crecimiento para Chevrolet México 2025-2027**
 

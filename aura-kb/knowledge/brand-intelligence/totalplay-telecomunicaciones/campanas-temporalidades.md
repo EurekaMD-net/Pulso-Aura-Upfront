@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Totalplay Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Totalplay Campañas & Temporalidades 2025.docx"
 ---
 **Estrategia de mercado y análisis de inteligencia competitiva de Totalplay Telecomunicaciones en México: Un enfoque omnicanal hacia 2027**
 

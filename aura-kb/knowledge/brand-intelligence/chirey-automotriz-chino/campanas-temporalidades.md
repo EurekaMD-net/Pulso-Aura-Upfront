@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Chirey Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Chirey Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia Estratégica y Pack de Crecimiento Automotriz: Chirey Motor México (2025-2026)**
 

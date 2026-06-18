@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Comex Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Comex Campañas & Temporalidades 2025.docx"
 ---
 **Informe de Inteligencia Estratégica: Ecosistema de Campañas, Dinámica de Temporalidades y Madurez Competitiva en el Mercado de Recubrimientos Arquitectónicos en México (2024–2025)**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Corona Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Corona Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia Estratégica de Marca y Sistema de Crecimiento: El Ecosistema de Corona en México (2024-2025)**
 

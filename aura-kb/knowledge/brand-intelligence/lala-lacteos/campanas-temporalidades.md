@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Lala Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Lala Campañas & Temporalidades.docx"
 ---
 **Análisis estratégico de inteligencia de mercado y arquitectura de comunicación de Grupo Lala: Prospectiva 2025-2026**
 

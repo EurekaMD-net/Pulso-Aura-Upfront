@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Rappi Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "Rappi Campañas y Temporalidades 2025.docx"
 ---
 **Análisis Estratégico del Ecosistema Rappi en México: Inteligencia de Mercado, Disrupción Logística y la Nueva Economía del Retail Media**
 

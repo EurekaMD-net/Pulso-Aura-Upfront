@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Tresemme Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Tresemme Campañas & Temporalidades 2025.docx"
 ---
 **Paquete de Inteligencia de Publicidad y Temporalidades: TRESemmé Hair Care México 2025-2027**
 

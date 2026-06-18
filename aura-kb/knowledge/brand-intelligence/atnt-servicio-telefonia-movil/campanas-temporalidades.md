@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "AT&T Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "AT&T Campañas & Temporalidades 2025.docx"
 ---
 **Perspectivas estratégicas y mapa de oportunidades de AT&T México: Infraestructura, convergencia digital y el ecosistema del fútbol hacia el Mundial 2026**
 

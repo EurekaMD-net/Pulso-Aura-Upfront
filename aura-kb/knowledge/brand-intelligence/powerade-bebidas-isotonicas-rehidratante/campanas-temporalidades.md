@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Powerade Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Powerade Mx Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado de Powerade en México: Estrategias de Campaña, Segmentación y Canales de Distribución**
 

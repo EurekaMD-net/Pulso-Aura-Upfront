@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Oreo Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Oreo Campañas & Temporalidades 2026.docx"
 ---
 **Análisis estratégico integral de Oreo en el mercado mexicano: Innovación, cultura del consumo y dinámicas competitivas 2025-2026**
 

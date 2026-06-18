@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Trident Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Trident Campañas & Temporalidades.docx"
 ---
 **Advertising & Seasonality Intelligence Pack: Sistema de Crecimiento Estratégico para TRIDENT México 2025-2026**
 

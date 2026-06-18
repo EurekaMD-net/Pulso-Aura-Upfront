@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Pampers Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Pampers Campañas & Temporalidades 2026.docx"
 ---
 **Estudio de inteligencia de mercado y mapeo estratégico de branding: Pampers México**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Nutella Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Nutella Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de Mercados y Planificación Estacional: Nutella México 2025-2026**
 

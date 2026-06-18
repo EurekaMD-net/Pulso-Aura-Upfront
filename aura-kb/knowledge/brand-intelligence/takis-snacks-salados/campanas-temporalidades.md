@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Takis Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Takis Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de Mercado y Ecosistema Global de Comunicación: El Caso de Takis en el Mercado de Snacks Salados de México**
 

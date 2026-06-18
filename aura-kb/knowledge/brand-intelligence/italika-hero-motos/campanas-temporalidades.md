@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Italika & Hero Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Italika & Hero Campañas & Temporalidades.docx"
 ---
 **Inteligencia Estratégica de Publicidad y Estacionalidad: Italika & Hero Motos México (2024-2025)**
 

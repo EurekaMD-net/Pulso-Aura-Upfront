@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Elvive Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Elvive Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de Mercado y Estrategias Multimedia para Elvive de L'Oréal: Análisis de Campañas, Temporalidades y Dinámicas Competitivas en el Mercado Mexicano (2024-2027)**
 

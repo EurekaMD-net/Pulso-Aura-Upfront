@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Burger King QSR Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Burger King QSR Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de Mercado y Estrategia Omnicanal de Burger King en el Sector QSR de México (2024-2027)**
 

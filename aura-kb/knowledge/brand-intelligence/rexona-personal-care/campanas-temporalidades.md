@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Rexona Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Rexona Campañas & Temporalidades 2025.docx"
 ---
 **Sistema de Inteligencia Estratégica de Marca: Rexona México (2024-2025)**
 

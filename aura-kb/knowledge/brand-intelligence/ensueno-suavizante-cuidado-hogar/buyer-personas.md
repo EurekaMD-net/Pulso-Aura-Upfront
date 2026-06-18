@@ -1,7 +1,7 @@
 ---
 id: kb-brand-ensue-u00f1o-suavizante-cuidado-hogar-buyer-personas
-titulo: "Ensue#U00f1o · Buyer Personas"
-marca: "Ensue#U00f1o"
+titulo: "Ensueño · Buyer Personas"
+marca: "Ensueño"
 categoria: por_definir
 mercado: MX
 cuerpo: buyer_personas
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: buyermap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Ensue#U00f1o Buyer Personas Mexico 2026.docx"
+archivo_origen: "Ensueño Buyer Personas Mexico 2026.docx"
 ---
 **Inteligencia de Mercado y Arquitectura de Decisiones para Ensueño en México**
 

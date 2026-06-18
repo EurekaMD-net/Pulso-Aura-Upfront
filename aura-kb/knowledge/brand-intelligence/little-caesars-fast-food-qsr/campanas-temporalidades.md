@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Little Caesars Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Little Caesars Campañas & Temporalidades.docx"
 ---
 **Análisis de Inteligencia Estratégica: Little Caesars México y el Ecosistema QSR 2024-2025**
 

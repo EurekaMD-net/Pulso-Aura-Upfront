@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Bonafont Aguas Frescas Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Bonafont Aguas Frescas Campañas & Temporalidades 2025.docx"
 ---
 **Análisis Estratégico y Modelo de Investigación Integral: Bonafont Aguas Frescas en el Mercado Mexicano (2025-2026)**
 

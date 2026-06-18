@@ -462,6 +462,7 @@ export function createCrmSchema(db: Database.Database): void {
       -- Aura KB governance (NULL for drive/email/manual docs; see aura-kb-sync.ts)
       marca TEXT,
       marca_norm TEXT,
+      brand_key TEXT,
       rol_minimo TEXT,
       sensibilidad TEXT,
       aislado_por_cliente INTEGER DEFAULT 0,
@@ -471,9 +472,9 @@ export function createCrmSchema(db: Database.Database): void {
     );
     CREATE INDEX IF NOT EXISTS idx_crm_docs_persona ON crm_documents(persona_id);
     CREATE INDEX IF NOT EXISTS idx_crm_docs_source ON crm_documents(source, source_id);
-    CREATE INDEX IF NOT EXISTS idx_crm_docs_marca ON crm_documents(marca);
-    CREATE INDEX IF NOT EXISTS idx_crm_docs_marca_norm ON crm_documents(marca_norm);
-    CREATE INDEX IF NOT EXISTS idx_crm_docs_rolmin ON crm_documents(rol_minimo);
+    -- Indexes on the governance columns (marca/marca_norm/brand_key/rol_minimo) are created in
+    -- the Phase-12 migration below, AFTER its ALTERs add those columns — a CREATE INDEX here
+    -- would fail on a pre-existing DB whose crm_documents predates the columns.
 
     -- 15. CRM_EMBEDDINGS (document chunk embeddings for RAG search)
     CREATE TABLE IF NOT EXISTS crm_embeddings (
@@ -800,6 +801,7 @@ export function createCrmSchema(db: Database.Database): void {
   const auraDocCols: [string, string][] = [
     ["marca", "TEXT"],
     ["marca_norm", "TEXT"],
+    ["brand_key", "TEXT"],
     ["rol_minimo", "TEXT"],
     ["sensibilidad", "TEXT"],
     ["aislado_por_cliente", "INTEGER DEFAULT 0"],
@@ -817,6 +819,9 @@ export function createCrmSchema(db: Database.Database): void {
   );
   db.exec(
     "CREATE INDEX IF NOT EXISTS idx_crm_docs_marca_norm ON crm_documents(marca_norm)",
+  );
+  db.exec(
+    "CREATE INDEX IF NOT EXISTS idx_crm_docs_brand_key ON crm_documents(brand_key)",
   );
   db.exec(
     "CREATE INDEX IF NOT EXISTS idx_crm_docs_rolmin ON crm_documents(rol_minimo)",
@@ -848,14 +853,14 @@ export function createCrmSchema(db: Database.Database): void {
         fecha_sync TEXT DEFAULT (datetime('now')),
         fecha_modificacion TEXT,
         tamano_bytes INTEGER,
-        marca TEXT, marca_norm TEXT, rol_minimo TEXT, sensibilidad TEXT,
+        marca TEXT, marca_norm TEXT, brand_key TEXT, rol_minimo TEXT, sensibilidad TEXT,
         aislado_por_cliente INTEGER DEFAULT 0,
         cuerpo TEXT, estabilidad TEXT, tier_evidencia TEXT
       )
     `);
     db.exec(
-      `INSERT INTO crm_documents_new (id,source,source_id,persona_id,titulo,tipo_doc,contenido_hash,chunk_count,fecha_sync,fecha_modificacion,tamano_bytes,marca,marca_norm,rol_minimo,sensibilidad,aislado_por_cliente,cuerpo,estabilidad,tier_evidencia)
-       SELECT id,source,source_id,persona_id,titulo,tipo_doc,contenido_hash,chunk_count,fecha_sync,fecha_modificacion,tamano_bytes,marca,marca_norm,rol_minimo,sensibilidad,aislado_por_cliente,cuerpo,estabilidad,tier_evidencia
+      `INSERT INTO crm_documents_new (id,source,source_id,persona_id,titulo,tipo_doc,contenido_hash,chunk_count,fecha_sync,fecha_modificacion,tamano_bytes,marca,marca_norm,brand_key,rol_minimo,sensibilidad,aislado_por_cliente,cuerpo,estabilidad,tier_evidencia)
+       SELECT id,source,source_id,persona_id,titulo,tipo_doc,contenido_hash,chunk_count,fecha_sync,fecha_modificacion,tamano_bytes,marca,marca_norm,brand_key,rol_minimo,sensibilidad,aislado_por_cliente,cuerpo,estabilidad,tier_evidencia
        FROM crm_documents`,
     );
     db.exec("DROP TABLE crm_documents");

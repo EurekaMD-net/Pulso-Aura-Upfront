@@ -1,7 +1,7 @@
 ---
 id: kb-brand-ensue-u00f1o-suavizante-cuidado-hogar-diagnostico-9fuentes
-titulo: "Ensue#U00f1o Suavizante Cuidado Hogar · Diagnóstico 9 Fuentes"
-marca: "Ensue#U00f1o Suavizante Cuidado Hogar"
+titulo: "Ensueño Suavizante Cuidado Hogar · Diagnóstico 9 Fuentes"
+marca: "Ensueño Suavizante Cuidado Hogar"
 categoria: por_definir
 mercado: MX
 cuerpo: diagnostico_9fuentes
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: brandmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Ensue#U00f1o Suavizante Cuidado Hogar Mx.docx"
+archivo_origen: "Ensueño Suavizante Cuidado Hogar Mx.docx"
 ---
 **Mapeo de marca, investigación de mercado e inteligencia estratégica de Ensueño Suavizante en México**
 

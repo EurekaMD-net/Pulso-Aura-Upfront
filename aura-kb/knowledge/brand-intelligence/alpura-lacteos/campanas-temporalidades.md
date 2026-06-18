@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Alpura Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Alpura Campañas & Temporalidades 2025.docx"
 ---
 **Informe de Inteligencia de Mercado: Ecosistema Estratégico, Análisis de Campañas y Proyección de Crecimiento para Alpura (2024-2025)**
 

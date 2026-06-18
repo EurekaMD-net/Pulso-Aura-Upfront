@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Fud Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Fud Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia Publicitaria y de Temporalidades: FUD Carnes Frías y Embutidos México 2025**
 

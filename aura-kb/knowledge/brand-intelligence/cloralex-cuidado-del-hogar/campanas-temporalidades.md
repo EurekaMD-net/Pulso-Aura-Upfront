@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Cloralex Campa#U00f1as & Temporalidades Mexico 2026.docx"
+archivo_origen: "Cloralex Campañas & Temporalidades Mexico 2026.docx"
 ---
 **Inteligencia de Mercado y Diagnóstico Estratégico de la Actividad Publicitaria de Cloralex en México**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "AirWick Camnpa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "AirWick Camnpañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Estrategia de Comunicación Omnicanal: Air Wick Cuidado del Hogar México**
 

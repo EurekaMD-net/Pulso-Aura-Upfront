@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Ensue#U00f1o Campa#U00f1as & Temporalidades Mexico 2026.docx"
+archivo_origen: "Ensueño Campañas & Temporalidades Mexico 2026.docx"
 ---
 **Reporte de inteligencia de mercado y estrategia publicitaria de la marca Ensueño en México**
 

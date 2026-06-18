@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Alka Seltzer Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "Alka Seltzer Campañas y Temporalidades 2025.docx"
 ---
 **Sistema Integral de Inteligencia de Marketing: Ecosistema Gastronómico, Estrategia de Marca y Crecimiento para Alka-Seltzer en México (2024-2026)**
 

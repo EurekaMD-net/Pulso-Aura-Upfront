@@ -1,7 +1,7 @@
 ---
 id: kb-brand-ual-u00e1-inteligencia-social
-titulo: "Ual#U00e1 · Inteligencia Social"
-marca: "Ual#U00e1"
+titulo: "Ualá · Inteligencia Social"
+marca: "Ualá"
 categoria: por_definir
 mercado: MX
 cuerpo: inteligencia_social
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: socialmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Ual#U00e1_Inteligencia Social Mx.docx"
+archivo_origen: "Ualá_Inteligencia Social Mx.docx"
 vigencia_hasta: 2026-12-31
 ---
 # Reporte de Conversación Social – Ualá

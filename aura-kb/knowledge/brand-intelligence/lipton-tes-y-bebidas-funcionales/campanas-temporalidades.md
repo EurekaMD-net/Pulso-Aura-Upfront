@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Lipton Te Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Lipton Te Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Arquitectura de Comunicación Estratégica: Lipton y el Ecosistema de Bebidas Funcionales en México**
 

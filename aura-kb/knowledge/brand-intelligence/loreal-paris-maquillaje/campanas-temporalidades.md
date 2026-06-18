@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "L#U00d3real Paris Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "LÓreal Paris Campañas & Temporalidades 2026.docx"
 ---
 **Panorama Estratégico de L'Oréal Paris (Maquillaje y Belleza) en México**
 

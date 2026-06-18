@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "KIR Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "KIR Campañas & Temporalidades 2025.docx"
 ---
 **Análisis estratégico e inteligencia de mercado de la marca KIR en la industria de carnes frías en México**
 

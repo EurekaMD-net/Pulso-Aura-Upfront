@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Tampax Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Tampax Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Planificación Estratégica de Campañas para Tampax México: Guía de Posicionamiento, Medios y Activación de la Categoría**
 

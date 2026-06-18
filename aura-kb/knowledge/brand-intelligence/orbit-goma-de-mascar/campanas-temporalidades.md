@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Orbit Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Orbit Mx Campañas & Temporalidades 2026.docx"
 ---
 **Sistema de Inteligencia de Publicidad y Temporalidades: Orbit México**
 

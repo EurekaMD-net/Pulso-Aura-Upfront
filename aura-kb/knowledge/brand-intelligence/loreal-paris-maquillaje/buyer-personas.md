@@ -1,7 +1,7 @@
 ---
 id: kb-brand-l-u00d3real-paris-buyer-personas
-titulo: "L#U00d3real Paris · Buyer Personas"
-marca: "L#U00d3real Paris"
+titulo: "LÓreal Paris · Buyer Personas"
+marca: "LÓreal Paris"
 categoria: por_definir
 mercado: MX
 cuerpo: buyer_personas
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: buyermap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "L#U00d3real Paris Buyer Personas Mexico 2026.docx"
+archivo_origen: "LÓreal Paris Buyer Personas Mexico 2026.docx"
 ---
 **Análisis Estratégico y Arquitectura de Decisiones: L'Oréal Paris México y el Ecosistema Global de Belleza 2024-2033**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Hills Petcare Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Hills Petcare Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de mercado y estrategia de comunicación integral para Hill's Pet Nutrition en México: Análisis de campañas, audiencias y ciclos de mercado**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Adidas Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Adidas Campañas & Temporalidades 2025.docx"
 ---
 **Advertising & Seasonality Intelligence Pack: Análisis Estratégico de Adidas México 2024-2030**
 

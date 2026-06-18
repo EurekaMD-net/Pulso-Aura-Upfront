@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Ultra Cervezas Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Ultra Cervezas Campañas & Temporalidades 2025.docx"
 ---
 **Estrategia de mercado y análisis de inteligencia competitiva para la categoría de Cervezas Ultra en México: Michelob Ultra vs. Amstel Ultra (2025-2027)**
 

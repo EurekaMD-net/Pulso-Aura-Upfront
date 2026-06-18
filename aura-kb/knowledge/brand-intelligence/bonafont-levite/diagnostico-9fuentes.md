@@ -1,7 +1,7 @@
 ---
 id: kb-brand-levit-u00e9-aguas-saborizadas-diagnostico-9fuentes
-titulo: "Levit#U00e9 Aguas Saborizadas · Diagnóstico 9 Fuentes"
-marca: "Levit#U00e9 Aguas Saborizadas"
+titulo: "Levité Aguas Saborizadas · Diagnóstico 9 Fuentes"
+marca: "Levité Aguas Saborizadas"
 categoria: por_definir
 mercado: MX
 cuerpo: diagnostico_9fuentes
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: brandmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Levit#U00e9 Aguas Saborizadas Mx.docx"
+archivo_origen: "Levité Aguas Saborizadas Mx.docx"
 ---
 **PERFIL DE MADUREZ ESTRATÉGICA Y ANÁLISIS DE MERCADO: LEVITÉ (BONAFONT) EN LA CATEGORÍA DE AGUAS SABORIZADAS EN MÉXICO 2024-2025**
 

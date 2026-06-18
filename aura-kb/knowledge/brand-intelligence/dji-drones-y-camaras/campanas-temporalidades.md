@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "DJI Drones y Camaras Campa#U00f1as & Temporalidades Mexico.docx"
+archivo_origen: "DJI Drones y Camaras Campañas & Temporalidades Mexico.docx"
 ---
 **DJI México: Advertising & Seasonality Intelligence Pack (2025-2026)**
 

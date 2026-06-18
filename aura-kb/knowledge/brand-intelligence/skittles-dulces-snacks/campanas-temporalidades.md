@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Skittles Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Skittles Mx Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de mercado y estrategia de mensajería de marca para Skittles en México: Análisis competitivo, regulatorio y mapeo de comunicación multicanal**
 

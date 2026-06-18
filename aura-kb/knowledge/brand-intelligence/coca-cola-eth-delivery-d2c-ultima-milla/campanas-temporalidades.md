@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Coca Cola ETH Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Coca Cola ETH Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia Estratégica de Publicidad y Estacionalidad: Coca-Cola En Tu Hogar México 2025-2026**
 

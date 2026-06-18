@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Cat Chow Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Cat Chow Campañas & Temporalidades 2026.docx"
 ---
 **Sistema de Inteligencia de Mercado, Campañas y Temporalidades: Purina Cat Chow México**
 

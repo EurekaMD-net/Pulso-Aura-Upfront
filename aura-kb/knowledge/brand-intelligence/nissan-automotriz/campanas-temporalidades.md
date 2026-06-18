@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Nissan Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Nissan Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de mercado y estrategia de crecimiento integral para Nissan Mexicana: Ciclo 2025-2026**
 

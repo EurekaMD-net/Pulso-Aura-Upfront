@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "McDonalds Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "McDonalds Mx Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Campañas y Temporalidades: McDonald's México 2025-2026**
 

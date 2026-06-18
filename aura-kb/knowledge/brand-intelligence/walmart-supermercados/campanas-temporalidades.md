@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Walmart Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Walmart Campañas & Temporalidades 2025.docx"
 ---
 **Análisis Estratégico de Inteligencia de Mercados: Ecosistema Omnicanal y Mapa de Temporalidades de Walmart de México 2024-2025**
 

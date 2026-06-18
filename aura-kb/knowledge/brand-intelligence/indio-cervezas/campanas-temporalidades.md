@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Indio Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Indio Campañas & Temporalidades 2025.docx"
 ---
 **Estrategia de Comunicación e Inteligencia de Mercado de Cerveza Indio en México: Un Análisis Exhaustivo de Posicionamiento, Audiencias y Dinámicas de Consumo (2024-2026)**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Oikos Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Oikos Campañas & Temporalidades.docx"
 ---
 **Inteligencia de Marca Oikos México: Advertising & Seasonality Intelligence Pack 2024-2026**
 

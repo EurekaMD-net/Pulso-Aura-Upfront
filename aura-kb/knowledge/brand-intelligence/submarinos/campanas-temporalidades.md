@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-18
-archivo_origen: "Submarinos Campa#U00f1as Temporalidades.docx"
+archivo_origen: "Submarinos Campañas Temporalidades.docx"
 ---
 **Inteligencia de mercado e investigación estratégica de Submarinos Marinela en México: Análisis de campañas, temporalidades, medios y oportunidades de negocio**
 

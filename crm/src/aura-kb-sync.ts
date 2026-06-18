@@ -71,9 +71,11 @@ function str(v: string | boolean | undefined): string | null {
 
 export function governanceFrom(
   fm: Record<string, string | boolean>,
+  brandKey: string | null = null,
 ): AuraGovernance {
   return {
     marca: str(fm.marca),
+    brandKey,
     rolMinimo: str(fm.rol_minimo),
     sensibilidad: str(fm.sensibilidad),
     aisladoPorCliente: fm.aislado_por_cliente === true,
@@ -83,6 +85,21 @@ export function governanceFrom(
     // document-level field — they ride along in the retrieved chunk text.
     tier: null,
   };
+}
+
+/**
+ * Brand firewall key = the `brand-intelligence/<slug>/` folder of a finding (one folder =
+ * one brand, always consistent — unlike the free-text `marca`). Null for non-brand docs
+ * (doctrine, catalogs), which are cross-brand. Path is relative to the knowledge/ dir.
+ */
+export function brandKeyForFile(
+  knowledgeDir: string,
+  file: string,
+): string | null {
+  const parts = path.relative(knowledgeDir, file).split(path.sep);
+  return parts[0] === "brand-intelligence" && parts.length >= 3
+    ? parts[1]
+    : null;
 }
 
 // ---------------------------------------------------------------------------
@@ -177,7 +194,8 @@ export async function syncAuraKb(
     try {
       const raw = fs.readFileSync(file, "utf8");
       const { frontmatter, body } = parseFrontmatter(raw);
-      const governance = governanceFrom(frontmatter);
+      const brandKey = brandKeyForFile(knowledgeDir, file);
+      const governance = governanceFrom(frontmatter, brandKey);
       // Only index governed findings. Skip anything ungoverned — a navigation file
       // with no frontmatter (e.g. platform-intelligence/README.md), an empty body, or
       // a finding with no rol_minimo (it could never be RBAC-gated, so we never index
@@ -203,6 +221,14 @@ export async function syncAuraKb(
         text,
         governance,
       );
+      // Ensure brand_key is set even when storeDocument skipped (content unchanged) — lets an
+      // incremental `sync:aura-kb` backfill the key onto an already-embedded corpus with no
+      // re-embedding.
+      getDatabase()
+        .prepare(
+          "UPDATE crm_documents SET brand_key = ? WHERE source = 'aura-kb' AND source_id = ?",
+        )
+        .run(brandKey, sourceId);
       if (chunkCount > 0) result.indexed++;
       else result.skipped++;
     } catch (err) {
@@ -213,4 +239,37 @@ export async function syncAuraKb(
 
   logger.info(result, "Aura KB sync complete");
   return result;
+}
+
+/**
+ * Backfill ONLY the brand_key column on an already-indexed corpus — a pure UPDATE keyed by
+ * source_id, with NO re-embedding. Use this to fix the firewall key on a live DB without
+ * paying to re-embed (and without risking a local-fallback overwrite of good vectors when no
+ * embedding provider is configured). Matches by frontmatter id (= source_id), which the
+ * mojibake cleanup does not touch.
+ */
+export function backfillBrandKeys(kbRoot?: string): {
+  files: number;
+  updated: number;
+} {
+  const root =
+    kbRoot || process.env.AURA_KB_DIR || path.resolve(process.cwd(), "aura-kb");
+  const knowledgeDir = path.join(root, "knowledge");
+  const files = walkMarkdown(knowledgeDir);
+  const db = getDatabase();
+  const upd = db.prepare(
+    "UPDATE crm_documents SET brand_key = ? WHERE source = 'aura-kb' AND source_id = ?",
+  );
+  let updated = 0;
+  const run = db.transaction(() => {
+    for (const file of files) {
+      const fm = parseFrontmatter(fs.readFileSync(file, "utf8")).frontmatter;
+      const sourceId = str(fm.id) || path.relative(knowledgeDir, file);
+      const brandKey = brandKeyForFile(knowledgeDir, file);
+      updated += upd.run(brandKey, sourceId).changes;
+    }
+  });
+  run();
+  logger.info({ files: files.length, updated }, "Aura KB brand_key backfill");
+  return { files: files.length, updated };
 }

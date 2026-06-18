@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Persil Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Persil Campañas & Temporalidades 2026.docx"
 ---
 **Análisis integral de la estrategia de marketing, temporalidades y ecosistema de medios de Persil en México (2024-2027)**
 

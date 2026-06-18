@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Bardahl Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "Bardahl Campañas y Temporalidades 2025.docx"
 ---
 **Análisis Estratégico del Mercado de Lubricantes en México: Multimedia, Temporalidades y Posicionamiento Competitivo de Bardahl**
 

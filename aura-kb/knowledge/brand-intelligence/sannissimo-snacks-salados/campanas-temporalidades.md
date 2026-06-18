@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Sannissimo Salmas Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Sannissimo Salmas Mx Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de mercado y análisis de campañas de Saníssimo: Segmento de tortillas y snacks salados en México**
 

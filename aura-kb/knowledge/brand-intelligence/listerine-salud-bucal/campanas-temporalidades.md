@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Listerine Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Listerine Campañas & Temporalidades.docx"
 ---
 **Sistema de Inteligencia de Marketing y Estrategia de Crecimiento: Listerine México (2024-2026)**
 

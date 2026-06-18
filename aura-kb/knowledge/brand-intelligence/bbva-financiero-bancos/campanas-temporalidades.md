@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "BBVA Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "BBVA Campañas y Temporalidades 2025.docx"
 ---
 **Análisis Integral de BBVA México: Arquitectura Financiera, Transformación Tecnológica y Dinámicas de Mercado en el Horizonte 2024-2025**
 

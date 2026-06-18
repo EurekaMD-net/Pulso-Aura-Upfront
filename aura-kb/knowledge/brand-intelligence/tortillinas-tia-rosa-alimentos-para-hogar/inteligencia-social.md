@@ -1,7 +1,7 @@
 ---
 id: kb-brand-t-u00cda-rosa-inteligencia-social
-titulo: "T#U00cdA ROSA · Inteligencia Social"
-marca: "T#U00cdA ROSA"
+titulo: "TÍA ROSA · Inteligencia Social"
+marca: "TÍA ROSA"
 categoria: por_definir
 mercado: MX
 cuerpo: inteligencia_social
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: socialmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "T#U00cdA_ROSA Inteligencia Social Mexico 2026.docx"
+archivo_origen: "TÍA_ROSA Inteligencia Social Mexico 2026.docx"
 vigencia_hasta: 2026-12-31
 ---
 REPORTE DE INTELIGENCIA SOCIAL (SIA)

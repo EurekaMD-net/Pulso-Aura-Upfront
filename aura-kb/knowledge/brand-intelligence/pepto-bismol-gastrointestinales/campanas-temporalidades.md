@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Pepto Bismol Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Pepto Bismol Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercados y Estrategia de Crecimiento: Ecosistema Pepto-Bismol en México (2024-2026)**
 

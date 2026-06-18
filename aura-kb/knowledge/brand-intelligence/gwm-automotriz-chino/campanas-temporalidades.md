@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "GWM Automotriz Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "GWM Automotriz Campañas & Temporalidades 2025.docx"
 ---
 **Sistema de Inteligencia de Mercadotecnia y Estacionalidad: Great Wall Motor México (2024-2026)**
 

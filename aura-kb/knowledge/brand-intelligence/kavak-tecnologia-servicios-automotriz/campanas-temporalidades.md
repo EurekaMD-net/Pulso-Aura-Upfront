@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Kavak Campa#U00f1as & Temporaldiades 2025.docx"
+archivo_origen: "Kavak Campañas & Temporaldiades 2025.docx"
 ---
 **Inteligencia de Mercado y Estrategia de Comunicación de Kavak México: Análisis del Ciclo Estratégico 2024-2026**
 

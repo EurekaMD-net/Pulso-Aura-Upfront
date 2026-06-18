@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Sidral Mundet Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Sidral Mundet Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de Mercado y Estrategia Publicitaria: Sidral Mundet en México (2025-2026)**
 

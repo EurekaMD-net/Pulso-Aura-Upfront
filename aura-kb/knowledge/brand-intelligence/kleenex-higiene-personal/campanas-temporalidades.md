@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Kleenex Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Kleenex Campañas & Temporalidades 2026.docx"
 ---
 **Informe de Inteligencia de Mercado y Estrategia de Comunicación: Kleenex en México (Edición 2025-2026)**
 

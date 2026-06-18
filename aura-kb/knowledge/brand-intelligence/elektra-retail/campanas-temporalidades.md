@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Elektra Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Elektra Campañas & Temporalidades 2025.docx"
 ---
 **Análisis Estratégico Multidimensional del Ecosistema de Marketing, Ciclos Comerciales y Posicionamiento de Marca de Grupo Elektra en México (2024-2025)**
 

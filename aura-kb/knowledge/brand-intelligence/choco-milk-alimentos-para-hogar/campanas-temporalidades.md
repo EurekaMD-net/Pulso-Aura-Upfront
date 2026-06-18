@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Choco Milk Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Choco Milk Campañas & Temporalidades 2025.docx"
 ---
 **Pack de Inteligencia de Publicidad y Estacionalidad: Choco Milk México 2024-2025**
 

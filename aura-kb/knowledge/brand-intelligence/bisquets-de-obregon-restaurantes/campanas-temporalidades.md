@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Bisquets de Obregon Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Bisquets de Obregon Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de Campañas y Temporalidades: Bisquets de Obregón – Advertising & Seasonality Intelligence Pack (2024-2025)**
 

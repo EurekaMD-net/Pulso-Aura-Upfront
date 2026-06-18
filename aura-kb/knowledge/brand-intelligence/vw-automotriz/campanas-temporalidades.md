@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "VW Autos Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "VW Autos Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de Mercados y Estrategia de Crecimiento para Volkswagen México: Sistema de Inteligencia 2024-2026**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Sevenup 7UP Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Sevenup 7UP Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Planificación Estratégica de Campañas para 7UP en México**
 

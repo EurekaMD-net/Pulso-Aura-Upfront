@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Vanish Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Vanish Campañas & Temporalidades 2025.docx"
 ---
 **Reporte de Inteligencia Publicitaria y Estacionalidad: Vanish Home Care México**
 

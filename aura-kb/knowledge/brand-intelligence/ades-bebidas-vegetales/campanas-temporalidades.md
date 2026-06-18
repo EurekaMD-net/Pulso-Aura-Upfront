@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Ades Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Ades Campañas & Temporalidades 2025.docx"
 ---
 **Advertising & Seasonality Intelligence Pack: AdeS México (Estrategia de Crecimiento y Comunicación 2024-2025)**
 

@@ -1,7 +1,7 @@
 ---
 id: kb-brand-duval-u00edn-inteligencia-social
-titulo: "Duval#U00edn · Inteligencia Social"
-marca: "Duval#U00edn"
+titulo: "Duvalín · Inteligencia Social"
+marca: "Duvalín"
 categoria: por_definir
 mercado: MX
 cuerpo: inteligencia_social
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: socialmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Duval#U00edn_Inteligencia Social Mexico.docx"
+archivo_origen: "Duvalín_Inteligencia Social Mexico.docx"
 vigencia_hasta: 2026-12-31
 ---
 **Estudio de Inteligencia Social — Duvalín**

@@ -1,7 +1,7 @@
 ---
 id: kb-brand-ping-u00dcinos-inteligencia-social
-titulo: "PING#U00dcINOS · Inteligencia Social"
-marca: "PING#U00dcINOS"
+titulo: "PINGÜINOS · Inteligencia Social"
+marca: "PINGÜINOS"
 categoria: por_definir
 mercado: MX
 cuerpo: inteligencia_social
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: socialmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "PING#U00dcINOS Inteligencia Social Mexico 2026.docx"
+archivo_origen: "PINGÜINOS Inteligencia Social Mexico 2026.docx"
 vigencia_hasta: 2026-12-31
 ---
 REPORTE DE INTELIGENCIA SOCIAL (SIA)

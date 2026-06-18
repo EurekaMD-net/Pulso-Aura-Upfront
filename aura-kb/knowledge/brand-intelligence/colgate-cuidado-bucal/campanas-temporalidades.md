@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Colgate Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Colgate Mx Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de mercado y análisis de estrategias de comunicación de Colgate Cuidado Bucal en México**
 

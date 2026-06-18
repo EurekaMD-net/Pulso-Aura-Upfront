@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Axion Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Axion Mx Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de mercado, arquitectura de comunicación y mapeo de medios para Axion en la categoría de cuidado del hogar en México**
 

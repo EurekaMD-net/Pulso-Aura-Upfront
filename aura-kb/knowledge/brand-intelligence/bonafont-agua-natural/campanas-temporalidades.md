@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Bonafont Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "Bonafont Campañas y Temporalidades 2025.docx"
 ---
 **Advertising & Seasonality Intelligence Pack: Sistema de Inteligencia Estratégica para Bonafont México 2025-2026**
 

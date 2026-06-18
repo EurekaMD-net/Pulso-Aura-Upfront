@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Farmacias Similares Campa#U00f1as & TEmporalidades 2025.docx"
+archivo_origen: "Farmacias Similares Campañas & TEmporalidades 2025.docx"
 ---
 **Inteligencia Estratégica y Ecosistema de Comunicación de Farmacias Similares en México: Un Análisis de Branding, Temporalidades y Crecimiento 2024-2026**
 

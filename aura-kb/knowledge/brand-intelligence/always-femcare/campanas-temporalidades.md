@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Always Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "Always Campañas y Temporalidades 2025.docx"
 ---
 **Análisis Estratégico y Prospectiva del Mercado de Higiene Femenina en México 2025: El Liderazgo de Always en la Era de la Innovación y la Sostenibilidad**
 

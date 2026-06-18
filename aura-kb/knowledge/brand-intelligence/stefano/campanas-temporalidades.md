@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Stefano Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Stefano Mx Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de mercado y mapeo estratégico de comunicación para la marca Stefano en México**
 

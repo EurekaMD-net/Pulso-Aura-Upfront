@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-18
-archivo_origen: "Pinguinos Campa#U00f1as temporalidades .docx"
+archivo_origen: "Pinguinos Campañas temporalidades .docx"
 ---
 **Inteligencia de mercado y análisis publicitario de Pingüinos Marinela en México: Estrategias, temporalidades y oportunidades de innovación**
 

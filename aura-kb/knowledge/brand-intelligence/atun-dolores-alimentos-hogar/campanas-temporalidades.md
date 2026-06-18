@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Atun Dolores Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "Atun Dolores Campañas y Temporalidades 2025.docx"
 ---
 **Estrategia integral de mercado y efectividad publicitaria de Atún Dolores en México: Inteligencia de campañas y prospectiva de medios 2024-2025**
 

@@ -1,7 +1,7 @@
 ---
 id: kb-brand-gersamex-muebles-para-ba-u00f1o-diagnostico-9fuentes
-titulo: "GersaMex Muebles para Ba#U00f1o · Diagnóstico 9 Fuentes"
-marca: "GersaMex Muebles para Ba#U00f1o"
+titulo: "GersaMex Muebles para Baño · Diagnóstico 9 Fuentes"
+marca: "GersaMex Muebles para Baño"
 categoria: por_definir
 mercado: MX
 cuerpo: diagnostico_9fuentes
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: brandmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "GersaMex Muebles para Ba#U00f1o Mx.docx"
+archivo_origen: "GersaMex Muebles para Baño Mx.docx"
 ---
 **Informe Estratégico de Madurez de Mercado: Gersamex y la Categoría de Muebles para Baño en México**
 

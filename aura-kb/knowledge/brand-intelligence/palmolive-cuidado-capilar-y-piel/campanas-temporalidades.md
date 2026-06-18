@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Palmolive Mx Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Palmolive Mx Campañas & Temporalidades 2026.docx"
 ---
 **Estudio de Inteligencia de Mercado: Estrategia de Campañas, Canales y Posicionamiento de Palmolive Cuidado Personal y Capilar en México**
 

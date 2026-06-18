@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Kit Kat Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Kit Kat Campañas & Temporalidades 2026.docx"
 ---
 **Reporte de Inteligencia de Mercado: Sistema de Campañas y Temporalidades para KitKat México**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Danonino Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Danonino Campañas & Temporalidades 2025.docx"
 ---
 **Sistema de inteligencia de mercado y estrategia transmedia para Danonino México: Análisis de campañas, estacionalidades y crecimiento en el ecosistema 2025-2026**
 

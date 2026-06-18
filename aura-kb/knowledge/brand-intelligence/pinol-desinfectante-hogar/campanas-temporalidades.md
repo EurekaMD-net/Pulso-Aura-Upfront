@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Pinol Campa#U00f1as & Temporalidades Mexico 2026.docx"
+archivo_origen: "Pinol Campañas & Temporalidades Mexico 2026.docx"
 ---
 **Inteligencia de mercado e investigación estratégica de la actividad publicitaria de Pinol en México**
 

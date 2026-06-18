@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Nesquick Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Nesquick Campañas & Temporalidades 2026.docx"
 ---
 **Sistema de Inteligencia de Canales, Campañas y Temporalidades: Nesquik Bebida en Polvo en México**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Sico Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Sico Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Arquitectura de Comunicación: Sico y el Ecosistema de Salud Sexual en México**
 

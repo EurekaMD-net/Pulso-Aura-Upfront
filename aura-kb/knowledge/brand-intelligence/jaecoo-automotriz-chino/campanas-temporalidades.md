@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Jaecoo Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Jaecoo Campañas & Temporalidades 2025.docx"
 ---
 **Sistema de Inteligencia de Campañas y Temporalidades para Jaecoo México: Estrategia de Crecimiento, Posicionamiento de Marca y Optimización de Ecosistemas Automotrices 2024-2026**
 

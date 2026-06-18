@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Pizza Hut Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Pizza Hut Campañas & Temporalidades 2025.docx"
 ---
 **Análisis Integral de Inteligencia de Mercado y Estrategia de Operaciones: Pizza Hut en el Ecosistema de Comida Rápida en México**
 

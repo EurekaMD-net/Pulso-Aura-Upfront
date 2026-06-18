@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Ego Hair Care Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Ego Hair Care Campañas & Temporalidades 2025.docx"
 ---
 **Advertising & Seasonality Intelligence Pack: Ego Hair Care Masculino en México (2024-2026)**
 

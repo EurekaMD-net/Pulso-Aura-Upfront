@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "M&M Campa#U00f1as & Temporalidades Mx 2026.docx"
+archivo_origen: "M&M Campañas & Temporalidades Mx 2026.docx"
 ---
 **Inteligencia de Campañas y Temporalidades de M&M’s en México: Análisis de Portafolio, Estrategia Omnicanal y Relevancia de Medios**
 

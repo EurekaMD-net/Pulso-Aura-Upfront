@@ -1,7 +1,7 @@
 ---
 id: kb-brand-pr-u00cdncipe-inteligencia-social
-titulo: "PR#U00cdNCIPE · Inteligencia Social"
-marca: "PR#U00cdNCIPE"
+titulo: "PRÍNCIPE · Inteligencia Social"
+marca: "PRÍNCIPE"
 categoria: por_definir
 mercado: MX
 cuerpo: inteligencia_social
@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: socialmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "PR#U00cdNCIPE Inteligencia Social Mexico 2026.docx"
+archivo_origen: "PRÍNCIPE Inteligencia Social Mexico 2026.docx"
 vigencia_hasta: 2026-12-31
 ---
 REPORTE DE INTELIGENCIA SOCIAL (SIA)

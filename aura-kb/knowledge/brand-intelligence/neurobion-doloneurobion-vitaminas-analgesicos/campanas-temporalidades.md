@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2026
 fecha_migracion: 2026-06-17
-archivo_origen: "Neurobion Doloneurobion Campa#U00f1as & Temporalidades 2026.docx"
+archivo_origen: "Neurobion Doloneurobion Campañas & Temporalidades 2026.docx"
 ---
 **Inteligencia de Mercado y Plan de Campañas para el Segmento de Analgésicos, Vitaminas del Complejo B y Marcas OTC en México: El Caso de Neurobion y Dolo-Neurobion**
 

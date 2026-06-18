@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Skwinkles Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Skwinkles Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de Mercados y Estrategia de Crecimiento para Skwinkles en México: Sistema de Inteligencia de Campañas y Temporalidades 2024-2026**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Revitalift Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Revitalift Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia Estratégica y Análisis Prospectivo de Revitalift Skincare Facial en el Mercado Mexicano: Un Informe de Dominancia en la Era de la Convergencia Digital**
 

@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Shein Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Shein Campañas & Temporalidades 2025.docx"
 ---
 **Análisis Estratégico de Shein en el Ecosistema de Retail, Moda y Servicios Financieros en México: Evolución Hacia un Modelo de Localización y Omnicanalidad**
 

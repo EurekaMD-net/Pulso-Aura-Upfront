@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Dove Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Dove Campañas & Temporalidades 2025.docx"
 ---
 **Inteligencia de Publicidad y Temporalidades: Dove Derma Care y el Mercado de Cuidado Personal en México (2024-2025)**
 

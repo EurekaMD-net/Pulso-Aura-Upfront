@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "AXE Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "AXE Campañas y Temporalidades 2025.docx"
 ---
 **Sistema Integral de Inteligencia de Mercados para Axe en México: Estrategia de Marca, Crecimiento y Operaciones de Campaña 2024-2027**
 

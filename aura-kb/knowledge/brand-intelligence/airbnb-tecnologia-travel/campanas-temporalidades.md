@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "AirBnB Campa#U00f1as y Temporalidades 2025.docx"
+archivo_origen: "AirBnB Campañas y Temporalidades 2025.docx"
 ---
 **Sistema Integral de Inteligencia de Mercados Airbnb México: Campañas, Temporalidades y Estrategia de Crecimiento 2025-2026**
 

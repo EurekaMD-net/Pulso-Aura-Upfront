@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: null
 fecha_migracion: 2026-06-17
-archivo_origen: "Kelloggs Barras Snacks Campa#U00f1as & Temporalidades.docx"
+archivo_origen: "Kelloggs Barras Snacks Campañas & Temporalidades.docx"
 ---
 **Estrategia Integral de Inteligencia de Mercado: Ecosistema de Barras de Snacks Kellogg’s en México (2025-2026)**
 

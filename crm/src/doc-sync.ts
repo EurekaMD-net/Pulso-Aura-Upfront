@@ -101,6 +101,10 @@ export function chunkText(
  */
 export interface AuraGovernance {
   marca: string | null;
+  /** Stable firewall key = the brand-intelligence folder slug (one folder = one brand).
+   *  Used instead of the inconsistent free-text `marca` so a brand's findings (variant
+   *  marca spellings/typos) are all retrieved together. Null for non-brand docs. */
+  brandKey: string | null;
   rolMinimo: string | null;
   sensibilidad: string | null;
   aisladoPorCliente: boolean;
@@ -151,8 +155,8 @@ export async function storeDocument(
   const embeddings = await embedBatch(chunks.map((c) => c.content));
 
   const insertDoc = db.prepare(`
-    INSERT INTO crm_documents (id, source, source_id, persona_id, titulo, tipo_doc, contenido_hash, chunk_count, fecha_sync, tamano_bytes, marca, marca_norm, rol_minimo, sensibilidad, aislado_por_cliente, cuerpo, estabilidad, tier_evidencia)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO crm_documents (id, source, source_id, persona_id, titulo, tipo_doc, contenido_hash, chunk_count, fecha_sync, tamano_bytes, marca, marca_norm, brand_key, rol_minimo, sensibilidad, aislado_por_cliente, cuerpo, estabilidad, tier_evidencia)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const insertChunk = db.prepare(`
@@ -184,6 +188,7 @@ export async function storeDocument(
       text.length,
       governance?.marca ?? null,
       governance?.marca ? normalizeMarca(governance.marca) : null,
+      governance?.brandKey ?? null,
       governance?.rolMinimo ?? null,
       governance?.sensibilidad ?? null,
       governance ? (governance.aisladoPorCliente ? 1 : 0) : 0,
@@ -509,27 +514,28 @@ interface AuraRanked {
 
 function auraGovernanceClause(clearedRoles: string[]): {
   clause: string;
-  bind: (marca: string) => unknown[];
+  bind: (brandKey: string) => unknown[];
 } {
   const rolePh = clearedRoles.map(() => "?").join(",");
-  // Firewall: a finding that HAS a brand is locked to that brand regardless of the
-  // (operator-supplied, therefore untrusted) aislado_por_cliente flag — gating on
-  // marca presence means a mislabeled aislado=0 brand finding still cannot leak. Only
-  // a truly general doc (no brand AND not isolated) is cross-brand. marca_norm folds
-  // case + diacritics so accented brands match (SQLite LOWER() is ASCII-only).
+  // Firewall keys on brand_key — the brand-intelligence FOLDER slug, one folder = one
+  // brand — NOT the free-text `marca`. The marca field is inconsistent within a brand
+  // (case, accents, typos like "Lievité", wording variants), so keying on it would split
+  // a brand across values and under-retrieve. brand_key is the stable structural fact.
+  // A finding with a brand_key is locked to it regardless of the operator-supplied
+  // aislado flag; only a truly general doc (no brand_key AND not isolated) is cross-brand.
   const clause = `
       AND d.source = 'aura-kb'
-      AND ((d.marca_norm IS NULL AND d.aislado_por_cliente = 0) OR d.marca_norm = ?)
+      AND ((d.brand_key IS NULL AND d.aislado_por_cliente = 0) OR d.brand_key = ?)
       AND d.rol_minimo IN (${rolePh})`;
   return {
     clause,
-    bind: (marca: string) => [normalizeMarca(marca), ...clearedRoles],
+    bind: (brandKey: string) => [brandKey, ...clearedRoles],
   };
 }
 
 async function searchAuraKbVector(
   query: string,
-  marca: string,
+  brandKey: string,
   clearedRoles: string[],
   limite: number,
 ): Promise<AuraRanked[]> {
@@ -560,7 +566,7 @@ async function searchAuraKbVector(
     JOIN crm_documents d ON e.document_id = d.id
     WHERE e.rowid IN (${placeholders})${gov.clause}
   `;
-  const rows = db.prepare(sql).all(...rowids, ...gov.bind(marca)) as {
+  const rows = db.prepare(sql).all(...rowids, ...gov.bind(brandKey)) as {
     rid: number | bigint;
     contenido: string;
     titulo: string;
@@ -588,7 +594,7 @@ async function searchAuraKbVector(
 
 function searchAuraKbKeyword(
   query: string,
-  marca: string,
+  brandKey: string,
   clearedRoles: string[],
   limite: number,
 ): AuraRanked[] {
@@ -610,7 +616,7 @@ function searchAuraKbKeyword(
     `;
     const rows = db
       .prepare(sql)
-      .all(ftsQuery, ...gov.bind(marca), overFetchK) as {
+      .all(ftsQuery, ...gov.bind(brandKey), overFetchK) as {
       rid: number | bigint;
       contenido: string;
       titulo: string;
@@ -681,22 +687,23 @@ function auraToResult(r: AuraRanked): AuraSearchResult {
  * Hybrid retrieval over the Aura KB, governed by the firewall + RBAC.
  *
  * @param query  the search text
- * @param opts.marca  the session's active brand (firewall key). Required: a null/blank
- *   brand returns [] (fail-closed — all brand findings are client-isolated).
+ * @param opts.brand  the session's active brand = the brand-intelligence FOLDER slug
+ *   (the firewall key). Required: a null/blank brand returns [] (fail-closed — all brand
+ *   findings are client-isolated). P3's router resolves a display name -> this slug.
  * @param opts.role   the caller's CRM role (ae/gerente/director/vp); gates rol_minimo.
  */
 export async function searchAuraKb(
   query: string,
-  opts: { marca: string | null; role: string; limite?: number },
+  opts: { brand: string | null; role: string; limite?: number },
 ): Promise<AuraSearchResult[]> {
   const limite = opts.limite ?? 5;
-  if (!opts.marca || !opts.marca.trim()) return [];
+  if (!opts.brand || !opts.brand.trim()) return [];
   const clearedRoles = clearedFloors(opts.role) as string[];
 
   const [vectorResults, keywordResults] = await Promise.all([
-    searchAuraKbVector(query, opts.marca, clearedRoles, limite),
+    searchAuraKbVector(query, opts.brand, clearedRoles, limite),
     Promise.resolve(
-      searchAuraKbKeyword(query, opts.marca, clearedRoles, limite),
+      searchAuraKbKeyword(query, opts.brand, clearedRoles, limite),
     ),
   ]);
 

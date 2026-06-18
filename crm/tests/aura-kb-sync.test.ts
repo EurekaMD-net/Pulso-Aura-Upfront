@@ -36,8 +36,13 @@ vi.mock("../src/embedding.js", async (importOriginal) => {
   };
 });
 
-const { parseFrontmatter, governanceFrom, syncAuraKb, clearAuraKb } =
-  await import("../src/aura-kb-sync.js");
+const {
+  parseFrontmatter,
+  governanceFrom,
+  brandKeyForFile,
+  syncAuraKb,
+  clearAuraKb,
+} = await import("../src/aura-kb-sync.js");
 
 function setupDb() {
   testDb = new Database(":memory:");
@@ -97,6 +102,7 @@ describe("governanceFrom", () => {
     });
     expect(gov).toEqual({
       marca: "Coca Cola",
+      brandKey: null,
       rolMinimo: "comercial_kam",
       sensibilidad: "baja",
       aisladoPorCliente: true,
@@ -106,11 +112,30 @@ describe("governanceFrom", () => {
     });
   });
 
+  it("carries the brandKey arg through", () => {
+    expect(governanceFrom({ marca: "X" }, "coca-cola").brandKey).toBe(
+      "coca-cola",
+    );
+  });
+
   it("defaults aisladoPorCliente to false when absent/non-true", () => {
     expect(governanceFrom({}).aisladoPorCliente).toBe(false);
     expect(
       governanceFrom({ aislado_por_cliente: "true" }).aisladoPorCliente,
     ).toBe(false); // string, not boolean true
+  });
+});
+
+describe("brandKeyForFile", () => {
+  const KN = "/repo/aura-kb/knowledge";
+  it("derives the brand-intelligence folder slug", () => {
+    expect(
+      brandKeyForFile(KN, KN + "/brand-intelligence/coca-cola/diag.md"),
+    ).toBe("coca-cola");
+  });
+  it("returns null for non-brand docs (doctrine/catalogs)", () => {
+    expect(brandKeyForFile(KN, KN + "/doctrine/efectividad.md")).toBeNull();
+    expect(brandKeyForFile(KN, KN + "/catalogs/formatos.md")).toBeNull();
   });
 });
 
@@ -156,11 +181,12 @@ describe("syncAuraKb", () => {
 
     const docs = testDb
       .prepare(
-        "SELECT titulo, marca, rol_minimo, aislado_por_cliente, source, persona_id FROM crm_documents WHERE source = 'aura-kb' ORDER BY marca",
+        "SELECT titulo, marca, brand_key, rol_minimo, aislado_por_cliente, source, persona_id FROM crm_documents WHERE source = 'aura-kb' ORDER BY marca",
       )
       .all() as any[];
     expect(docs).toHaveLength(2);
     expect(docs[0].marca).toBe("Coca Cola");
+    expect(docs[0].brand_key).toBe("coca-cola"); // firewall key = folder slug, not marca
     expect(docs[0].aislado_por_cliente).toBe(1);
     expect(docs[0].persona_id).toBeNull();
     expect(docs[0].source).toBe("aura-kb");

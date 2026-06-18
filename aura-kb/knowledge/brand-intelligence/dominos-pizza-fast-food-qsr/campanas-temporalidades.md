@@ -13,7 +13,7 @@ aislado_por_cliente: true
 fuente: campaignmap
 anio: 2025
 fecha_migracion: 2026-06-17
-archivo_origen: "Dominos Campa#U00f1as & Temporalidades 2025.docx"
+archivo_origen: "Dominos Campañas & Temporalidades 2025.docx"
 ---
 **Advertising & Seasonality Intelligence Pack: Domino's Pizza México 2025-2027**
 
