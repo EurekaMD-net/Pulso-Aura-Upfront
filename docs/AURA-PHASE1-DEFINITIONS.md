@@ -1,8 +1,11 @@
 # Azteca-Aura — Phase 1 Definitions
 
-> Status: **DEFINITION STAGE** (2026-06-15). Scope is set; the Aura methodology
-> content is still being transferred to the operator. No functionality built yet.
-> This document is the contract that new functionality + retrieval must satisfy.
+> Status: **METHODOLOGY LANDED** (2026-06-18). Scope is set, and the Aura methodology corpus is
+> now ingested + verified in `aura-kb/` (320 brands / 969 findings / 19 skills). The
+> operationalization design lives in `AURA-KB-OPERATIONALIZATION.md` and **supersedes the
+> "single state machine / PENDING transfer" framing in §6 + §8 below** — what landed is a
+> 19-skill orchestrated system, not one prompt slot. This doc remains the Phase-1 scope contract;
+> engine wiring (P2–P3) is pending.
 
 ## 1. What this is
 
@@ -53,16 +56,18 @@ Dormant until the acceptance gate (§7) passes — code is inherited but not sur
 
 The base capabilities still exist in the codebase; Phase 1 simply does not lead with them.
 
-## 6. The Aura methodology (core IP — PENDING TRANSFER)
+## 6. The Aura methodology (core IP — LANDED 2026-06-18)
 
-- A **named methodology** for **storytelling + closing argumentation**.
-- **Status: being transferred to the operator now.** Content (frameworks, steps, argument
-  structures, examples, language) is **not yet available**.
-- **Design implication:** the closing-companion engine must be **methodology-pluggable** —
-  scaffold the interface, role-scoping, and the inputs Aura will consume now; encode the
-  actual Aura frameworks/prompts once received.
-- **This is the substantive blocker** for authoring the closing-argument generation. We can
-  build everything around it; we cannot fill it in until the methodology lands.
+- A **named methodology** for the full preventa motion — far more than storytelling + closing
+  argumentation. It shipped as a structured KB: **19 skills** (router → diagnosis → ARMAGEDDON →
+  DARK/STAKEHOLDERS, with transversals), a **320-brand / 969-finding** RAG corpus, doctrine,
+  7 controlled vocabularies, SOPs, and a governance constitution (`_RULES.md`).
+- **Status: LANDED + verified** in `aura-kb/`. No longer a blocker.
+- **Design implication (revised):** the closing companion is no longer "one pluggable prompt
+  slot" — it is the **closing slice of a 19-skill graph** re-hosted from claude.ai Projects into
+  the engine. The wiring contract is `AURA-KB-OPERATIONALIZATION.md` (RAG indexing, governance as
+  code, the CRM↔KB role-clearance lattice, the coaching state machine).
+- **What remains** is engine wiring (P2–P3), not content acquisition.
 
 ## 7. Acceptance gate → full rollout
 
