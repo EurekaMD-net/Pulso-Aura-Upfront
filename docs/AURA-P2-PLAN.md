@@ -43,11 +43,17 @@
    $0.10/1M. Dry-run indexed **971 / skipped 2 / failed 0** (the 2 skips are `knowledge/README.md`
    - `platform-intelligence/README.md` — ungoverned, correctly excluded). `syncAuraKb` prints
      `{files, indexed, skipped, failed}`; the script warns if it fell back to the local hash.
-3. **Brand cardinality:** the corpus carries **684 distinct `marca` strings** (per-product display
-   names: "Bonafont Agua Natural" vs "Bonafont Aguas Frescas" vs "Bonafont Levite", etc.). The
-   firewall scopes on the exact normalized `marca`, so P3's router must resolve a session to the
-   precise `marca` string(s) — a "Bonafont" session won't match "Bonafont Levite" findings unless
-   it queries that value. Substrate is correct; brand→marca resolution is a P3 concern.
+3. **⚠️ KNOWN DEFECT — firewall under-retrieves (verified 2026-06-18).** The corpus has **320 brand
+   folders** but **684 distinct `marca` strings** (629 normalized), and **254/320 folders (79%)
+   disagree on `marca` across their own findings** — not just case: typos (`Lievité`), dropped
+   accents (`Levite`), mojibake (`Levit#U00e9`), and wording (`Bonafont` vs `Bonafont Agua Natural`).
+   The firewall keys on `marca_norm`, which folds case/accent but NOT wording/typos — so a single
+   brand's findings are split across 2–4 `marca_norm` values and a session scoped to one value
+   **silently misses 50–75% of that brand's intelligence**. Secure (zero leak) but INCOMPLETE.
+   **Fix (not yet applied):** derive the firewall key from the **folder slug** (one folder = one
+   brand, always consistent) at ingest instead of the free-text `marca` — yields 320 clean keys and
+   simplifies P3's brand→key resolution. Lesson: never use a per-document free-text field as a
+   security/scoping key; key on the stable structural fact (the folder).
 
 ## Step 1 — Schema migration (`crm/src/schema.ts`)
 

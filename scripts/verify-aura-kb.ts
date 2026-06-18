@@ -11,6 +11,7 @@
 import { getDatabase } from "../crm/src/db.js";
 import { createCrmSchema } from "../crm/src/schema.js";
 import { searchAuraKb } from "../crm/src/doc-sync.js";
+import { isEmbeddingDegraded } from "../crm/src/embedding.js";
 
 const db = getDatabase();
 createCrmSchema(db); // idempotent
@@ -20,10 +21,17 @@ const total = (
     .prepare("SELECT COUNT(*) c FROM crm_documents WHERE source = 'aura-kb'")
     .get() as { c: number }
 ).c;
-const brands = (
+const marcaStrings = (
   db
     .prepare(
       "SELECT COUNT(DISTINCT marca) c FROM crm_documents WHERE source = 'aura-kb' AND marca IS NOT NULL",
+    )
+    .get() as { c: number }
+).c;
+const marcaNorm = (
+  db
+    .prepare(
+      "SELECT COUNT(DISTINCT marca_norm) c FROM crm_documents WHERE source = 'aura-kb' AND marca_norm IS NOT NULL",
     )
     .get() as { c: number }
 ).c;
@@ -36,7 +44,10 @@ const chunks = (
 ).c;
 
 console.log(
-  `aura-kb docs: ${total} | distinct brands: ${brands} | embedding chunks: ${chunks}`,
+  `aura-kb docs: ${total} | distinct marca strings: ${marcaStrings} (normalized: ${marcaNorm}) | embedding chunks: ${chunks}`,
+);
+console.log(
+  "  note: the corpus has 320 brand FOLDERS; marca strings > 320 because the marca field is inconsistent within folders (see AURA-P2-PLAN.md brand-key note).",
 );
 
 if (total === 0) {
@@ -58,10 +69,20 @@ const other = db
   )
   .get(top.marca) as { marca: string } | undefined;
 
-// Include the brand name so FTS reliably surfaces that brand's own findings.
-const query = `${top.marca} campaña medios objetivos audiencia`;
+// Query with the brand name only: FTS surfaces that brand's findings on the keyword
+// path, so the firewall check holds even without a live embedding provider (e.g. a
+// standalone `npm run verify:aura-kb` with no .env). Semantic recall isn't tested here.
+const query = top.marca;
 
 const hits = await searchAuraKb(query, { marca: top.marca, role: "gerente" });
+if (isEmbeddingDegraded()) {
+  console.log(
+    "  note: no embedding provider in env — firewall checked via the keyword (FTS) path only;",
+  );
+  console.log(
+    "        run ./scripts/deploy-aura-kb-p2.sh (sources .env) for a full semantic check.",
+  );
+}
 const leak = hits.filter((r) => r.marca !== top.marca);
 
 const failClosed = await searchAuraKb(query, { marca: null, role: "gerente" });
