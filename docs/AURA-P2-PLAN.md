@@ -38,9 +38,16 @@
    `EMBEDDING_MODEL=accounts/fireworks/models/qwen3-embedding-8b` (and `EMBEDDING_URL=https://api.fireworks.ai/inference/v1`
    unless `INFERENCE_PRIMARY_URL` is already Fireworks, in which case it inherits; key inherits
    `INFERENCE_PRIMARY_KEY`).
-2. **Cost/volume:** ~969 findings × ~1k tokens ≈ ~1M tokens → **~$0.10 one-time** for the full
-   ingest. `syncAuraKb` already prints `{files, indexed, skipped, failed}`; the script warns if it
-   silently fell back to the non-semantic local hash (provider unreachable).
+2. **Cost/volume (measured by a dry-run ingest 2026-06-18):** the corpus chunks to **17,986
+   embedding chunks** (~512 tokens each ≈ ~9.2M tokens) → **~$0.90 one-time** at Qwen3-8B's
+   $0.10/1M. Dry-run indexed **971 / skipped 2 / failed 0** (the 2 skips are `knowledge/README.md`
+   - `platform-intelligence/README.md` — ungoverned, correctly excluded). `syncAuraKb` prints
+     `{files, indexed, skipped, failed}`; the script warns if it fell back to the local hash.
+3. **Brand cardinality:** the corpus carries **684 distinct `marca` strings** (per-product display
+   names: "Bonafont Agua Natural" vs "Bonafont Aguas Frescas" vs "Bonafont Levite", etc.). The
+   firewall scopes on the exact normalized `marca`, so P3's router must resolve a session to the
+   precise `marca` string(s) — a "Bonafont" session won't match "Bonafont Levite" findings unless
+   it queries that value. Substrate is correct; brand→marca resolution is a P3 concern.
 
 ## Step 1 — Schema migration (`crm/src/schema.ts`)
 

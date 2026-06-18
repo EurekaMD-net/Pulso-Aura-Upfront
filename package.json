@@ -15,6 +15,8 @@
     "bootstrap": "tsx scripts/bootstrap.sh",
     "register-team": "tsx scripts/register-hierarchy.ts",
     "sync:aura-kb": "tsx scripts/sync-aura-kb.ts",
+    "verify:aura-kb": "tsx scripts/verify-aura-kb.ts",
+    "deploy:aura-kb": "bash scripts/deploy-aura-kb-p2.sh",
     "simulate": "tsx scripts/simulator/index.ts",
     "simulate:regression": "tsx scripts/simulator/index.ts --mode regression",
     "simulate:morning": "tsx scripts/simulator/index.ts --mode morning",
