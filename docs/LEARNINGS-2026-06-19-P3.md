@@ -205,6 +205,30 @@ make a feature light up; a correct null that degrades beats a wrong advertiser. 
 by qa: no cuenta-rename tool exists today, but if one is added it must recompute the link or it freezes on the
 old name — the standard "derived column goes stale on the source edit" trap.)
 
+## 20. A feature's seed footprint is a trace of its read-path, not the schema (pilot prep)
+
+Asked "what must we seed for the pilot," the naive answer enumerates the schema (30 tables). The right
+answer traces what the _target feature_ actually reads. For the closing companion the trace collapses
+dramatically: the intelligence tools (`buscar_inteligencia_marca`, `armar_radiografia_*`) read an
+**already-loaded corpus**, so they need **zero** seed; the only rows that matter are the ones the
+**proactive trigger** walks (`persona` → `propuesta` in the closing zone → `cuenta`) and the ones the
+**committee tool** joins (`cuenta` → `contacto`). Everything else — `cuota`, `contrato`, `descarga`,
+`inventario`, relationship intelligence — belongs to _other_ features and is noise for this stage.
+
+Two corollaries that keep a seed list honest:
+
+- **Don't seed what an external system-of-record owns.** Factual actuals (last closed amount, inventory
+  mix, pacing) come from Snowflake on demand (P4); hand-seeding them into the CRM creates a stale second
+  source — the exact thing the bridge exists to avoid. The CRM seeds only its forward/relational data.
+- **The seed isn't done until the delivery wiring lines up.** The relational rows are inert if the
+  WhatsApp group folders don't match `persona.whatsapp_group_folder` — the nudge resolves the recipient
+  through `registeredGroups()`, so a folder-name mismatch sends every nudge into the void. List the
+  wiring (group registration, the anunciante link) as seed to-dos, not afterthoughts.
+
+Lesson: scope a seed list by walking the feature's queries, name what each table powers (so exclusions
+are defensible, not forgotten), and treat the integration seams as part of the seed. Checklist:
+`docs/PILOT-SEEDING-CLOSING.md`.
+
 ## Deferred / next
 
 - P3.1 recognition+architecture+Step 1; **P3.2** ARMAGEDDON read-path; **P3.3** DARK/STAKEHOLDERS
