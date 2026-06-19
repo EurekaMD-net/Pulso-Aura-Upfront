@@ -73,6 +73,17 @@ const SCHEDULES: ScheduleEntry[] = [
     taskType: "crm_daily_seed",
     startupBehavior: "immediate",
   },
+  {
+    // Proactive Aura near-close coaching sweep — finds deals in the closing
+    // zone (en_negociacion / confirmada_verbal) and nudges the responsible
+    // Gerente/Director to open Modo Cierre. Weekly (Monday 7 AM MX, start of
+    // the sales week) so the daily alerta_log dedup yields one nudge per
+    // cluster per week. Never reaches the client (gate in nearclose.ts).
+    name: "nearclose",
+    cron: "0 7 * * 1",
+    taskType: "crm_nearclose_coaching",
+    startupBehavior: "none",
+  },
 ];
 
 const timers = new Map<string, ReturnType<typeof setTimeout>>();

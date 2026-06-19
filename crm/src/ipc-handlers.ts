@@ -531,6 +531,17 @@ export async function processCrmIpc(
       }
     }
 
+    case "crm_nearclose_coaching": {
+      try {
+        const { evaluateNearcloseCoaching } = await import("./nearclose.js");
+        const result = await evaluateNearcloseCoaching(deps);
+        logger.info(result, "Near-close coaching sweep completed");
+        return true;
+      } catch (err) {
+        return handleIpcError(err, sourceGroup, data.type);
+      }
+    }
+
     case "crm_daily_seed": {
       try {
         const { runDailySeed } = await import("./daily-seeder.js");

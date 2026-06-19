@@ -159,13 +159,13 @@ WhatsApp → engine (forked from NanoClaw) → Direct tools (73 CRM tools via in
 ## Testing
 
 ```bash
-npm run test         # Full suite — 76 test files (62 crm + 14 engine)
+npm run test         # Full suite — 76 test files (63 crm + 13 engine)
 ```
 
 Tests live in:
 
-- `engine/src/*.test.ts` — Engine tests (14 test files)
-- `crm/tests/*.test.ts` — CRM tests (60 test files)
+- `engine/src/*.test.ts` — Engine tests (13 test files)
+- `crm/tests/*.test.ts` — CRM tests (63 test files)
 
 **The test gate is CI**, not a local hook. `.github/workflows/ci.yml` runs `npm run typecheck`
 

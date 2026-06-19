@@ -337,6 +337,8 @@ describe("Modo Cierre -- Preventa 2027 closing mode", () => {
     "armar_radiografia_anunciante", // portfolio rollup tool
     "mapa_poder_anunciante", // STAKEHOLDERS over the real CRM committee
     "necesidad GLOBAL del anunciante", // the advertiser-level assertion
+    // P3.4 proactive near-close trigger
+    "Disparador proactivo", // recognizes an "Aura · Cierre cercano" nudge as closing intent
   ];
 
   const closingTemplates = [

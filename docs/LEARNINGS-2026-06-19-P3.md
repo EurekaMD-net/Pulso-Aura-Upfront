@@ -144,6 +144,45 @@ its portfolio. A retrieval layer over an unloaded table passes its unit tests an
 production. (W2 — `cuenta.anunciante_norm` population — genuinely can't be closed until accounts exist;
 it degrades gracefully to `sin_comite`→coach-from-method, and is tracked for the account-registration flow.)
 
+## 16. A safety gate is a resolver that returns a reason, not a boolean sprinkled at call sites (P3.4)
+
+The never-to-client guarantee is the load-bearing property of proactive delivery. The faithful way to
+express it is **one function that resolves a recipient or refuses with a reason** —
+`resolveCoachingRecipient(personaId, deps) → { ok, jid } | { ok:false, reason }` — not a scatter of
+`if (isClient) return` checks at each send site. Two properties make it airtight: (a) the only input is a
+`persona` id, and a `contacto` (client) **has no row in `persona`**, so `getPersonById` returns undefined →
+blocked — a client can't even be addressed; (b) **nothing in the module reads `contacto.telefono` or
+`persona.telefono`** — the sole phone-adjacent read is `whatsapp_group_folder`, which resolves to a _group_
+jid, never an individual number. The six guards run in sequence and a jid is assigned **only** on the
+all-pass path, so the gate is structural, not behavioral. qa-auditor's job became "try to find a path to a
+jid that skips a guard" — and there wasn't one. Lesson: when a property must hold, make it impossible to
+violate by construction (no code path exists), then test each refusal branch — don't rely on a correct
+runtime check that a future edit could move or weaken.
+
+## 17. Ride the rail — find the existing delivery path before building a new one (P3.4)
+
+P3.4 looked like "build WhatsApp push + a scheduler." Recon found `escalation.ts` already does the exact
+shape (scan a condition → resolve recipient via the `reporta_a` hierarchy → dedup via `alerta_log` →
+`findJid(folder)` from `registeredGroups()` → `deps.sendMessage`), and the unified `scheduler.ts` is a
+**declarative `SCHEDULES` cron table**. So the build collapsed to: a 5th evaluator on the same rail + **one
+table entry** + one IPC case. No new scheduler file, no engine change, no new transport. Two corollaries:
+(a) match the new feature's dedup to the rail's existing grain — a **weekly** cron (`0 7 * * 1`) makes the
+rail's **daily** `alerta_log` dedup yield once-per-cluster-per-week for free, no dedup-schema change; (b)
+mirroring a working rail is a feature, not debt — when the audit flagged that the dedup check omits
+`grupo_destino` (a column on the unique index), the right call was to _document the deliberate divergence_
+(entityId already embeds the recipient) rather than diverge from the rail escalation.ts established. Always
+grep for the existing producer/consumer before designing a parallel one.
+
+## 18. Anchor the proactive layer on the deal unit, degrade gracefully on the unpopulated link (P3.4)
+
+The proactive trigger groups near-close deals by **(gerente, anunciante)** — the anunciante is the deal unit
+(P3.5), so the coach gets one nudge per hot advertiser, not per brand or per deal. But `cuenta.anunciante_norm`
+is unpopulated at clean-start (P3.5's tracked wiring gap), so the cluster key degrades to `cuenta:<id>` and
+the nudge renders the cuenta name — same graceful-degradation posture as P3.5's `sin_comite`→coach-from-method.
+Lesson: a new layer should anchor on the _correct_ unit even when the link feeding it isn't populated yet, as
+long as it degrades to a sensible lower grain — don't block the feature on the upstream data gap, and don't
+silently anchor on the wrong unit because the right one is empty today.
+
 ## Deferred / next
 
 - P3.1 recognition+architecture+Step 1; **P3.2** ARMAGEDDON read-path; **P3.3** DARK/STAKEHOLDERS

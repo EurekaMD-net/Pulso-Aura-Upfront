@@ -125,10 +125,36 @@ tables 28→29; `anunciante.test.ts` (18 tests) + drift anchors; 291 affected te
 (cuentas are empty in clean-start), so `mapa_poder_anunciante` returns `sin_comite` (→ coach from method) until
 accounts are registered/linked to an anunciante. The account-registration flow should set `cuenta.anunciante`.
 
-### P3.4 — Proactive trigger + delivery
+### P3.4 — Proactive trigger + delivery ✅ DONE
 
 Proactive near-close nudge (reuse pipeline `etapa` + an overnight-style scan) and WhatsApp delivery
-scoped to Gerente/Director. The acceptance gate (§7 of the spec) decides "fledge fully".
+scoped to Gerente/Director. The never-to-client gate becomes **code** at the delivery boundary.
+
+**Done.** Rides the existing `escalation.ts` rail (same `alerta_log` dedup + `registeredGroups()`
+folder→jid + `deps.sendMessage`), so no new transport. (1) **Detection:** `nearcloseClusters()` in
+`crm/src/nearclose.ts` — SQL sweep of `propuesta WHERE etapa IN ('en_negociacion','confirmada_verbal')`
+(the closing zone; excludes early `en_discusion`, won `orden_recibida`, terminal), joined to `ae.reporta_a`
+(the coach) and `cuenta`. **Anchored on the anunciante** (P3.5): groups by **(gerente, anunciante)**;
+degrades to per-`cuenta` when `cuenta.anunciante_norm` is null (clean-start). (2) **Never-to-client gate
+as code:** `resolveCoachingRecipient(personaId, deps)` — the ONLY path to a jid is an internal `persona`
+with `rol ∈ {gerente,director}`, active, with a registered group. A `contacto` (client) has no `persona`
+row → `not_a_persona` → blocked; AE/VP → `role_out_of_scope`; nothing reads `contacto.telefono`. qa-auditor
+verified the gate **structurally airtight** (six sequential guards, jid assigned only on the all-pass path).
+(3) **Nudge:** `composeNudge` — seller-language coaching (synthesize, never dump JSON), points to
+`armar_radiografia_anunciante` + `mapa_poder_anunciante`, footer "_Material interno de guerra — jamás al
+cliente ni al grupo._" (4) **Schedule:** one declarative entry in the unified `scheduler.ts` SCHEDULES
+table (`crm_nearclose_coaching`, cron `0 7 * * 1` = Mon 7 AM MX; weekly cadence makes the daily `alerta_log`
+dedup naturally once-per-cluster-per-week, no spam) → IPC case → `evaluateNearcloseCoaching(deps)`. No new
+scheduler file, no engine change. (5) **Persona:** a "Disparador proactivo" line in manager/director.md so a
+nudge-reply is recognized as closing intent (preserves the never-to-client framing). **No tool/schema/count
+changes** (reuses `alerta_log`/`propuesta`/`cuenta`). `nearclose.test.ts` (20 tests — detection scope, the
+gate's six branches incl. a contacto-with-real-phone, anunciante grouping + null-degrade, message contract,
+dedup, sweep) + `templates.test.ts` +1 anchor; tsc clean. qa-auditor **PASS WITH WARNINGS** (0 Critical;
+low-effort warnings applied — `STALE_DAYS` const, `::` entityId delimiter, dedup-design + count-semantics
+docs). **Deferred (tracked, demo-safe at clean-start volume):** per-sweep/per-coach nudge cap before
+real-volume deploy (W3/I2 — avoid blasting a coach on a data-quality spike); per-send timeout (mirrors the
+`escalation.ts` rail, which also has none). **§7 acceptance gate** ("fledge fully") is an operator decision
+after a deployed pilot — can't be validated live while the service is undeployed.
 
 ## Deferred / dependencies
 
