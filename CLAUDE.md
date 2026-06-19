@@ -159,13 +159,22 @@ WhatsApp → engine (forked from NanoClaw) → Direct tools (71 CRM tools via in
 ## Testing
 
 ```bash
-npm run test         # All tests (1119 across 61 files)
+npm run test         # Full suite — 74 test files (60 crm + 14 engine)
 ```
 
 Tests live in:
 
-- `engine/src/*.test.ts` — Engine tests (11 test files)
-- `crm/tests/*.test.ts` — CRM tests (50 test files)
+- `engine/src/*.test.ts` — Engine tests (14 test files)
+- `crm/tests/*.test.ts` — CRM tests (60 test files)
+
+**The test gate is CI**, not a local hook. `.github/workflows/ci.yml` runs `npm run typecheck`
+
+- `npm test` on every push to `main` and every PR (~1 min on a clean runner). There is **no
+  local pre-commit hook** in this repo (no husky) — so locally, **run scoped tests** while you work
+  (`npx vitest run <file>`, `-t "name"`, or `--changed`) and let CI run the full suite on push. A
+  bare `npm test` / `vitest run` here OOMs the shared VPS; that's why the full run belongs on the CI
+  runner. (Note: the sibling `mission-control` repo DOES gate via a local `.git/hooks/pre-commit` —
+  don't assume the same topology across repos.)
 
 ## Service Operations
 
