@@ -22,6 +22,7 @@ import { getDatabase } from "../db.js";
 import { getPersonById, getManager, getDirector } from "../hierarchy.js";
 import type { ToolContext } from "./index.js";
 import { findCuentaId, scopeFilter } from "./helpers.js";
+import { anuncianteLinkForCuenta } from "../anunciante.js";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -294,9 +295,15 @@ export function solicitar_cuenta(
   const estado = initialEstado(ctx.rol);
   const now = new Date().toISOString();
 
+  // Link the account to its advertiser (the deal unit) at registration. Reuses
+  // the Aura resolver; auto-links only on a confident single match, else nulls
+  // (downstream degrades gracefully). Lights up mapa_poder_anunciante's real
+  // committee + the near-close anunciante grouping.
+  const { anunciante, anuncianteNorm } = anuncianteLinkForCuenta(nombre);
+
   db.prepare(
-    `INSERT INTO cuenta (id, nombre, tipo, vertical, holding_agencia, agencia_medios, ae_id, gerente_id, director_id, creado_por, estado, notas, fecha_creacion)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO cuenta (id, nombre, tipo, vertical, holding_agencia, agencia_medios, ae_id, gerente_id, director_id, creado_por, estado, notas, fecha_creacion, anunciante, anunciante_norm)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).run(
     id,
     nombre,
@@ -311,6 +318,8 @@ export function solicitar_cuenta(
     estado,
     notas,
     now,
+    anunciante,
+    anuncianteNorm,
   );
 
   logAprobacion(

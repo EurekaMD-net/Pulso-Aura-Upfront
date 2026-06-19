@@ -183,6 +183,28 @@ Lesson: a new layer should anchor on the _correct_ unit even when the link feedi
 long as it degrades to a sensible lower grain — don't block the feature on the upstream data gap, and don't
 silently anchor on the wrong unit because the right one is empty today.
 
+## 19. Store at the write seam exactly what the read seam queries — same normalizer, same input (P3.4 wiring)
+
+Wiring `cuenta.anunciante_norm` at registration only works if the value written is _byte-identical_ to
+what the consumers look it up by. Two consumers query it: `committeeForAnunciante` (`WHERE
+anunciante_norm = ?` with `normalizeMarca(resolved.anunciante)`) and the near-close sweep (groups on the
+stored `cuenta.anunciante_norm` directly). So the write path stores **`normalizeMarca(resolved.anunciante)`**
+— the same pure function, on the same input — not `normalizeMarca(the_raw_account_name)`. Those differ:
+the account name is free text ("Coca-Cola"), the resolved advertiser is the canonical map value
+("Coca-Cola FEMSA"); normalizing the raw name would write a norm that never matches the lookup. The way to
+be sure is to **trace both consumers and confirm the normalizer + its argument match on both sides** — which
+is exactly what the qa pass and the loop-close test (`backfill → committeeForAnunciante surfaces the cuenta`)
+verify. Lesson: a derived key is only useful if producer and consumer compute it identically; assert that by
+construction (one shared pure fn) and prove it with a test that round-trips through the real query, not just
+the helper.
+
+A corollary worth its own note: the link is honest about ambiguity. `resolveAnunciante` resolves only on a
+single match, so an ambiguous account name ("Danone" → two advertisers) writes NULL, not a guess — and the
+downstream already degrades (per-cuenta grouping / `sin_comite` coach-from-method). Never fabricate a link to
+make a feature light up; a correct null that degrades beats a wrong advertiser. (Latent forward-risk flagged
+by qa: no cuenta-rename tool exists today, but if one is added it must recompute the link or it freezes on the
+old name — the standard "derived column goes stale on the source edit" trap.)
+
 ## Deferred / next
 
 - P3.1 recognition+architecture+Step 1; **P3.2** ARMAGEDDON read-path; **P3.3** DARK/STAKEHOLDERS

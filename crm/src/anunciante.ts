@@ -69,6 +69,62 @@ export function resolveAnunciante(input: string): AnuncianteResolution {
   };
 }
 
+/**
+ * Resolve a cuenta's display name to its advertiser-link columns at
+ * account-registration. Auto-links ONLY on a single confident match; returns
+ * nulls when the name is ambiguous (>1 advertiser) or unknown — we never guess
+ * which advertiser an ambiguous name means, and the downstream paths
+ * (committeeForAnunciante, the near-close sweep) already degrade gracefully on
+ * a null link. `anuncianteNorm` is exactly what those consumers query against
+ * (`cuenta.anunciante_norm = normalizeMarca(anunciante)`).
+ */
+export function anuncianteLinkForCuenta(nombre: string): {
+  anunciante: string | null;
+  anuncianteNorm: string | null;
+} {
+  const r = resolveAnunciante(nombre);
+  return { anunciante: r.anunciante, anuncianteNorm: r.anuncianteNorm };
+}
+
+export interface BackfillResult {
+  updated: number;
+  ambiguous: number;
+  unmatched: number;
+}
+
+/**
+ * Backfill `cuenta.anunciante` / `anunciante_norm` for accounts missing the link
+ * — created before the registration wiring, or by demo seeds that bypass
+ * `solicitar_cuenta`. Links only unambiguous matches; reports `ambiguous` and
+ * `unmatched` counts for operator review rather than silently guessing. Idempotent.
+ */
+export function backfillCuentaAnunciante(): BackfillResult {
+  const db = getDatabase();
+  const rows = db
+    .prepare(
+      `SELECT id, nombre FROM cuenta WHERE anunciante_norm IS NULL AND nombre IS NOT NULL`,
+    )
+    .all() as { id: string; nombre: string }[];
+  const upd = db.prepare(
+    `UPDATE cuenta SET anunciante = ?, anunciante_norm = ? WHERE id = ?`,
+  );
+  let updated = 0;
+  let ambiguous = 0;
+  let unmatched = 0;
+  for (const row of rows) {
+    const r = resolveAnunciante(row.nombre);
+    if (r.anunciante && r.anuncianteNorm) {
+      upd.run(r.anunciante, r.anuncianteNorm, row.id);
+      updated++;
+    } else if (r.candidates.length > 1) {
+      ambiguous++;
+    } else {
+      unmatched++;
+    }
+  }
+  return { updated, ambiguous, unmatched };
+}
+
 export function marcasForAnunciante(
   anuncianteNorm: string,
 ): { brand_key: string; marca: string | null }[] {

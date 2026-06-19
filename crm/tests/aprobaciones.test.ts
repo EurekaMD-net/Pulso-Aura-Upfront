@@ -15,6 +15,7 @@ import fs from "fs";
 import path from "path";
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { createCrmSchema } from "../src/schema.js";
+import { normalizeMarca } from "../src/aura-rbac.js";
 
 // Mock engine modules
 let testDb: InstanceType<typeof Database>;
@@ -325,6 +326,38 @@ describe("solicitar_cuenta", () => {
     expect(log.accion).toBe("creado");
     expect(log.actor_id).toBe("ae1");
     expect(log.estado_nuevo).toBe("pendiente_gerente");
+  });
+
+  it("links the cuenta to its advertiser when the name resolves (P3.4 wiring)", () => {
+    const anun = "Procter & Gamble México";
+    testDb
+      .prepare(
+        `INSERT INTO anunciante_marca (brand_key, marca, anunciante, anunciante_norm, grupo, grupo_norm, confianza, basis)
+         VALUES ('ariel','Ariel',?,?,'Procter & Gamble',?,'alta','finding')`,
+      )
+      .run(anun, normalizeMarca(anun), normalizeMarca("Procter & Gamble"));
+    const ctx = makeCtx("ae1", "ae");
+    const result = JSON.parse(solicitar_cuenta({ nombre: anun }, ctx));
+    const row = testDb
+      .prepare("SELECT anunciante, anunciante_norm FROM cuenta WHERE id = ?")
+      .get(result.cuenta_id) as {
+      anunciante: string | null;
+      anunciante_norm: string | null;
+    };
+    expect(row.anunciante).toBe(anun);
+    expect(row.anunciante_norm).toBe(normalizeMarca(anun));
+  });
+
+  it("leaves the advertiser link null when the name is unknown (account still created)", () => {
+    const ctx = makeCtx("ae1", "ae");
+    const result = JSON.parse(
+      solicitar_cuenta({ nombre: "Anunciante Inexistente ZZZ" }, ctx),
+    );
+    expect(result.cuenta_id).toBeTruthy();
+    const row = testDb
+      .prepare("SELECT anunciante_norm FROM cuenta WHERE id = ?")
+      .get(result.cuenta_id) as { anunciante_norm: string | null };
+    expect(row.anunciante_norm).toBeNull();
   });
 });
 

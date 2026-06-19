@@ -43,6 +43,8 @@ const {
   marcasForAnunciante,
   radiografiaForAnunciante,
   committeeForAnunciante,
+  anuncianteLinkForCuenta,
+  backfillCuentaAnunciante,
 } = await import("../src/anunciante.js");
 const { syncAnuncianteMap } = await import("../src/anunciante-sync.js");
 const { armar_radiografia_anunciante, mapa_poder_anunciante } =
@@ -289,6 +291,108 @@ describe("committeeForAnunciante — real CRM committee", () => {
     const comite = committeeForAnunciante("P&G México")!;
     expect(comite.sin_comite).toBe(true);
     expect(comite.cuentas).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Account-registration wiring: cuenta.anunciante link
+// ---------------------------------------------------------------------------
+
+describe("anuncianteLinkForCuenta (registration wiring)", () => {
+  beforeEach(() => {
+    seedAnun("ariel", "Ariel", "Procter & Gamble México", "Procter & Gamble");
+    seedAnun(
+      "pampers",
+      "Pampers",
+      "Procter & Gamble México",
+      "Procter & Gamble",
+    );
+    seedAnun("bonafont", "Bonafont", "Danone México", "Danone");
+    seedAnun("danette", "Danette", "Danone Internacional", "Danone");
+  });
+
+  it("links a cuenta named after the advertiser (single match)", () => {
+    const r = anuncianteLinkForCuenta("Procter & Gamble México");
+    expect(r.anunciante).toBe("Procter & Gamble México");
+    expect(r.anuncianteNorm).toBe(normalizeMarca("Procter & Gamble México"));
+  });
+
+  it("returns nulls (never guesses) when the name is ambiguous", () => {
+    const r = anuncianteLinkForCuenta("Danone"); // grupo → 2 anunciantes
+    expect(r.anunciante).toBeNull();
+    expect(r.anuncianteNorm).toBeNull();
+  });
+
+  it("returns nulls for an unknown account name", () => {
+    expect(
+      anuncianteLinkForCuenta("Cuenta Inexistente ZZZ").anunciante,
+    ).toBeNull();
+  });
+});
+
+describe("backfillCuentaAnunciante", () => {
+  function seedCuenta(
+    id: string,
+    nombre: string,
+    anuncianteNorm: string | null = null,
+  ) {
+    testDb
+      .prepare(
+        `INSERT INTO cuenta (id, nombre, tipo, anunciante_norm) VALUES (?, ?, 'directo', ?)`,
+      )
+      .run(id, nombre, anuncianteNorm);
+  }
+
+  beforeEach(() => {
+    seedAnun("ariel", "Ariel", "Procter & Gamble México", "Procter & Gamble");
+    seedAnun(
+      "pampers",
+      "Pampers",
+      "Procter & Gamble México",
+      "Procter & Gamble",
+    );
+    seedAnun("bonafont", "Bonafont", "Danone México", "Danone");
+    seedAnun("danette", "Danette", "Danone Internacional", "Danone");
+  });
+
+  it("links unambiguous cuentas, reports ambiguous + unmatched, skips already-linked", () => {
+    seedCuenta("c1", "Procter & Gamble México"); // → links
+    seedCuenta("c2", "Danone"); // → ambiguous (grupo, 2 anunciantes)
+    seedCuenta("c3", "Cuenta Desconocida ZZZ"); // → unmatched
+    seedCuenta("c4", "Danone México", normalizeMarca("Danone México")); // already linked → skipped
+
+    const res = backfillCuentaAnunciante();
+    expect(res).toEqual({ updated: 1, ambiguous: 1, unmatched: 1 });
+
+    const c1 = testDb
+      .prepare(`SELECT anunciante, anunciante_norm FROM cuenta WHERE id='c1'`)
+      .get() as { anunciante: string; anunciante_norm: string };
+    expect(c1.anunciante).toBe("Procter & Gamble México");
+    expect(c1.anunciante_norm).toBe(normalizeMarca("Procter & Gamble México"));
+
+    // ambiguous + unmatched stay null (no guessing)
+    const c2 = testDb
+      .prepare(`SELECT anunciante_norm FROM cuenta WHERE id='c2'`)
+      .get() as { anunciante_norm: string | null };
+    expect(c2.anunciante_norm).toBeNull();
+  });
+
+  it("closes the loop: a backfilled cuenta surfaces in committeeForAnunciante (no longer sin_comite)", () => {
+    seedCuenta("c1", "Danone México"); // unlinked at first
+
+    // Before the link: the advertiser has no cuenta on file → sin_comite.
+    expect(committeeForAnunciante("Danone México")!.sin_comite).toBe(true);
+
+    backfillCuentaAnunciante();
+    testDb
+      .prepare(
+        `INSERT INTO contacto (id, nombre, cuenta_id, rol) VALUES ('k1','Decisor Danone','c1','decisor')`,
+      )
+      .run();
+
+    const after = committeeForAnunciante("Danone México")!;
+    expect(after.sin_comite).toBe(false);
+    expect(after.cuentas[0].contactos[0].nombre).toBe("Decisor Danone");
   });
 });
 
