@@ -113,6 +113,37 @@ Ger/Dir, absent in AE/VP). Don't manufacture an RBAC query for a floor with no r
 capability where only the cleared roles can see it, and assert the absence. (The _delivery-boundary_
 enforcement of the never-to-client gate — code, not prose — lands with P3.4 when WhatsApp send exists.)
 
+## 13. Model the COMMERCIAL unit, not just the content unit (P3.5)
+
+Aura is authored per-brand, so the whole pipeline was per-brand — but the deal is closed with the
+**anunciante** (one budget, one committee, whole portfolio). The content unit (brand) and the deal
+unit (advertiser) are different, and the closing companion has to operate on the deal unit. The tell
+was already in the CRM: `propuesta`/`contrato` reference `cuenta_id` (account-level) and carry **no
+brand** — the schema knew the deal was account-level before we did. Lesson: when wiring a workflow,
+find who signs / holds the budget and anchor on that; per-item intelligence is a drill-down, not the
+spine. Hierarchy here: grupo (holding) → anunciante → marcas.
+
+## 14. Derive missing data with grounded research agents — provenance, not fabrication (P3.5)
+
+The advertiser field didn't exist in the corpus. Rather than hand-map 320 brands or guess, we fanned
+out 3 research agents, each grounding in the brand's own `diagnostico-9fuentes` (which names the
+parent in its competitive context — **trust the finding over the slug**: `abuelita-chocolate`→Nestlé,
+`ades`→Coca-Cola FEMSA), web for the ambiguous, and **provenance per row** (confidence/basis/evidencia).
+Result: 320/320, 0 nulls, 298 alta. Keys to not fabricating: a primary grounded source, a confidence
+tier (22 `media` rows surfaced for operator review, not silently merged), and `anunciante=null` allowed
+when unresolvable. The map is a versioned, auditable artifact — not embedded magic.
+
+## 15. Built ≠ integrated — run the producer and smoke-test the join, don't just write it (P3.5)
+
+The first cut had `syncAnuncianteMap` with no npm script and no caller, and `cuenta.anunciante_norm`
+written by nothing — so `anunciante_marca` would be **empty on every real DB** and both tools would
+return `encontrada:false`. qa-auditor flagged both as the producer-consumer gap. The fix isn't just
+"add the script" — it's **run it against the live DB and verify the join**: `npm run sync:anunciante-map`
+→ 320 rows → SQL spot-check that all 320 brand_keys join to corpus docs (0 orphans), P&G resolves to
+its portfolio. A retrieval layer over an unloaded table passes its unit tests and still does nothing in
+production. (W2 — `cuenta.anunciante_norm` population — genuinely can't be closed until accounts exist;
+it degrades gracefully to `sin_comite`→coach-from-method, and is tracked for the account-registration flow.)
+
 ## Deferred / next
 
 - P3.1 recognition+architecture+Step 1; **P3.2** ARMAGEDDON read-path; **P3.3** DARK/STAKEHOLDERS

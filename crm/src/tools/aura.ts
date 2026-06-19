@@ -10,6 +10,11 @@
 
 import { resolveBrandKey } from "../aura-brand.js";
 import { searchAuraKb, radiografiaForBrand } from "../doc-sync.js";
+import {
+  resolveAnunciante,
+  radiografiaForAnunciante,
+  committeeForAnunciante,
+} from "../anunciante.js";
 import type { ToolContext } from "./index.js";
 
 export async function buscar_inteligencia_marca(
@@ -130,5 +135,126 @@ export async function armar_radiografia_marca(
         : radiografia.faltantes.length > 0
           ? `Radiografía parcial: faltan ${radiografia.faltantes.join(", ")}. Trabaja con lo disponible y dilo abiertamente.`
           : undefined,
+  });
+}
+
+/**
+ * armar_radiografia_anunciante — the PORTFOLIO rollup (P3.5).
+ *
+ * The Upfront deal is with the ANUNCIANTE across its whole brand portfolio. Resolves the
+ * advertiser, lists ALL its brands, and returns a bounded per-brand summary (which cuerpos exist
+ * + a short resumen) so the agent can assert portfolio-level needs and decide which brands to
+ * deep-dive with armar_radiografia_marca. Ambiguous → options; unknown → encontrada:false.
+ */
+export async function armar_radiografia_anunciante(
+  args: Record<string, unknown>,
+  ctx: ToolContext,
+): Promise<string> {
+  const anunciante =
+    typeof args.anunciante === "string" ? args.anunciante.trim() : "";
+  if (!anunciante)
+    return JSON.stringify({ error: 'Falta el parámetro "anunciante".' });
+
+  const res = resolveAnunciante(anunciante);
+  if (!res.anunciante) {
+    if (res.candidates.length === 0) {
+      return JSON.stringify({
+        anunciante,
+        encontrada: false,
+        marcas: [],
+        mensaje: `No hay anunciante "${anunciante}" en el mapa de marcas de Aura.`,
+      });
+    }
+    return JSON.stringify({
+      anunciante,
+      ambigua: true,
+      mensaje: `"${anunciante}" coincide con varios anunciantes/grupos. Pregunta a cuál se refiere.`,
+      opciones: res.candidates.slice(0, 10).map((c) => ({
+        anunciante: c.anunciante,
+        grupo: c.grupo,
+        marcas: c.marcas,
+      })),
+    });
+  }
+
+  const port = radiografiaForAnunciante(anunciante, ctx.rol);
+  if (!port) {
+    return JSON.stringify({
+      anunciante,
+      encontrada: false,
+      marcas: [],
+      mensaje: `No se pudo armar el portafolio de "${anunciante}".`,
+    });
+  }
+
+  return JSON.stringify({
+    anunciante: port.anunciante,
+    grupo: port.grupo,
+    encontrada: true,
+    totales: port.totales,
+    marcas: port.marcas.map((m) => ({
+      marca: m.marca,
+      brand_key: m.brand_key,
+      cuerpos_disponibles: m.cuerpos_disponibles,
+      faltantes: m.faltantes,
+      resumen: m.resumen,
+    })),
+    mensaje:
+      port.totales.marcas === 0
+        ? `"${port.anunciante}" no tiene marcas con inteligencia en el KB.`
+        : `Portafolio de ${port.totales.marcas} marca(s). Sintetiza la necesidad GLOBAL del anunciante (no marca por marca) y profundiza con armar_radiografia_marca donde haga falta.`,
+  });
+}
+
+/**
+ * mapa_poder_anunciante — STAKEHOLDERS over the REAL committee (P3.5).
+ *
+ * Returns the anunciante's CRM cuenta(s) and their contactos (comprador/planeador/decisor +
+ * seniority) — the actual people to ponderar and work, instead of a generic method. When no
+ * committee is on file (`sin_comite`), the agent coaches the power map from method and asks the rep.
+ */
+export async function mapa_poder_anunciante(
+  args: Record<string, unknown>,
+  _ctx: ToolContext,
+): Promise<string> {
+  const anunciante =
+    typeof args.anunciante === "string" ? args.anunciante.trim() : "";
+  if (!anunciante)
+    return JSON.stringify({ error: 'Falta el parámetro "anunciante".' });
+
+  const res = resolveAnunciante(anunciante);
+  if (!res.anunciante) {
+    if (res.candidates.length === 0) {
+      return JSON.stringify({
+        anunciante,
+        encontrada: false,
+        mensaje: `No hay anunciante "${anunciante}" en el mapa de marcas de Aura.`,
+      });
+    }
+    return JSON.stringify({
+      anunciante,
+      ambigua: true,
+      mensaje: `"${anunciante}" coincide con varios anunciantes/grupos. Pregunta a cuál se refiere.`,
+      opciones: res.candidates.slice(0, 10).map((c) => ({
+        anunciante: c.anunciante,
+        grupo: c.grupo,
+        marcas: c.marcas,
+      })),
+    });
+  }
+
+  const comite = committeeForAnunciante(anunciante)!;
+  return JSON.stringify({
+    anunciante: comite.anunciante,
+    encontrada: true,
+    sin_comite: comite.sin_comite,
+    cuentas: comite.cuentas.map((c) => ({
+      cuenta: c.cuenta,
+      tipo: c.tipo,
+      contactos: c.contactos,
+    })),
+    mensaje: comite.sin_comite
+      ? "No hay comité registrado en el CRM para este anunciante. Arma el mapa de poder con el método (ponderar a los 3 que deciden) y pregunta al vendedor por los nombres y cargos."
+      : "Usa estos contactos como base del mapa de poder: pondera a los 3 que deciden y arma la ficha por persona. Recuerda: material interno de guerra, jamás al cliente.",
   });
 }

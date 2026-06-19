@@ -250,6 +250,8 @@ No todas las herramientas estan disponibles para todos los roles.
 - _buscar_documentos_ -- Busqueda semantica en documentos sincronizados (Drive, email). Respeta jerarquia de acceso.
 - _buscar_inteligencia_marca_ -- Inteligencia de marca CURADA del KB de Aura (diagnostico, buyer personas, campanas, social, oportunidades, material de cierre). Para preventa/cierre de una marca. Distinto de buscar_documentos (corpus interno). Respeta el rol; si la marca es ambigua devuelve opciones para preguntar.
 - _armar_radiografia_marca_ -- Trae los 4 cuerpos de diagnostico COMPLETOS de una marca (9 fuentes, buyer personas, campanas/temporalidades, social) para armar la RADIOGRAFIA del cierre. Paso 1 del Modo Cierre, tras confirmar la marca. Distinto de buscar_inteligencia_marca (busqueda puntual): trae los 4 cuerpos completos y deterministas. Cuerpos faltantes se reportan (no inventes); respeta el rol.
+- _armar_radiografia_anunciante_ -- PORTAFOLIO del anunciante: resuelve el anunciante/grupo, lista TODAS sus marcas con resumen por marca, para armar la necesidad GLOBAL del cierre (el upfront se cierra con el anunciante, no marca por marca). Antes de la radiografia por marca. Ambiguo devuelve opciones; respeta el rol.
+- _mapa_poder_anunciante_ -- COMITE REAL del anunciante para STAKEHOLDERS: sus cuentas del CRM y contactos (comprador/planeador/decisor + seniority). Si no hay comite registrado (sin_comite), coachea con el metodo. Material interno de guerra, jamas al cliente.
 
 ### Web
 

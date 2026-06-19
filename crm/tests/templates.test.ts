@@ -94,13 +94,14 @@ const allTemplateNames = [
 
 describe("global.md -- schema coverage", () => {
   it("references all user-facing CRM table names", () => {
-    // Internal index tables not queried by agents directly
+    // Internal index/registry tables not queried by agents directly (accessed via tools)
     const agentFacingTables = CRM_TABLES.filter(
       (t) =>
         t !== "crm_vec_embeddings" &&
         t !== "crm_fts_embeddings" &&
         t !== "template_score" &&
-        t !== "template_variant",
+        t !== "template_variant" &&
+        t !== "anunciante_marca",
     );
     for (const table of agentFacingTables) {
       expect(globalMd, `Missing table: ${table}`).toContain(table);
@@ -217,8 +218,8 @@ describe("global.md -- tool coverage", () => {
     }
   }
 
-  it("references all 73 tool names", () => {
-    expect(allToolNames.size).toBe(73); // unique tool names across all roles
+  it("references all 75 tool names", () => {
+    expect(allToolNames.size).toBe(75); // unique tool names across all roles
     for (const name of allToolNames) {
       expect(globalMd, `Missing tool: ${name}`).toContain(name);
     }
@@ -246,7 +247,7 @@ describe("ae.md -- tool references", () => {
 describe("manager.md -- tool references", () => {
   const gerenteTools = getToolsForRole("gerente").map((t) => t.function.name);
 
-  it("references all 57 gerente tools", () => {
+  it("references all 59 gerente tools", () => {
     for (const name of gerenteTools) {
       expect(managerMd, `Missing gerente tool: ${name}`).toContain(name);
     }
@@ -272,7 +273,7 @@ describe("manager.md -- tool references", () => {
 describe("director.md -- tool references", () => {
   const directorTools = getToolsForRole("director").map((t) => t.function.name);
 
-  it("references all 68 director tools", () => {
+  it("references all 70 director tools", () => {
     for (const name of directorTools) {
       expect(directorMd, `Missing director tool: ${name}`).toContain(name);
     }
@@ -316,7 +317,7 @@ describe("Modo Cierre -- Preventa 2027 closing mode", () => {
     "siempre multimedia", // guardrail: never collapse to TV lineal
     "NO pegues el JSON", // guardrail: synthesize, don't dump raw findings
     "No fabricas", // guardrail: honor encontrada:false
-    "Una marca por hilo de cierre", // one brand per closing thread
+    "Un anunciante por hilo de cierre", // the advertiser (deal unit) per closing thread (P3.5)
     // P3.2 ARMAGEDDON read-path (radiografía → preventa-2027 method)
     "armar_radiografia_marca", // tool wiring (P3.2)
     "6 factores causales del ROAS", // radiografía spine
@@ -332,6 +333,10 @@ describe("Modo Cierre -- Preventa 2027 closing mode", () => {
     "Moldear, nunca fabricar", // STAKEHOLDERS: mold-not-fabricate
     "Dos pistas, una disciplina", // STAKEHOLDERS: sala vs 1:1
     "Material interno de guerra", // never-to-client gate
+    // P3.5 anunciante portfolio layer (the deal is with the advertiser)
+    "armar_radiografia_anunciante", // portfolio rollup tool
+    "mapa_poder_anunciante", // STAKEHOLDERS over the real CRM committee
+    "necesidad GLOBAL del anunciante", // the advertiser-level assertion
   ];
 
   const closingTemplates = [

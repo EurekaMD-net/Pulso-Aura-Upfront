@@ -11,7 +11,7 @@ Agentic CRM for media ad sales. Agent runtime at `engine/` (originally subtree'd
 | File                             | Purpose                                                                                                                                                |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `crm/src/bootstrap.ts`           | CRM init: creates schema, registers hooks                                                                                                              |
-| `crm/src/schema.ts`              | 28 CRM tables (15 core + 3 search + 3 relationship + 5 intelligence + 2 template evolution)                                                            |
+| `crm/src/schema.ts`              | 29 CRM tables (15 core + 3 search + 3 relationship + 5 intelligence + 2 template evolution + 1 anunciante bridge)                                      |
 | `crm/src/hierarchy.ts`           | isManagerOf, isDirectorOf, isVp helpers                                                                                                                |
 | `crm/src/ipc-handlers.ts`        | CRM IPC handler (crm_registrar_actividad, warmth_recompute, etc.)                                                                                      |
 | `crm/src/doc-sync.ts`            | Document sync + hybrid RAG (vector KNN + FTS5 keyword + RRF fusion)                                                                                    |
@@ -27,7 +27,7 @@ Agentic CRM for media ad sales. Agent runtime at `engine/` (originally subtree'd
 | `crm/src/warmth.ts`              | Executive relationship warmth scoring (recency + frequency + quality)                                                                                  |
 | `crm/src/warmth-scheduler.ts`    | Nightly warmth recomputation (4 AM MX via IPC)                                                                                                         |
 | `crm/src/memory/`                | Pluggable memory service (Hindsight sidecar or SQLite fallback) + `recall-hook.ts` injects role-appropriate digest into system prompt at session start |
-| `crm/src/tools/index.ts`         | Tool registry: 73 tools, role-based filtering                                                                                                          |
+| `crm/src/tools/index.ts`         | Tool registry: 75 tools, role-based filtering                                                                                                          |
 | `crm/src/tools/jarvis.ts`        | Jarvis strategic analysis pull tool (Google Doc output)                                                                                                |
 | `crm/src/tools/perfil.ts`        | User profile tool (actualizar_perfil + getUserProfile + formatProfileSection)                                                                          |
 | `crm/src/package-builder.ts`     | Creative package composition (historical mix, peers, inventory, rate cards)                                                                            |
@@ -128,7 +128,7 @@ If a future need arises to look at upstream for inspiration: clone shallow into 
 
 ```
 WhatsApp → engine (forked from NanoClaw) → Direct tools (73 CRM tools via inference adapter)
-                                    ├── Role-based tool filtering (AE:51, Ger:57, Dir:68, VP:64)
+                                    ├── Role-based tool filtering (AE:51, Ger:59, Dir:70, VP:64)
                                     ├── Google Workspace (Gmail, Drive, Calendar)
                                     ├── Hybrid RAG (vector + FTS5 keyword + RRF fusion)
                                     ├── Long-term memory (Hindsight or SQLite fallback)
@@ -159,7 +159,7 @@ WhatsApp → engine (forked from NanoClaw) → Direct tools (73 CRM tools via in
 ## Testing
 
 ```bash
-npm run test         # Full suite — 75 test files (61 crm + 14 engine)
+npm run test         # Full suite — 76 test files (62 crm + 14 engine)
 ```
 
 Tests live in:

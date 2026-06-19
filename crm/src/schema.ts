@@ -59,6 +59,7 @@ export const CRM_TABLES = [
   "perfil_usuario",
   "template_score",
   "template_variant",
+  "anunciante_marca",
 ] as const;
 
 export type CrmTableName = (typeof CRM_TABLES)[number];
@@ -878,5 +879,36 @@ export function createCrmSchema(db: Database.Database): void {
       "CREATE INDEX IF NOT EXISTS idx_crm_docs_rolmin ON crm_documents(rol_minimo)",
     );
     db.pragma("foreign_keys = ON");
+  }
+
+  // -- Phase 13: Anunciante portfolio layer (P3.5) --
+  // The Upfront deal is closed with the ANUNCIANTE (advertiser) across its whole brand
+  // portfolio. anunciante_marca is the researched brand_key -> anunciante bridge (ingested
+  // by syncAnuncianteMap from aura-kb/anunciantes/brand-anunciante-map.json). cuenta gains
+  // an anunciante link so the closing flow can reach the real committee (contacto).
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS anunciante_marca (
+      brand_key TEXT PRIMARY KEY,
+      marca TEXT,
+      anunciante TEXT,
+      anunciante_norm TEXT,
+      grupo TEXT,
+      grupo_norm TEXT,
+      confianza TEXT,
+      basis TEXT
+    );
+  `);
+  db.exec(
+    "CREATE INDEX IF NOT EXISTS idx_anunciante_marca_anorm ON anunciante_marca(anunciante_norm)",
+  );
+  db.exec(
+    "CREATE INDEX IF NOT EXISTS idx_anunciante_marca_gnorm ON anunciante_marca(grupo_norm)",
+  );
+  // cuentaColNames computed in the Phase-10 block above.
+  if (!cuentaColNames.has("anunciante")) {
+    db.exec("ALTER TABLE cuenta ADD COLUMN anunciante TEXT");
+  }
+  if (!cuentaColNames.has("anunciante_norm")) {
+    db.exec("ALTER TABLE cuenta ADD COLUMN anunciante_norm TEXT");
   }
 }

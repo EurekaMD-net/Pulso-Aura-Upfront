@@ -98,6 +98,33 @@ in both role files (`templates.test.ts`, 125 in-file green); `tsc` clean. No cou
 `mapa_stakeholders`, …) as retrievable **general doctrine** (brand_key NULL, `rol_minimo=restringido_senior`) +
 a method-retrieval tool — only if the in-persona coaching depth proves insufficient. **NEXT = P3.4.**
 
+### P3.5 — Anunciante portfolio layer ✅ DONE (must-have, added 2026-06-19)
+
+Operator insight: the Upfront deal is closed with the **ANUNCIANTE** (advertiser), not the brand —
+one budget, one committee, across the advertiser's whole brand portfolio. Aura was per-brand with no
+advertiser concept (`categoria=por_definir` for all 969 findings); the CRM had the deal side (`cuenta`
+= anunciante, `contacto` = committee, `contrato` = deal) but **no brand linkage**. P3.5 builds the bridge.
+
+**Done.** (1) **Research:** 3 parallel agents derived `brand_key → anunciante + grupo` for all 320 brands,
+grounded in each diagnostico (trust finding over slug) + web, with provenance — **0 nulls, 298 alta / 22
+media**, 39 multi-brand portfolios (P&G 24, Nestlé 13, Danone 11…). Artifact: `aura-kb/anunciantes/brand-anunciante-map.json`
+(commit `2178913`). (2) **Data:** `anunciante_marca` registry table + `cuenta.anunciante` link cols
+(Phase-13 migration) + `syncAnuncianteMap` ingester (`npm run sync:anunciante-map`, pure upsert, no re-embed).
+**Loaded + smoke-tested on the live DB: 320/320 brand_keys join to corpus docs, 0 orphans.** (3) **Retrieval:**
+`resolveAnunciante` (ambiguous→candidates), `radiografiaForAnunciante` (portfolio rollup — per-brand cuerpo
+availability + a bounded ≤600-char resumen, NOT full bodies; firewall/RBAC inherited per brand),
+`committeeForAnunciante` (the real `contacto` committee). (4) **Tools (Ger/Dir):** `armar_radiografia_anunciante`
+(portfolio) + `mapa_poder_anunciante` (STAKEHOLDERS over the real committee). (5) **Flow refactor:** Modo Cierre
+now **anchors on the anunciante** — movement 1 confirms the advertiser + portfolio, Paso 1 = portfolio rollup →
+per-brand drill-down → the **necesidad GLOBAL del anunciante** (the CFO allocates one budget to the portfolio,
+not brand-by-brand), STAKEHOLDERS uses the real committee. "Una marca por hilo" → "Un anunciante por hilo".
+qa-auditor **PASS** (firewall/RBAC airtight, no cross-advertiser leak). Counts Ger 57→59, Dir 68→70, unique 73→75,
+tables 28→29; `anunciante.test.ts` (18 tests) + drift anchors; 291 affected tests green; `tsc` clean.
+
+**Wiring-pending (tracked, degrade gracefully):** `cuenta.anunciante_norm` is not yet populated by any code path
+(cuentas are empty in clean-start), so `mapa_poder_anunciante` returns `sin_comite` (→ coach from method) until
+accounts are registered/linked to an anunciante. The account-registration flow should set `cuenta.anunciante`.
+
 ### P3.4 — Proactive trigger + delivery
 
 Proactive near-close nudge (reuse pipeline `etapa` + an overnight-style scan) and WhatsApp delivery

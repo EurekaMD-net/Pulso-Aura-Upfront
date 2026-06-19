@@ -32,7 +32,12 @@ import { crear_evento_calendario, consultar_agenda } from "./calendar.js";
 import { establecer_recordatorio } from "./seguimiento.js";
 import { consultar_eventos, consultar_inventario_evento } from "./eventos.js";
 import { buscar_documentos } from "./rag.js";
-import { buscar_inteligencia_marca, armar_radiografia_marca } from "./aura.js";
+import {
+  buscar_inteligencia_marca,
+  armar_radiografia_marca,
+  armar_radiografia_anunciante,
+  mapa_poder_anunciante,
+} from "./aura.js";
 import { buscar_emails, leer_email, crear_borrador_email } from "./gmail.js";
 import {
   listar_archivos_drive,
@@ -924,6 +929,57 @@ const TOOL_ARMAR_RADIOGRAFIA_MARCA: ToolDefinition = {
         },
       },
       required: ["marca"],
+    },
+  },
+};
+
+const TOOL_ARMAR_RADIOGRAFIA_ANUNCIANTE: ToolDefinition = {
+  type: "function",
+  function: {
+    name: "armar_radiografia_anunciante",
+    description:
+      "Arma el PORTAFOLIO de un ANUNCIANTE para el CIERRE / PREVENTA 2027. El upfront se cierra con el " +
+      "anunciante (no con una marca suelta): un solo presupuesto, un solo comité, sobre TODAS sus marcas. " +
+      "Resuelve el anunciante, lista todas sus marcas y devuelve un resumen por marca (qué cuerpos de " +
+      "diagnóstico existen + un extracto) para que armes la NECESIDAD GLOBAL del anunciante.\n\n" +
+      "USAR al ARRANCAR un cierre, ANTES de la radiografía por marca: primero el portafolio, luego " +
+      "profundizas marca por marca con armar_radiografia_marca. Si el anunciante es ambiguo devuelve " +
+      "OPCIONES; respeta el rol de acceso.",
+    parameters: {
+      type: "object",
+      properties: {
+        anunciante: {
+          type: "string",
+          description:
+            "Nombre del anunciante o grupo (p. ej. 'Procter & Gamble', 'Danone', 'Coca-Cola FEMSA').",
+        },
+      },
+      required: ["anunciante"],
+    },
+  },
+};
+
+const TOOL_MAPA_PODER_ANUNCIANTE: ToolDefinition = {
+  type: "function",
+  function: {
+    name: "mapa_poder_anunciante",
+    description:
+      "Trae el COMITÉ REAL de un anunciante para STAKEHOLDERS: sus cuenta(s) en el CRM y sus contactos " +
+      "(comprador / planeador / decisor + seniority) — las personas reales a ponderar y trabajar, no un " +
+      "método genérico.\n\n" +
+      "USAR en el Paso STAKEHOLDERS del cierre, para armar el mapa de poder sobre personas reales. Si no " +
+      "hay comité registrado (`sin_comite`), coachea el mapa con el método y pregunta al vendedor por los " +
+      "nombres. Material interno de guerra: jamás al cliente. Si el anunciante es ambiguo devuelve OPCIONES.",
+    parameters: {
+      type: "object",
+      properties: {
+        anunciante: {
+          type: "string",
+          description:
+            "Nombre del anunciante o grupo (p. ej. 'Procter & Gamble', 'Danone').",
+        },
+      },
+      required: ["anunciante"],
     },
   },
 };
@@ -2375,6 +2431,8 @@ const APPROVAL_TOOLS: ToolDefinition[] = [
 const GERENTE_TOOLS: ToolDefinition[] = [
   TOOL_BUSCAR_INTELIGENCIA_MARCA,
   TOOL_ARMAR_RADIOGRAFIA_MARCA,
+  TOOL_ARMAR_RADIOGRAFIA_ANUNCIANTE,
+  TOOL_MAPA_PODER_ANUNCIANTE,
   TOOL_CONSULTAR_PIPELINE,
   TOOL_CONSULTAR_CUENTA,
   TOOL_CONSULTAR_CUENTAS,
@@ -2434,6 +2492,8 @@ const RELATIONSHIP_TOOLS: ToolDefinition[] = [
 const DIRECTOR_TOOLS: ToolDefinition[] = [
   TOOL_BUSCAR_INTELIGENCIA_MARCA,
   TOOL_ARMAR_RADIOGRAFIA_MARCA,
+  TOOL_ARMAR_RADIOGRAFIA_ANUNCIANTE,
+  TOOL_MAPA_PODER_ANUNCIANTE,
   TOOL_CONSULTAR_PIPELINE,
   TOOL_CONSULTAR_CUENTA,
   TOOL_CONSULTAR_CUENTAS,
@@ -2576,6 +2636,8 @@ const TOOL_HANDLERS: Record<string, ToolHandler> = {
   buscar_documentos,
   buscar_inteligencia_marca,
   armar_radiografia_marca,
+  armar_radiografia_anunciante,
+  mapa_poder_anunciante,
   buscar_web,
   consultar_clima,
   convertir_moneda,
