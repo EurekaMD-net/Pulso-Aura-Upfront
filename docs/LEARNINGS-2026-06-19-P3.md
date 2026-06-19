@@ -66,10 +66,40 @@ outputs: `encontrada:false` (no brand in KB → say so), `ambigua:true` + `opcio
 brand). Reference the actual return-shape fields in the prose so the instruction is actionable, and
 confirm those fields exist in the handler (`tools/aura.ts`) — not phantom.
 
+## 8. Deterministic pull by dimension tag ≫ semantic search for a structured read-path (P3.2)
+
+When the corpus carries a **structural tag** for the thing you need (here `crm_documents.cuerpo` ∈
+the 4 diagnostic dimensions), pull by that tag — don't issue N semantic searches and hope all N
+dimensions surface. The radiografía needs _all four_ cuerpos, complete; `searchAuraKb` (KNN+FTS+RRF,
+consulta-driven) would rank chunks by similarity and could miss or duplicate a dimension. A
+deterministic `WHERE brand_key=? AND cuerpo IN (...)` returns exactly the four, and a missing one is
+a real, reportable `faltante` — not a search miss. Lesson: check whether the data is already tagged
+before reaching for embeddings; semantic search is for open-ended questions, not "give me these N
+known parts."
+
+## 9. The body lives in the chunks, not the document row (P3.2)
+
+`crm_documents` holds metadata (titulo, cuerpo, rol_minimo, …) but **no full-body column** — the text
+is chunked into `crm_embeddings.contenido`. To return a document's full body, reassemble
+`SELECT contenido … WHERE document_id=? ORDER BY chunk_index`. The `UNIQUE(document_id, chunk_index)`
+schema constraint guarantees no gaps/dupes, so the ordered join is sound. (Don't assume a row has its
+own text just because it has a title.)
+
+## 10. A new read-path can be STRICTER than the search path — and should be (P3.2)
+
+`radiografiaForBrand` uses `brand_key = ?` (mandatory) and omits `searchAuraKb`'s
+`(brand_key IS NULL AND aislado=0) OR …` general-doc branch. That's correct: a diagnostic cuerpo is
+always brand-tagged, so a NULL-brand row is never a valid radiografía input. Side benefit (qa-auditor
+flagged): it **closes the P2 content-trust weakness** — a mis-tagged `aislado_por_cliente=0` can't
+leak through a path that requires `brand_key`. Don't "harmonize" a stricter governed path back to a
+looser shared clause later; stricter-where-the-data-allows is a feature.
+
 ## Deferred / next
 
-- P3.1 ships the recognition + architecture + **Step 1 (intelligence pull) live**. The deep
-  ARMAGEDDON radiografía→preventa assembly is **P3.2**; DARK/STAKEHOLDERS war-room read-path is
-  **P3.3**; proactive near-close trigger + WhatsApp delivery is **P3.4**.
+- P3.1 ships recognition + architecture + Step 1 live; **P3.2 ships the ARMAGEDDON read-path
+  (radiografía → preventa-2027)**. Remaining: **P3.3** DARK/STAKEHOLDERS war-room (restringido_senior,
+  sala-vs-1:1 gate); **P3.4** proactive near-close trigger + WhatsApp delivery.
+- `radiografiaForBrand` returns full cuerpo bodies (faithful to "read completos"); payload can be
+  large but the engine's tool-eviction backstops it and the persona mandates synthesize-don't-dump.
 - Live `groups/*/CLAUDE.md` regenerate from these templates at deploy (`register.ts`) — never
   hand-edit the live files; edit the templates.

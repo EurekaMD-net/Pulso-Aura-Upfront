@@ -190,14 +190,14 @@ describe("role-based tool filtering", () => {
     expect(tools.length).toBe(51);
   });
 
-  it("gerente gets 56 tools", () => {
+  it("gerente gets 57 tools", () => {
     const tools = getToolsForRole("gerente");
-    expect(tools.length).toBe(56);
+    expect(tools.length).toBe(57);
   });
 
-  it("director gets 67 tools", () => {
+  it("director gets 68 tools", () => {
     const tools = getToolsForRole("director");
-    expect(tools.length).toBe(67);
+    expect(tools.length).toBe(68);
   });
 
   it("VP gets 64 tools", () => {

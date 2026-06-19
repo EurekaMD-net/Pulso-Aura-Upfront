@@ -32,7 +32,7 @@ import { crear_evento_calendario, consultar_agenda } from "./calendar.js";
 import { establecer_recordatorio } from "./seguimiento.js";
 import { consultar_eventos, consultar_inventario_evento } from "./eventos.js";
 import { buscar_documentos } from "./rag.js";
-import { buscar_inteligencia_marca } from "./aura.js";
+import { buscar_inteligencia_marca, armar_radiografia_marca } from "./aura.js";
 import { buscar_emails, leer_email, crear_borrador_email } from "./gmail.js";
 import {
   listar_archivos_drive,
@@ -896,6 +896,34 @@ const TOOL_BUSCAR_INTELIGENCIA_MARCA: ToolDefinition = {
         },
       },
       required: ["marca", "consulta"],
+    },
+  },
+};
+
+const TOOL_ARMAR_RADIOGRAFIA_MARCA: ToolDefinition = {
+  type: "function",
+  function: {
+    name: "armar_radiografia_marca",
+    description:
+      "Trae la RADIOGRAFÍA de una marca para el CIERRE / PREVENTA 2027: los 4 cuerpos de diagnóstico " +
+      "curados del KB de Aura (diagnóstico de 9 fuentes, buyer personas, campañas y temporalidades, " +
+      "inteligencia social), COMPLETOS, para construir el diagnóstico de portafolio de campañas " +
+      "(whitespaces) y la tesis de oportunidad.\n\n" +
+      "USAR en el Paso 1 del Modo Cierre, una vez confirmada la marca, ANTES de coachear el argumento. " +
+      "Distinto de buscar_inteligencia_marca (búsqueda semántica puntual): esto trae los 4 cuerpos " +
+      "completos y deterministas para armar la radiografía de una sola vez.\n\n" +
+      "Si la marca es ambigua devuelve OPCIONES (pregunta cuál); si falta un cuerpo lo reporta en " +
+      "'faltantes' (dilo, no lo inventes). Respeta el rol de acceso.",
+    parameters: {
+      type: "object",
+      properties: {
+        marca: {
+          type: "string",
+          description:
+            "Nombre de la marca como lo dice el vendedor (p. ej. 'Coca Cola', 'bonafont').",
+        },
+      },
+      required: ["marca"],
     },
   },
 };
@@ -2346,6 +2374,7 @@ const APPROVAL_TOOLS: ToolDefinition[] = [
 
 const GERENTE_TOOLS: ToolDefinition[] = [
   TOOL_BUSCAR_INTELIGENCIA_MARCA,
+  TOOL_ARMAR_RADIOGRAFIA_MARCA,
   TOOL_CONSULTAR_PIPELINE,
   TOOL_CONSULTAR_CUENTA,
   TOOL_CONSULTAR_CUENTAS,
@@ -2404,6 +2433,7 @@ const RELATIONSHIP_TOOLS: ToolDefinition[] = [
 
 const DIRECTOR_TOOLS: ToolDefinition[] = [
   TOOL_BUSCAR_INTELIGENCIA_MARCA,
+  TOOL_ARMAR_RADIOGRAFIA_MARCA,
   TOOL_CONSULTAR_PIPELINE,
   TOOL_CONSULTAR_CUENTA,
   TOOL_CONSULTAR_CUENTAS,
@@ -2545,6 +2575,7 @@ const TOOL_HANDLERS: Record<string, ToolHandler> = {
   crear_documento_drive,
   buscar_documentos,
   buscar_inteligencia_marca,
+  armar_radiografia_marca,
   buscar_web,
   consultar_clima,
   convertir_moneda,

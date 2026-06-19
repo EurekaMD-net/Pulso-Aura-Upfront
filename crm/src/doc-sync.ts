@@ -716,6 +716,120 @@ export async function searchAuraKb(
 }
 
 // ---------------------------------------------------------------------------
+// ARMAGEDDON radiografía read-path (P3.2)
+// ---------------------------------------------------------------------------
+
+/** The four diagnostic cuerpos that feed RADIOGRAFÍA, in reading order (brandmap →
+ *  buyermap → campaignmap → socialmap). These are the deterministic dimension tags
+ *  on crm_documents.cuerpo, so the radiografía substrate is pulled by brand_key +
+ *  cuerpo — NOT semantic search; the diagnosis needs all four, complete. */
+export const RADIOGRAFIA_CUERPOS = [
+  "diagnostico_9fuentes",
+  "buyer_personas",
+  "campanas_temporalidades",
+  "inteligencia_social",
+] as const;
+
+export type RadiografiaCuerpo = (typeof RADIOGRAFIA_CUERPOS)[number];
+
+export interface RadiografiaDimension {
+  cuerpo: RadiografiaCuerpo;
+  titulo: string;
+  estabilidad: string | null;
+  /** Full body, reassembled from the document's chunks in chunk_index order. */
+  contenido: string;
+}
+
+export interface Radiografia {
+  brandKey: string;
+  dimensiones: RadiografiaDimension[];
+  /** Dimensions with no document the role can see — report, never fabricate. */
+  faltantes: RadiografiaCuerpo[];
+}
+
+/**
+ * Pull a brand's RADIOGRAFÍA substrate — the four diagnostic cuerpos — deterministically
+ * by brand_key + cuerpo. Unlike searchAuraKb (semantic, ranked, partial), this returns each
+ * dimension's full body so the agent can run the campaign-portfolio diagnosis over all four.
+ *
+ * Firewall + RBAC inherited from P2: brand_key locks the brand; rol_minimo must be within the
+ * caller's cleared floors. A dimension the role can't see (or the brand simply lacks) lands in
+ * `faltantes` so the agent says so rather than inventing it. Fail-closed: blank brand → empty.
+ */
+export function radiografiaForBrand(
+  brandKey: string,
+  role: string,
+): Radiografia {
+  const allMissing: Radiografia = {
+    brandKey,
+    dimensiones: [],
+    faltantes: [...RADIOGRAFIA_CUERPOS],
+  };
+  if (!brandKey || !brandKey.trim()) return allMissing;
+  const clearedRoles = clearedFloors(role) as string[];
+  if (clearedRoles.length === 0) return allMissing;
+
+  const db = getDatabase();
+  const cuerpoPh = RADIOGRAFIA_CUERPOS.map(() => "?").join(",");
+  const rolePh = clearedRoles.map(() => "?").join(",");
+  // Firewall (brand_key) + RBAC (rol_minimo cleared), same governance as searchAuraKb.
+  const docs = db
+    .prepare(
+      `SELECT id, titulo, cuerpo, estabilidad
+       FROM crm_documents
+       WHERE source = 'aura-kb' AND brand_key = ?
+         AND cuerpo IN (${cuerpoPh})
+         AND rol_minimo IN (${rolePh})`,
+    )
+    .all(brandKey, ...RADIOGRAFIA_CUERPOS, ...clearedRoles) as {
+    id: string;
+    titulo: string;
+    cuerpo: string | null;
+    estabilidad: string | null;
+  }[];
+
+  const byCuerpo = new Map<
+    string,
+    { id: string; titulo: string; estabilidad: string | null }
+  >();
+  for (const d of docs) {
+    if (d.cuerpo && !byCuerpo.has(d.cuerpo)) {
+      byCuerpo.set(d.cuerpo, {
+        id: d.id,
+        titulo: d.titulo,
+        estabilidad: d.estabilidad,
+      });
+    }
+  }
+
+  const reassemble = db.prepare(
+    `SELECT contenido FROM crm_embeddings WHERE document_id = ? ORDER BY chunk_index`,
+  );
+
+  const dimensiones: RadiografiaDimension[] = [];
+  const faltantes: RadiografiaCuerpo[] = [];
+  for (const cuerpo of RADIOGRAFIA_CUERPOS) {
+    const hit = byCuerpo.get(cuerpo);
+    if (!hit) {
+      faltantes.push(cuerpo);
+      continue;
+    }
+    const chunks = reassemble.all(hit.id) as { contenido: string }[];
+    dimensiones.push({
+      cuerpo,
+      titulo: hit.titulo,
+      estabilidad: hit.estabilidad,
+      contenido: chunks
+        .map((c) => c.contenido)
+        .join("\n")
+        .trim(),
+    });
+  }
+
+  return { brandKey, dimensiones, faltantes };
+}
+
+// ---------------------------------------------------------------------------
 // Google Drive sync
 // ---------------------------------------------------------------------------
 

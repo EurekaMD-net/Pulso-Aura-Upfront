@@ -217,8 +217,8 @@ describe("global.md -- tool coverage", () => {
     }
   }
 
-  it("references all 72 tool names", () => {
-    expect(allToolNames.size).toBe(72); // unique tool names across all roles
+  it("references all 73 tool names", () => {
+    expect(allToolNames.size).toBe(73); // unique tool names across all roles
     for (const name of allToolNames) {
       expect(globalMd, `Missing tool: ${name}`).toContain(name);
     }
@@ -246,7 +246,7 @@ describe("ae.md -- tool references", () => {
 describe("manager.md -- tool references", () => {
   const gerenteTools = getToolsForRole("gerente").map((t) => t.function.name);
 
-  it("references all 56 gerente tools", () => {
+  it("references all 57 gerente tools", () => {
     for (const name of gerenteTools) {
       expect(managerMd, `Missing gerente tool: ${name}`).toContain(name);
     }
@@ -272,7 +272,7 @@ describe("manager.md -- tool references", () => {
 describe("director.md -- tool references", () => {
   const directorTools = getToolsForRole("director").map((t) => t.function.name);
 
-  it("references all 67 director tools", () => {
+  it("references all 68 director tools", () => {
     for (const name of directorTools) {
       expect(directorMd, `Missing director tool: ${name}`).toContain(name);
     }
@@ -317,6 +317,12 @@ describe("Modo Cierre -- Preventa 2027 closing mode", () => {
     "NO pegues el JSON", // guardrail: synthesize, don't dump raw findings
     "No fabricas", // guardrail: honor encontrada:false
     "Una marca por hilo de cierre", // one brand per closing thread
+    // P3.2 ARMAGEDDON read-path (radiografía → preventa-2027 method)
+    "armar_radiografia_marca", // tool wiring (P3.2)
+    "6 factores causales del ROAS", // radiografía spine
+    "whitespaces", // radiografía output
+    "diagnostica, NO prescribe medios", // radiografía boundary
+    "defiende la inversion 2027 factor por factor", // preventa-2027 thesis
   ];
 
   const closingTemplates = [

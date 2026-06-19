@@ -56,11 +56,23 @@ and drive turn-by-turn (it's a coaching dialogue, not a doc generator — per `A
   P3.1 runs recognition + architecture + **Step 1 (intelligence pull) live**; the deep ARMAGEDDON/DARK/STAKEHOLDERS
   read-paths land in P3.2/P3.3. **NEXT = P3.2.**
 
-### P3.2 — ARMAGEDDON read-path (diagnosis → opportunity)
+### P3.2 — ARMAGEDDON read-path (diagnosis → opportunity) ✅ DONE
 
 Wire the closing flow to READ existing brand findings (the 4 cuerpos) via P3.0 and assemble the
 radiografía → preventa-2027 narrative. Skill bodies: `radiografia`, `preventa-2027`. (Build path =
 read-first; the 4 mapping skills only run if findings are missing — they already exist for 320 brands.)
+
+**Done:** the 4 cuerpos are deterministically tagged (`crm_documents.cuerpo` ∈ `diagnostico_9fuentes`,
+`buyer_personas`, `campanas_temporalidades`, `inteligencia_social`) → the read-path is a **deterministic
+pull by `brand_key` + `cuerpo`**, not semantic search. `radiografiaForBrand(brandKey, role)` in
+`doc-sync.ts` returns `{ dimensiones, faltantes }` (firewall on `brand_key`, RBAC on `rol_minimo` via
+`clearedFloors`; body reassembled from `crm_embeddings` by `chunk_index`). Tool `armar_radiografia_marca(marca)`
+(Ger/Dir only) wraps it (resolveBrandKey reuse: ambiguous→opciones, unknown→encontrada:false, partial→mensaje).
+Modo Cierre Paso 1 extended in manager/director.md with the radiografía (6 ROAS factors, **diagnoses-not-prescribes**,
+whitespaces) → preventa-2027 thesis (**defend 2027 volume factor-by-factor, not reach**; año non/no Mundial).
+qa-auditor PASS — firewall is intentionally **stricter** than `searchAuraKb` (mandatory `brand_key`, no
+`aislado`-flag branch → closes the P2 content-trust weakness). `aura-radiografia.test.ts` (pull/reassembly/
+faltantes/firewall/RBAC) + tool tests; counts Ger 56→57, Dir 67→68, unique 72→73. **NEXT = P3.3.**
 
 ### P3.3 — DARK / STAKEHOLDERS (the closing slice, restringido_senior)
 
