@@ -17,7 +17,7 @@
 
 ## Increments (build in order; each ships + tests independently)
 
-### P3.0 — Brand resolution + the retrieval tool ← START HERE
+### P3.0 — Brand resolution + the retrieval tool ✅ DONE (`8789a80`, `8687602`)
 
 The agent must turn a seller's free-text brand ("Coca Cola", "bonafont") into a `brand_key`, then call
 `searchAuraKb`. Two pieces:
@@ -35,12 +35,26 @@ The agent must turn a seller's free-text brand ("Coca Cola", "bonafont") into a 
 Acceptance: a Gerente can pull a brand's intelligence in one tool call; firewall/RBAC inherited from
 P2; ambiguous brand returns choices, not a wrong brand.
 
-### P3.1 — Coaching mode scaffold (the router as a persona mode)
+### P3.1 — Coaching mode scaffold (the router as a persona mode) ✅ DONE
 
 Encode `aura-amn`'s PREVENTA logic as a Gerente/Director **coaching mode** in the persona prompt:
 recognize a closing/preventa intent, confirm the brand (via P3.0), present the 3-step architecture,
 and drive turn-by-turn (it's a coaching dialogue, not a doc generator — per `AURA-PHASE1-DEFINITIONS.md`
 §8). Source the mode text from `aura-kb/skills/aura-amn/SKILL.md` (reconciled to the real 19 skills).
+
+**Done:** `### Modo Cierre (Preventa 2027)` block added under `## Comportamiento` in `crm/groups/manager.md`
+
+- `director.md` (NOT `global.md` — closing mode is genuinely Ger/Dir-only; `global.md` is read by all
+  4 roles). Re-host reconciliations: `project_knowledge_search` → `buscar_inteligencia_marca`; copy-paste
+  skill-handoffs dropped (one agent drives the dialogue); PREVENTA recognition encoded as trigger phrases
+  (engine-native, mirroring the briefing-trigger pattern). Guardrails: always-multimedia, never-fabricate
+  (honors the tool's `encontrada:false`), ambiguous→ask (`ambigua:true`), **synthesize don't dump raw JSON**,
+  closing material stays internal/1:1, one-brand-per-thread. Gated at **two layers**: registry (`buscar_inteligencia_marca`
+  ∈ GERENTE_TOOLS + DIRECTOR_TOOLS only — VP/AE lack it) + prose (drift-guard test asserts the closing anchors
+  present in both Ger/Dir templates, absent in `ae.md`/`vp.md`). qa-auditor PASS (no Critical/Warning).
+  Tests: `templates.test.ts` +32 closing-mode assertions (95 in-file, all green). No source code / no new tool.
+  P3.1 runs recognition + architecture + **Step 1 (intelligence pull) live**; the deep ARMAGEDDON/DARK/STAKEHOLDERS
+  read-paths land in P3.2/P3.3. **NEXT = P3.2.**
 
 ### P3.2 — ARMAGEDDON read-path (diagnosis → opportunity)
 

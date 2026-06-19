@@ -298,6 +298,65 @@ describe("vp.md -- tool references", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Modo Cierre (Preventa 2027) -- closing-mode scaffold, P3.1
+// Gerente + Director only (they hold buscar_inteligencia_marca); AE/VP gated out.
+// ---------------------------------------------------------------------------
+
+describe("Modo Cierre -- Preventa 2027 closing mode", () => {
+  // Canonical anchors that MUST appear verbatim in both Ger + Dir templates.
+  // Guards against silent drift between the two near-identical role blocks.
+  const CLOSING_ANCHORS = [
+    "Modo Cierre (Preventa 2027)",
+    "preventa 2027", // recognition trigger
+    "antes del upfront", // recognition trigger
+    "buscar_inteligencia_marca", // tool wiring (P3.0)
+    "ARMAGEDDON", // 3-step architecture
+    "DARK",
+    "STAKEHOLDERS",
+    "siempre multimedia", // guardrail: never collapse to TV lineal
+    "NO pegues el JSON", // guardrail: synthesize, don't dump raw findings
+    "No fabricas", // guardrail: honor encontrada:false
+    "Una marca por hilo de cierre", // one brand per closing thread
+  ];
+
+  const closingTemplates = [
+    { name: "manager.md", content: managerMd },
+    { name: "director.md", content: directorMd },
+  ];
+
+  for (const { name, content } of closingTemplates) {
+    for (const anchor of CLOSING_ANCHORS) {
+      it(`${name} carries closing-mode anchor: "${anchor}"`, () => {
+        expect(content, `Missing in ${name}: ${anchor}`).toContain(anchor);
+      });
+    }
+  }
+
+  // Gate: AE and VP must NOT carry the closing mode (Phase 1 = Ger/Dir only).
+  const gatedTemplates = [
+    { name: "ae.md", content: aeMd },
+    { name: "vp.md", content: vpMd },
+  ];
+  const GATED_OUT = [
+    "Modo Cierre",
+    "ARMAGEDDON",
+    "STAKEHOLDERS",
+    "(DARK)", // bound to closing-architecture context; bare "DARK" could collide
+    "buscar_inteligencia_marca", // prose mirror of the registry gate (Ger/Dir-only tool)
+  ];
+
+  for (const { name, content } of gatedTemplates) {
+    for (const token of GATED_OUT) {
+      it(`${name} does NOT carry closing-mode token: "${token}"`, () => {
+        expect(content, `${name} should not contain: ${token}`).not.toContain(
+          token,
+        );
+      });
+    }
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Confidence calibration section
 // ---------------------------------------------------------------------------
 
