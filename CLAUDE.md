@@ -11,7 +11,8 @@ Agentic CRM for media ad sales. Agent runtime at `engine/` (originally subtree'd
 | File                             | Purpose                                                                                                                                                |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `crm/src/bootstrap.ts`           | CRM init: creates schema, registers hooks                                                                                                              |
-| `crm/src/schema.ts`              | 29 CRM tables (15 core + 3 search + 3 relationship + 5 intelligence + 2 template evolution + 1 anunciante bridge)                                      |
+| `crm/src/schema.ts`              | 30 CRM tables (15 core + 3 search + 3 relationship + 5 intelligence + 2 template evolution + 1 anunciante bridge + 1 snowflake bridge)                 |
+| `crm/src/snowflake/`             | P4 factual-data bridge: config + querier (snowflake-sdk, lazy/optional) + anunciante reconciliation + on-demand factual queries. See docs/AURA-P4-PLAN |
 | `crm/src/hierarchy.ts`           | isManagerOf, isDirectorOf, isVp helpers                                                                                                                |
 | `crm/src/ipc-handlers.ts`        | CRM IPC handler (crm_registrar_actividad, warmth_recompute, etc.)                                                                                      |
 | `crm/src/doc-sync.ts`            | Document sync + hybrid RAG (vector KNN + FTS5 keyword + RRF fusion)                                                                                    |

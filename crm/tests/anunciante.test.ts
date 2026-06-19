@@ -517,4 +517,38 @@ describe("syncAnuncianteMap — ingester", () => {
       .get() as { n: number };
     expect(count.n).toBe(1);
   });
+
+  it("derives *_norm via normalizeMarca, ignoring a drifting JSON norm (join invariant)", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "anun-"));
+    fs.mkdirSync(path.join(dir, "anunciantes"));
+    const map = {
+      brands: [
+        {
+          brand_key: "bonafont",
+          marca: "Bonafont",
+          anunciante: "Danone México",
+          anunciante_norm: "WRONG-NORM-FROM-JSON", // deliberately drifted
+          grupo: "Danone",
+          grupo_norm: "also-wrong",
+          confidence: "alta",
+          basis: "finding",
+        },
+      ],
+    };
+    fs.writeFileSync(
+      path.join(dir, "anunciantes", "brand-anunciante-map.json"),
+      JSON.stringify(map),
+    );
+    syncAnuncianteMap(dir);
+    const row = testDb
+      .prepare(
+        "SELECT anunciante_norm, grupo_norm FROM anunciante_marca WHERE brand_key='bonafont'",
+      )
+      .get() as { anunciante_norm: string; grupo_norm: string };
+    // Stored norm = what every consumer computes (cuenta link, Snowflake reconcile
+    // join) — NOT the drifting JSON value. This keeps the join correct by construction.
+    expect(row.anunciante_norm).toBe(normalizeMarca("Danone México"));
+    expect(row.anunciante_norm).not.toBe("WRONG-NORM-FROM-JSON");
+    expect(row.grupo_norm).toBe(normalizeMarca("Danone"));
+  });
 });

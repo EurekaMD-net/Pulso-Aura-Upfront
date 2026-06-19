@@ -10,6 +10,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { getDatabase } from "./db.js";
+import { normalizeMarca } from "./aura-rbac.js";
 
 interface AnuncianteRow {
   brand_key: string;
@@ -56,13 +57,17 @@ export function syncAnuncianteMap(kbRoot = "aura-kb"): { upserted: number } {
   const run = db.transaction((rs: AnuncianteRow[]) => {
     for (const r of rs) {
       if (!r.brand_key) continue;
+      // Derive the *_norm columns from the one shared normalizer rather than
+      // trusting the JSON, so they're identical by construction to what every
+      // consumer computes (resolveAnunciante, the cuenta link, the Snowflake
+      // reconcile join). A drifting hand-edited norm would silently break those.
       stmt.run(
         r.brand_key,
         r.marca ?? null,
         r.anunciante ?? null,
-        r.anunciante_norm ?? null,
+        r.anunciante ? normalizeMarca(r.anunciante) : null,
         r.grupo ?? null,
-        r.grupo_norm ?? null,
+        r.grupo ? normalizeMarca(r.grupo) : null,
         r.confidence ?? null,
         r.basis ?? null,
       );

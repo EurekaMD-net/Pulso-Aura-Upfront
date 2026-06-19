@@ -36,6 +36,9 @@
     "sqlite-vec": "^0.1.7-alpha.2",
     "uuid": "^9.0.0"
   },
+  "optionalDependencies": {
+    "snowflake-sdk": "^1.13.0"
+  },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.0",
     "@types/nodemailer": "^6.4.0",

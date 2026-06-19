@@ -60,6 +60,7 @@ export const CRM_TABLES = [
   "template_score",
   "template_variant",
   "anunciante_marca",
+  "anunciante_snowflake_map",
 ] as const;
 
 export type CrmTableName = (typeof CRM_TABLES)[number];
@@ -911,4 +912,26 @@ export function createCrmSchema(db: Database.Database): void {
   if (!cuentaColNames.has("anunciante_norm")) {
     db.exec("ALTER TABLE cuenta ADD COLUMN anunciante_norm TEXT");
   }
+
+  // -- Phase 14: Snowflake factual-data bridge (P4) --
+  // Factual / transactional truth (last closed amount, inventory mix [spot vs.
+  // programa vs. timeslot vs. otras propiedades], descarga / investment pacing)
+  // lives in an external Snowflake instance, queried on demand — NOT stored here.
+  // Their advertiser identifier must be reconciled to ours before use:
+  // anunciante_snowflake_map links OUR anunciante_norm -> the Snowflake advertiser
+  // (id + display), populated by reconcileAnunciantes (exact-norm auto-match, the
+  // rest flagged for operator review). This table is the join key, not a data cache.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS anunciante_snowflake_map (
+      anunciante_norm TEXT PRIMARY KEY,
+      sf_anunciante_id TEXT,
+      sf_anunciante_nombre TEXT,
+      match_method TEXT,
+      confianza TEXT,
+      reconciled_at TEXT
+    );
+  `);
+  db.exec(
+    "CREATE INDEX IF NOT EXISTS idx_anunciante_sf_id ON anunciante_snowflake_map(sf_anunciante_id)",
+  );
 }
