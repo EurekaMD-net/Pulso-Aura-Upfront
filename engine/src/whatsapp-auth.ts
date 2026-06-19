@@ -15,7 +15,7 @@ import readline from 'readline';
 import makeWASocket, {
   Browsers,
   DisconnectReason,
-  fetchLatestWaWebVersion,
+  fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
   useMultiFileAuthState,
 } from '@whiskeysockets/baileys';
@@ -60,10 +60,10 @@ async function connectSocket(
     process.exit(0);
   }
 
-  const { version } = await fetchLatestWaWebVersion({}).catch((err) => {
+  const { version } = await fetchLatestBaileysVersion().catch((err) => {
     logger.warn(
       { err },
-      'Failed to fetch latest WA Web version, using default',
+      'Failed to fetch latest Baileys version, using default',
     );
     return { version: undefined };
   });

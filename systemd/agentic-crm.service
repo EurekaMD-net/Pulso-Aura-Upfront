@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/root/claude/crm-azteca
+WorkingDirectory=/root/claude/Pulso-Aura-Upfront
 ExecStart=/usr/bin/npx tsx engine/src/index.ts
 Restart=on-failure
 RestartSec=10
@@ -13,13 +13,13 @@ StandardOutput=journal
 StandardError=journal
 
 # Environment
-EnvironmentFile=/root/claude/crm-azteca/.env
+EnvironmentFile=/root/claude/Pulso-Aura-Upfront/.env
 Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.nvm/versions/node/v22.22.0/bin
 
 # Security
 NoNewPrivileges=true
 ProtectSystem=strict
-ReadWritePaths=/root/claude/crm-azteca/store /root/claude/crm-azteca/data /root/claude/crm-azteca/groups /tmp
+ReadWritePaths=/root/claude/Pulso-Aura-Upfront/store /root/claude/Pulso-Aura-Upfront/data /root/claude/Pulso-Aura-Upfront/groups /tmp
 
 [Install]
 WantedBy=multi-user.target

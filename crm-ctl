@@ -2,7 +2,7 @@
 # crm-ctl — Management console for Agentic CRM
 set -euo pipefail
 
-PROJECT_DIR="/root/claude/crm-azteca"
+PROJECT_DIR="/root/claude/Pulso-Aura-Upfront"
 SERVICE_NAME="agentic-crm"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 LOG_FILE="/tmp/crm-engine.log"

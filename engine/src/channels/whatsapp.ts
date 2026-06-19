@@ -10,7 +10,7 @@ import makeWASocket, {
   DisconnectReason,
   WASocket,
   downloadMediaMessage,
-  fetchLatestWaWebVersion,
+  fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
   normalizeMessageContent,
   useMultiFileAuthState,
@@ -68,10 +68,10 @@ export class WhatsAppChannel implements Channel {
 
     const { state, saveCreds } = await useMultiFileAuthState(authDir);
 
-    const { version } = await fetchLatestWaWebVersion({}).catch((err) => {
+    const { version } = await fetchLatestBaileysVersion().catch((err) => {
       logger.warn(
         { err },
-        'Failed to fetch latest WA Web version, using default',
+        'Failed to fetch latest Baileys version, using default',
       );
       return { version: undefined };
     });
@@ -84,6 +84,11 @@ export class WhatsAppChannel implements Channel {
       printQRInTerminal: false,
       logger,
       browser: Browsers.macOS('Chrome'),
+      // A linked-device bot that announces itself online on connect can have
+      // WhatsApp withhold message delivery it would otherwise push — a known
+      // cause of "connects + syncs but receives zero messages". Match the
+      // working salones-wa bot (false).
+      markOnlineOnConnect: false,
     });
 
     this.sock.ev.on('connection.update', (update) => {

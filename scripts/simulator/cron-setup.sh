@@ -10,7 +10,7 @@
 
 set -euo pipefail
 
-REPO_DIR="/root/claude/crm-azteca"
+REPO_DIR="/root/claude/Pulso-Aura-Upfront"
 SIMULATOR="cd ${REPO_DIR} && /root/.local/share/npm/bin/tsx scripts/simulator/index.ts"
 LOG_DIR="${REPO_DIR}/scripts/simulator/reports"
 MARKER="# CRM-SIMULATOR"
