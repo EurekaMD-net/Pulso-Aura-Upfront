@@ -94,12 +94,37 @@ flagged): it **closes the P2 content-trust weakness** — a mis-tagged `aislado_
 leak through a path that requires `brand_key`. Don't "harmonize" a stricter governed path back to a
 looser shared clause later; stricter-where-the-data-allows is a feature.
 
+## 11. Let the corpus shape the increment — retrieval vs prompt is a data question (P3.3)
+
+P3.2 was a retrieval increment because the brand had per-dimension _data_ (the 4 tagged cuerpos).
+P3.3 (DARK/STAKEHOLDERS) is **prompt-only** because the corpus check said so: every brand folder has
+only the 4 cuerpos, and `grep rol_minimo aura-kb/knowledge/` returns **zero `restringido_senior`** —
+the war-room skills are _method_, not per-brand content. So there's nothing to retrieve; the faithful
+move is to re-host the method as persona steps. Lesson: before designing a retrieval path, grep the
+corpus for the thing you'd retrieve. If it isn't there, retrieval is scaffolding for an empty table —
+encode the method in the prompt and log "ingest-as-doctrine" as a _deferred_ enhancement, not a P0.
+
+## 12. When there's no data to RBAC-filter, the gate is structural — and that's fine (P3.3)
+
+The plan said "gated to `restringido_senior`," but there is no `restringido_senior` _data_ to filter.
+The gate is satisfied **structurally**: the war-room lives only in the Ger/Dir personas (the roles that
+clear that floor), and AE/VP never receive it. The test enforces both directions (anchors present in
+Ger/Dir, absent in AE/VP). Don't manufacture an RBAC query for a floor with no rows — place the
+capability where only the cleared roles can see it, and assert the absence. (The _delivery-boundary_
+enforcement of the never-to-client gate — code, not prose — lands with P3.4 when WhatsApp send exists.)
+
 ## Deferred / next
 
-- P3.1 ships recognition + architecture + Step 1 live; **P3.2 ships the ARMAGEDDON read-path
-  (radiografía → preventa-2027)**. Remaining: **P3.3** DARK/STAKEHOLDERS war-room (restringido_senior,
-  sala-vs-1:1 gate); **P3.4** proactive near-close trigger + WhatsApp delivery.
+- P3.1 recognition+architecture+Step 1; **P3.2** ARMAGEDDON read-path; **P3.3** DARK/STAKEHOLDERS
+  war-room (prompt-only). Remaining: **P3.4** proactive near-close trigger + WhatsApp delivery, where
+  the never-to-client gate becomes a code concern at the delivery boundary.
+- **Deferred (P3.3b, only if needed):** ingest the DARK/STAKEHOLDERS references (`doctrina_vertice`,
+  `cinco_frentes`, `mapa_stakeholders`, `registro_por_driver`, …) as retrievable **general doctrine**
+  (brand_key NULL + `aislado=0` so they're cross-brand, `rol_minimo=restringido_senior`) + a
+  method-retrieval tool. `searchAuraKb` already supports the general-doc branch; this would create the
+  first real `restringido_senior` content and give the agent deep method on demand. Needs an ingester
+  change + a re-embed/deploy — only worth it if in-persona coaching depth proves thin.
 - `radiografiaForBrand` returns full cuerpo bodies (faithful to "read completos"); payload can be
-  large but the engine's tool-eviction backstops it and the persona mandates synthesize-don't-dump.
+  large but tool-eviction backstops it and the persona mandates synthesize-don't-dump.
 - Live `groups/*/CLAUDE.md` regenerate from these templates at deploy (`register.ts`) — never
   hand-edit the live files; edit the templates.

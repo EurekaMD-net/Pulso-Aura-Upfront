@@ -323,6 +323,15 @@ describe("Modo Cierre -- Preventa 2027 closing mode", () => {
     "whitespaces", // radiografía output
     "diagnostica, NO prescribe medios", // radiografía boundary
     "defiende la inversion 2027 factor por factor", // preventa-2027 thesis
+    // P3.3 DARK / STAKEHOLDERS war-room slice
+    "Sala Invisible", // DARK identity
+    "arquitecto del consenso", // DARK: win by architecting consensus
+    "la postura es la plataforma", // DARK: posture-is-platform
+    "ciencia vs. folclore", // DARK: confidence-tiered techniques
+    "los 3 que de verdad deciden", // STAKEHOLDERS: ponderar
+    "Moldear, nunca fabricar", // STAKEHOLDERS: mold-not-fabricate
+    "Dos pistas, una disciplina", // STAKEHOLDERS: sala vs 1:1
+    "Material interno de guerra", // never-to-client gate
   ];
 
   const closingTemplates = [
@@ -349,6 +358,8 @@ describe("Modo Cierre -- Preventa 2027 closing mode", () => {
     "STAKEHOLDERS",
     "(DARK)", // bound to closing-architecture context; bare "DARK" could collide
     "buscar_inteligencia_marca", // prose mirror of the registry gate (Ger/Dir-only tool)
+    "Sala Invisible", // P3.3 DARK war-room — never in AE/VP
+    "Material interno de guerra", // P3.3 never-to-client gate — never in AE/VP
   ];
 
   for (const { name, content } of gatedTemplates) {

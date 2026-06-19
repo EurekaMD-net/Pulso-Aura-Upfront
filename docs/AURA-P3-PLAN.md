@@ -74,11 +74,29 @@ qa-auditor PASS — firewall is intentionally **stricter** than `searchAuraKb` (
 `aislado`-flag branch → closes the P2 content-trust weakness). `aura-radiografia.test.ts` (pull/reassembly/
 faltantes/firewall/RBAC) + tool tests; counts Ger 56→57, Dir 67→68, unique 72→73. **NEXT = P3.3.**
 
-### P3.3 — DARK / STAKEHOLDERS (the closing slice, restringido_senior)
+### P3.3 — DARK / STAKEHOLDERS (the closing slice, restringido_senior) ✅ DONE
 
 The war-room slice: `aura-dark` (committee/sequence/negotiation) → `aura-stakeholders` (person-by-person).
 Gated to `restringido_senior` (Gerente/Director clear it). Enforce the sala-vs-1:1 gate (never to the
 group/client) at the delivery boundary.
+
+**Done — PROMPT-ONLY (no tool/code/ingestion).** Key structural fact: DARK/STAKEHOLDERS are **method-only**
+skills — there is NO per-brand war-room content (every brand folder has only the 4 diagnostic cuerpos) and
+the corpus has **zero `restringido_senior` data** (all brand content ≤ `estrategia_research`). So there's
+nothing to _retrieve_; P3.3 re-hosts the **method** as two new Modo Cierre steps in manager.md + director.md:
+**Paso 2 — DARK** (3 altitudes Campaña/Cuenta/Sala, architect-of-consensus, the Vértice clock = pre-close
+volume before the rival's upfront [2-4mo window], posture-is-platform, science-vs-folklore, ethics-as-calculation)
+and **Paso 3 — STAKEHOLDERS** (person-as-unit, ponderar the 3 who really decide, per-person ficha
+[driver/barrier/what-they-must-hear], mold-not-fabricate, dos-pistas sala-vs-1:1 with the −59%-if-hyperpersonalized
+rule; built on the radiografía's buyer-personas). The **never-to-client gate** is hardened (material interno de
+guerra, jamás al cliente/grupo). **Gating is structural** — the war-room lives only in the Ger/Dir personas
+(the restringido_senior-clearing roles); the gate test excludes `Sala Invisible`/`Material interno de guerra`/
+`(DARK)`/`STAKEHOLDERS` from `ae.md`/`vp.md`. qa-auditor PASS — every load-bearing claim (incl. the −59% and the
+2-4-month window) traces **verbatim** to the source skills; zero invented stats. Drift-guard: +8 closing anchors
+in both role files (`templates.test.ts`, 125 in-file green); `tsc` clean. No count bumps (no tool).
+**Deferred enhancement:** ingest the DARK/STAKEHOLDERS references (`doctrina_vertice`, `cinco_frentes`,
+`mapa_stakeholders`, …) as retrievable **general doctrine** (brand_key NULL, `rol_minimo=restringido_senior`) +
+a method-retrieval tool — only if the in-persona coaching depth proves insufficient. **NEXT = P3.4.**
 
 ### P3.4 — Proactive trigger + delivery
 
