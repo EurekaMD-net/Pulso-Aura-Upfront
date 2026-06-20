@@ -100,8 +100,10 @@ async function connectSocket(
   sock.ev.on('connection.update', (update) => {
     const { connection, lastDisconnect, qr } = update;
 
-    if (qr) {
-      // Write raw QR data to file so the setup skill can render it
+    if (qr && !usePairingCode) {
+      // Write raw QR data to file so the setup skill can render it.
+      // Suppressed entirely in --pairing-code mode so the operator only ever
+      // sees the 8-digit code path (a stray QR here is noise + a wrong-path trap).
       fs.writeFileSync(QR_FILE, qr);
       console.log('Scan this QR code with WhatsApp:\n');
       console.log('  1. Open WhatsApp on your phone');
