@@ -9,6 +9,7 @@ import fs from "fs";
 import path from "path";
 import { getDatabase } from "./db.js";
 import { logger } from "./logger.js";
+import { sellable2027Catalog } from "./cierre/query.js";
 
 export interface TeamMember {
   name: string;
@@ -180,6 +181,9 @@ export function copyRoleTemplate(
   }
 
   if (content) {
+    // Inject the live 2027-sellable catalog (from the meta_2027 escenario) so the
+    // prompt's allowlist tracks the sheet automatically — no hardcoded channel list.
+    content = content.replace(/\{\{CATALOGO_2027\}\}/g, sellable2027Catalog());
     fs.writeFileSync(destClaude, content);
   }
 }

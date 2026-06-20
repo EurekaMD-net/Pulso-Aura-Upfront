@@ -65,6 +65,40 @@ export function cierreMetasLoaded(): boolean {
   return row !== undefined;
 }
 
+/**
+ * The 2027-sellable media catalog, derived LIVE from the `meta_2027` escenario —
+ * the single source of truth for what Azteca actually sells next year (TV abierta
+ * + the resold streaming/CTV + digital/radio). Returned as a human-labeled
+ * "TV · Disney+ · …" string for injection into the persona prompt (placeholder
+ * `{{CATALOGO_2027}}`), so the prompt's allowlist tracks the sheet automatically.
+ * Falls back to a static line if metas aren't loaded yet (fresh setup / tests).
+ */
+export function sellable2027Catalog(): string {
+  let medios: string[] = [];
+  try {
+    medios = (
+      getDatabase()
+        .prepare(
+          `SELECT DISTINCT l.medio AS medio
+           FROM cierre_meta_linea l JOIN cierre_meta m ON l.cierre_id = m.id
+           WHERE m.escenario = 'meta_2027'`,
+        )
+        .all() as { medio: string }[]
+    ).map((r) => r.medio);
+  } catch {
+    medios = [];
+  }
+  if (medios.length === 0)
+    return "TV · Disney+ · Roku · CTV · Fox · Digital · Radio";
+  const order = Object.keys(MEDIO_LABEL);
+  medios.sort(
+    (a, b) =>
+      (order.indexOf(a) === -1 ? 999 : order.indexOf(a)) -
+      (order.indexOf(b) === -1 ? 999 : order.indexOf(b)),
+  );
+  return medios.map((m) => MEDIO_LABEL[m] ?? m).join(" · ");
+}
+
 function emptyResumen(): EscenarioResumen {
   return { total: 0, lineas: [] };
 }
