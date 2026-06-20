@@ -1,0 +1,8 @@
+name,role,phone,email,manager_name
+"Nombre VP",vp,+5215500000000,vp@ejemplo.com,
+"Nombre Director",director,+5215500000001,director@ejemplo.com,"Nombre VP"
+"Nombre Gerente A",gerente,+5215500000002,gerente.a@ejemplo.com,"Nombre Director"
+"Nombre Gerente B",gerente,+5215500000003,gerente.b@ejemplo.com,"Nombre Director"
+"Nombre Ejecutivo 1",ae,+5215500000004,ae1@ejemplo.com,"Nombre Gerente A"
+"Nombre Ejecutivo 2",ae,+5215500000005,ae2@ejemplo.com,"Nombre Gerente A"
+"Nombre Ejecutivo 3",ae,+5215500000006,ae3@ejemplo.com,"Nombre Gerente B"

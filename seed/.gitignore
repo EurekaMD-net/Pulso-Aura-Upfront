@@ -1,0 +1,6 @@
+# Real rosters carry PII (names, phones, emails) — never commit them.
+# Only the *.example.* templates are tracked.
+*.csv
+*.json
+!*.example.csv
+!*.example.json

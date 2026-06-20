@@ -19,6 +19,7 @@
     "deploy:aura-kb": "bash scripts/deploy-aura-kb-p2.sh",
     "sync:anunciante-map": "tsx scripts/sync-anunciante-map.ts",
     "backfill:cuenta-anunciante": "tsx scripts/backfill-cuenta-anunciante.ts",
+    "seed:cuentas": "tsx scripts/seed-cuentas.ts",
     "simulate": "tsx scripts/simulator/index.ts",
     "simulate:regression": "tsx scripts/simulator/index.ts --mode regression",
     "simulate:morning": "tsx scripts/simulator/index.ts --mode morning",

@@ -1,0 +1,4 @@
+nombre,tipo,ae_name,anunciante,vertical,holding_agencia,agencia_medios,anos_relacion,notas
+"Procter & Gamble México",directo,"Nombre Ejecutivo 1",,Consumo,,,8,"Portafolio multimarca — el nombre ya coincide con el anunciante, se autoenlaza"
+"Nestlé México",directo,"Nombre Ejecutivo 2",,Alimentos,,,12,"Cuenta directa fundadora"
+"Cuenta vía GroupM",agencia,"Nombre Ejecutivo 3","Danone México",Alimentos,GroupM,Mindshare,3,"El nombre de la cuenta NO es el anunciante → se especifica 'anunciante' explícito"
