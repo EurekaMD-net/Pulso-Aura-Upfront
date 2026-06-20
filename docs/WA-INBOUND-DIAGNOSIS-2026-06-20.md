@@ -1,61 +1,84 @@
-# WhatsApp Inbound — Conclusive Diagnosis (2026-06-20)
+# WhatsApp Inbound — RESOLVED (2026-06-20)
 
-**Status: deployment LIVE; inbound decryption is the one open blocker.**
+**Status: the full WhatsApp loop works end-to-end. Inbound was never broken.**
 
-## What works
+```
+[operator]  @crm hola
+[bot]       Un momento...
+[bot]       En qué tema de negocio puedo apoyarte?
+```
 
-Pulso-Aura is deployed and running on its own number `522205847540`: provider
-(Fireworks/minimax-m2p7), hindsight memory backend, dashboard `:3000`, agent image,
-and **WhatsApp OUTBOUND** all verified. crm pairs cleanly (code-only) and sends fine.
+(Test VPS group `120363409556213628@g.us`, 2026-06-20 03:02 — inbound → decrypt → route → VP persona → inference (Fireworks/minimax) → reply.)
 
-## The blocker
+## The real root cause (NOT decryption)
 
-crm's Baileys **companion** device receives the encrypted message stanza (journal logs
-`Translated LID` + `identity key changed or new contact, session will be re-established`)
-but **never completes the Signal session → 0 messages decrypted/stored**. `messages.upsert`
-fires for nothing usable.
+The earlier "inbound decryption fails / Baileys companion never completes the Signal
+session" conclusion was a **misdiagnosis**. There was never a decryption problem. The
+operator saw "the bot doesn't reply" and the prior session attributed it to Baileys.
+The truth was two missing **setup** steps stacked behind each other:
 
-## Ruled out — exhaustively
+1. **Unregistered group.** `registered_groups` was empty. The inbound handler
+   (`engine/src/channels/whatsapp.ts:213-215`) only delivers a message to an agent
+   `if (group)` — i.e. if the chat is registered. Every decrypted message updated the
+   `chats` table (via `onChatMetadata`, which runs for _all_ chats) but was then
+   **silently dropped** at the routing gate → no agent spawned → no reply.
+2. **Empty `persona` table.** Even after registering the group, the in-container
+   agent-runner (`crm/container/agent-runner/index.ts:517`) calls
+   `getPersonByGroupFolder(folder)` and exits with `Unknown persona for group folder`
+   when no persona maps to the folder. The Aura DB had its 971-document corpus but
+   **zero seeded personas** (the pilot-seeding step had not been done).
 
-1. **Not the number.** Fails _identically_ on `522205847540` AND the personal number
-   `525530331051` — and on both, the **primary phone receives the same messages fine**.
-   So the account/number can receive; only crm's companion can't decrypt.
-2. **Not the senders.** Normal personal phones; chats deleted + contacts removed/re-added
-   to force a fresh device-key fetch. No change.
-3. **Not `makeCacheableSignalKeyStore`.** Swapped to raw `state.keys` (matching the working
-   Gilda bot) → no change → reverted.
-4. **Not socket config / read-receipts / event wiring.** crm and the working **salones-wa
-   (Gilda)** bot — same Baileys `7.0.0-rc13` — drive Baileys **identically**: same three
-   handlers (`connection.update`, `creds.update`, `messages.upsert`), no advanced socket
-   options on either, and crm doesn't even send read-receipts (Gilda does, and Gilda works).
-5. **Pairing/keys are healthy.** Clean re-link (no prior devices), `PreKey validation passed
-   - Server: 812`, "handled N offline messages", `syncType: FULL` history sync — all confirmed.
+## Proof it was never decryption
 
-So it is a deep bug in **how the NanoClaw engine drives Baileys' inbound session/retry path**
-(or a companion-vs-active-primary quirk), below the config surface — the same Baileys version
-works in salones-wa.
+- **0** occurrences of `failed to decrypt` in 3 days of journal.
+- DMs decrypted with content: `translateJid` (which runs _after_ the `!msg.message`
+  content guard) logged real senders resolving (`5215530331051@s.whatsapp.net`, …).
+- The `chats` table synced 5 chats incl. the group name "Test VPS" — envelopes arrived
+  and were processed.
+- `session will be re-established` / `identity key changed or new contact` is **normal
+  libsignal new-contact session bootstrap**, logged 1:1 with "Own LID session created
+  successfully" — not a failure.
 
-## Engine changes kept (committed; align with the working bot, did NOT fix inbound)
+The asymmetry that pinpointed it: `chats` populated (5 rows) while `messages` stayed at
+**0** — because `onChatMetadata` runs before the group gate, but `storeMessage` runs
+only inside it.
+
+## The fix (runtime data — no code change)
+
+1. Registered the Test VPS group → `crm-test` persona folder, trigger `@CRM`:
+   `INSERT INTO registered_groups (...) VALUES ('120363409556213628@g.us','Test VPS','crm-test','@CRM',...)`
+   in `store/messages.db`; restarted the engine (`State loaded groupCount:1`).
+2. Seeded a VP smoke persona on that folder (matches the crm-azteca demo, which used a
+   single throwaway top-role persona): `INSERT INTO persona (id,nombre,rol,whatsapp_group_folder,activo)
+VALUES ('smoke-vp','VP Prueba','vp','crm-test',1)` in `data/store/crm.db`. The
+   container reads this same DB live (`CRM_DB_PATH=/workspace/extra/crm-db/crm.db`), so
+   no rebuild was needed.
+
+Note: the first `@crm hola` was dropped after the engine's 6-retry cap
+(`Max retries exceeded, dropping messages (will retry on next incoming message)`)
+because it was sent before the persona existed; the cursor stayed primed at `""`, so the
+next message reprocessed cleanly once the persona was seeded.
+
+## Engine changes kept from the bring-up (committed; correct, but unrelated to the bug)
 
 - `cf0e3ff`: Baileys `rc.9 → rc13`; `fetchLatestWaWebVersion → fetchLatestBaileysVersion`
-  (fixed the _handshake_ — clean Online vs rc.9's AwaitingInitialSync timeout loop);
+  (fixed the _handshake_ — clean Online vs rc.9's AwaitingInitialSync loop);
   `markOnlineOnConnect: false`.
 - `a2e486a`: suppress QR in `--pairing-code` mode (code-only pairing).
 
-## NEXT — for a fresh, focused session
+## Live smoke scaffolding (gitignored DBs)
 
-1. **Enable Baileys TRACE logging** (`LOG_LEVEL=trace` on the systemd unit), send ONE inbound
-   message, and read the retry-receipt + session-establishment + decrypt flow. This is the one
-   diagnostic that will actually show where it dies. (Expect heavy output — scope to one message.)
-2. If trace is inconclusive: line-by-line diff salones-wa's `src/bot/baileys-manager.ts`
-   message/receipt path vs the engine's `channels/whatsapp.ts`, or port salones-wa's WA layer.
-3. Consider the companion-vs-active-primary angle (Gilda's number may have an inactive primary;
-   crm's numbers have active primaries reading the messages first).
+- `registered_groups`: `Test VPS 120363409556213628@g.us → crm-test`, trigger `@CRM`,
+  requires_trigger=1.
+- `persona`: one throwaway `smoke-vp` (`VP Prueba`, rol `vp`) on folder `crm-test`.
 
-## Operator helper scripts (outside the repo, `/root/claude/`)
+Both are **test scaffolding**, not the real pilot seed. The actual closing-pilot seeding
+(Dir→Ger→AE hierarchy, accounts, committees, closing-zone proposals) is a separate,
+deliberate task — see `docs/PILOT-SEEDING-CLOSING.md`.
 
-- `aura-pair-fresh-2026-06-20.sh <number>` — full reset → pair (code-only) → start → guided
-  inbound test → ✅/✗ verdict. Refuses Gilda's `525640501088`.
-- `aura-bringup-2026-06-20.sh` — `.env` sync from base + hindsight restart + boot verify.
+## Lesson
 
-Live-state detail also in the operator memory `crm-azteca.md` (WA INBOUND diagnosis section).
+"No reply" ≠ "no decrypt." When a messaging bot goes silent, walk the **delivery chain**
+(decrypt → route/registration → persona/seeding → inference) before blaming the
+encryption layer. A single grep — `journalctl | grep -c "failed to decrypt"` — would have
+redirected the whole investigation on day one.
