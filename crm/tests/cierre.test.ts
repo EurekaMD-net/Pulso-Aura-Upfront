@@ -229,6 +229,33 @@ describe("resolveCierreAccounts — no-guess", () => {
     expect(res.accounts[0].cuentaRaw).toBe("COCA COLA");
   });
 
+  it("resolves hyphenated + advertiser-variant spellings to the cartera account", () => {
+    loadCierreMetas([
+      row("CG", "COCA COLA", "cierre_2026", 100, [["tv", 100, false]]),
+    ]);
+    // The cartera stores "COCA COLA" (space); these are how the agent/users actually
+    // type it — hyphen, advertiser suffix, brand-variant. All must resolve (was the
+    // "agent knows nothing about Coca Cola" bug: "Coca-Cola FEMSA" -> none).
+    for (const q of [
+      "Coca-Cola",
+      "Coca-Cola FEMSA",
+      "Coca Cola Refrescos de Cola",
+    ]) {
+      const res = resolveCierreAccounts(q);
+      expect(res.status, q).toBe("ok");
+      expect(res.accounts[0].cuentaRaw, q).toBe("COCA COLA");
+    }
+  });
+
+  it("token-subset never matches on a lone shared token (no-guess)", () => {
+    loadCierreMetas([
+      row("CG", "COCA COLA", "cierre_2026", 100, [["tv", 100, false]]),
+    ]);
+    // "Cola" alone (1 token) must NOT pull in the 2-token account; unrelated -> none.
+    expect(resolveCierreAccounts("Cola").status).toBe("none");
+    expect(resolveCierreAccounts("Pepsi").status).toBe("none");
+  });
+
   it("returns ambiguous when one name spans >1 account, never picking one", () => {
     // Two different gerentes each have an account literally named OXXO.
     loadCierreMetas([

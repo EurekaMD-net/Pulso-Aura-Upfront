@@ -14,7 +14,7 @@
  */
 
 import { getDatabase } from "./db.js";
-import { normalizeMarca, clearedFloors } from "./aura-rbac.js";
+import { normalizeMarca, matchNorm, clearedFloors } from "./aura-rbac.js";
 import { RADIOGRAFIA_CUERPOS, type RadiografiaCuerpo } from "./doc-sync.js";
 
 export interface AnuncianteCandidate {
@@ -56,6 +56,26 @@ export function resolveAnunciante(input: string): AnuncianteResolution {
       .all(param) as AnuncianteCandidate[];
 
   let candidates = byClause("anunciante_norm = ?", norm);
+  // Loose exact — hyphen/space/punct-insensitive ("Coca-Cola México" vs "Coca Cola").
+  // Preferred over the substring LIKE below (which would false-positive on tokens).
+  if (candidates.length === 0) {
+    const target = matchNorm(input);
+    const all = db
+      .prepare(
+        `SELECT MIN(anunciante) AS anunciante, MIN(grupo) AS grupo, COUNT(*) AS marcas, anunciante_norm
+         FROM anunciante_marca
+         WHERE anunciante IS NOT NULL
+         GROUP BY anunciante_norm`,
+      )
+      .all() as (AnuncianteCandidate & { anunciante_norm: string })[];
+    candidates = all
+      .filter((c) => matchNorm(c.anunciante_norm) === target)
+      .map((c) => ({
+        anunciante: c.anunciante,
+        grupo: c.grupo,
+        marcas: c.marcas,
+      }));
+  }
   if (candidates.length === 0)
     candidates = byClause("anunciante_norm LIKE ?", `%${norm}%`);
   if (candidates.length === 0) candidates = byClause("grupo_norm = ?", norm);

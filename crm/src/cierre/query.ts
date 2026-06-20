@@ -12,7 +12,7 @@
  */
 
 import { getDatabase } from "../db.js";
-import { normalizeMarca } from "../aura-rbac.js";
+import { normalizeMarca, matchNorm } from "../aura-rbac.js";
 import { resolveAnunciante } from "../anunciante.js";
 import { MEDIO_LABEL, type Escenario } from "./types.js";
 
@@ -219,17 +219,53 @@ export function resolveCierreAccounts(
   }[];
   let accounts = distinct(rows);
 
-  // 2. Advertiser path — resolve to anunciante_norm, match cierre rows by it.
+  // Fallbacks (only if the exact match missed). Cartera names ("COCA COLA") differ
+  // from advertiser spellings ("Coca-Cola FEMSA") by punctuation + extra tokens, so
+  // fetch the in-scope rows once and match them hyphen/space-insensitively.
   if (accounts.length === 0) {
-    const r = resolveAnunciante(nombre);
-    if (r.anuncianteNorm) {
-      rows = db
-        .prepare(
-          `SELECT DISTINCT gerente_code, cuenta_raw, cuenta_id
-           FROM cierre_meta WHERE anunciante_norm = ?${scopeClause}`,
-        )
-        .all(r.anuncianteNorm, ...scopeParams) as typeof rows;
-      accounts = distinct(rows);
+    type ScopeRow = {
+      gerente_code: string;
+      cuenta_raw: string;
+      cuenta_id: string | null;
+      cuenta_norm: string;
+      anunciante_norm: string | null;
+    };
+    const inScope = db
+      .prepare(
+        `SELECT DISTINCT gerente_code, cuenta_raw, cuenta_id, cuenta_norm, anunciante_norm
+         FROM cierre_meta WHERE 1=1${scopeClause}`,
+      )
+      .all(...scopeParams) as ScopeRow[];
+    const target = matchNorm(nombre);
+
+    // 2. Loose exact — same name, hyphen/space/punct-insensitive ("Coca-Cola").
+    accounts = distinct(
+      inScope.filter((r) => matchNorm(r.cuenta_norm) === target),
+    );
+
+    // 3. Advertiser path — resolve to anunciante, match cierre rows by it (loose).
+    if (accounts.length === 0) {
+      const r = resolveAnunciante(nombre);
+      if (r.anuncianteNorm) {
+        const adv = matchNorm(r.anuncianteNorm);
+        accounts = distinct(
+          inScope.filter((row) => matchNorm(row.anunciante_norm) === adv),
+        );
+      }
+    }
+
+    // 4. Whole-token subset — the account's tokens all appear in the query
+    //    ("Coca-Cola FEMSA" ⊇ "coca cola"). Whole-token, never substring; ≥2-token
+    //    accounts only (a lone common token must not over-match). >1 → ambiguous so
+    //    the caller disambiguates. No-guess.
+    if (accounts.length === 0) {
+      const qTokens = new Set(target.split(" ").filter(Boolean));
+      accounts = distinct(
+        inScope.filter((r) => {
+          const cTokens = matchNorm(r.cuenta_norm).split(" ").filter(Boolean);
+          return cTokens.length >= 2 && cTokens.every((t) => qTokens.has(t));
+        }),
+      );
     }
   }
 

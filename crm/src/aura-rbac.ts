@@ -32,6 +32,21 @@ export function normalizeMarca(marca: string | null | undefined): string {
   return out.toLowerCase().trim();
 }
 
+/**
+ * Looser normalization for cross-source NAME MATCHING only: `normalizeMarca` plus
+ * folding hyphens/underscores/slashes to spaces and collapsing whitespace. Bridges
+ * the cartera spelling ("COCA COLA") vs the advertiser spelling ("Coca-Cola") — the
+ * exact `normalizeMarca` keeps the hyphen, so "coca-cola" != "coca cola" and the
+ * lookup misses. Use for COMPARISON ONLY — never as a stored key (stored norms use
+ * `normalizeMarca`, hyphens preserved).
+ */
+export function matchNorm(marca: string | null | undefined): string {
+  return normalizeMarca(marca)
+    .replace(/[-_/]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 /** KB clearance floors, ascending (index = rank). */
 export const AURA_FLOORS = [
   "transversal",
