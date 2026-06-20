@@ -46,7 +46,7 @@ usage() {
   echo -e "  ${GREEN}db${NC} [query]     Run a SQLite query against CRM database"
   echo -e "  ${GREEN}personas${NC}       List all personas and their group mappings"
   echo -e "  ${GREEN}groups${NC}         List registered WhatsApp groups"
-  echo -e "  ${GREEN}set-persona${NC} ID Set persona for 'main' group folder"
+  echo -e "  ${GREEN}set-persona${NC} <id|nombre> [folder]  Map a persona onto the live group (regenerates the role prompt + respawns)"
   echo -e "  ${GREEN}install${NC}        Install systemd service (first time)"
   echo ""
   echo -e "  ${CYAN}Hindsight (long-term memory)${NC}"
@@ -237,16 +237,54 @@ cmd_groups() {
 }
 
 cmd_set_persona() {
-  local pid="${1:?Usage: crm-ctl set-persona <persona_id>}"
-  sqlite3 "${PROJECT_DIR}/data/store/crm.db" "UPDATE persona SET whatsapp_group_folder = NULL WHERE whatsapp_group_folder = 'main';"
-  sqlite3 "${PROJECT_DIR}/data/store/crm.db" "UPDATE persona SET whatsapp_group_folder = 'main' WHERE id = '${pid}';"
-  local result
-  result=$(sqlite3 "${PROJECT_DIR}/data/store/crm.db" "SELECT nombre, rol FROM persona WHERE id = '${pid}';")
-  echo -e "${GREEN}Main group now mapped to: ${result}${NC}"
-  # Clear sessions and kill container so next message gets fresh persona
-  rm -rf "${PROJECT_DIR}"/groups/main/.crm-sessions/*.json 2>/dev/null
-  docker kill $(docker ps -q --filter "name=nanoclaw-main") 2>/dev/null || true
-  echo -e "${YELLOW}Sessions cleared and container killed. New persona takes effect on next message.${NC}"
+  local arg="${1:?Usage: crm-ctl set-persona <persona_id|nombre> [group_folder]}"
+  local folder="${2:-}"
+  local crmdb="${PROJECT_DIR}/data/store/crm.db"
+  local msgdb="${PROJECT_DIR}/store/messages.db"
+
+  # Resolve by exact id OR exact nombre (case-insensitive) so a demo can use a readable
+  # name ("Juan Carlos Gamba", "ACL") instead of the raw id. Ambiguous -> show candidates.
+  local pid
+  pid=$(sqlite3 "$crmdb" "SELECT id FROM persona WHERE id='${arg}' OR lower(nombre)=lower('${arg}');")
+  local matches; matches=$(printf '%s' "$pid" | grep -c . || true)
+  if [ "$matches" -eq 0 ]; then
+    echo -e "${RED}No persona matches '${arg}'.${NC} Run: crm-ctl personas"; exit 1
+  elif [ "$matches" -gt 1 ]; then
+    echo -e "${RED}'${arg}' is ambiguous — use the id:${NC}"
+    sqlite3 -column "$crmdb" "SELECT id, nombre, rol FROM persona WHERE lower(nombre)=lower('${arg}');"
+    exit 1
+  fi
+  local rol; rol=$(sqlite3 "$crmdb" "SELECT rol FROM persona WHERE id='${pid}';")
+
+  # Default the seat to the live registered group's folder (single-group demo);
+  # fall back to 'main' (base convention) when 0 or >1 groups are registered.
+  if [ -z "$folder" ]; then
+    local gcount; gcount=$(sqlite3 "$msgdb" "SELECT COUNT(*) FROM registered_groups;" 2>/dev/null || echo 0)
+    if [ "$gcount" = "1" ]; then folder=$(sqlite3 "$msgdb" "SELECT folder FROM registered_groups;"); else folder="main"; fi
+  fi
+
+  # Pointer move: free the seat, then map the chosen persona onto it (identity/team untouched).
+  sqlite3 "$crmdb" "UPDATE persona SET whatsapp_group_folder = NULL WHERE whatsapp_group_folder = '${folder}' AND id <> '${pid}';"
+  sqlite3 "$crmdb" "UPDATE persona SET whatsapp_group_folder = '${folder}' WHERE id = '${pid}';"
+
+  # Regenerate the live prompt for the seat from the persona's ROLE — so a role switch is
+  # actually taught (Modo Cierre for ger/dir, observer framing for vp), not just tool-enabled.
+  # Uses the same copyRoleTemplate the registrar uses (global.md + role template; gerente->manager.md).
+  ( cd "${PROJECT_DIR}" && NODE_NO_WARNINGS=1 npx tsx -e \
+      "import path from 'path'; import { copyRoleTemplate } from './crm/src/register.ts'; copyRoleTemplate(path.resolve('groups/${folder}'), '${rol}', path.resolve('crm/groups'));" )
+
+  # Purge the seat's session (table row + on-disk transcript) so the new persona starts clean
+  # (the LLM otherwise mimics the previous role's turns).
+  sqlite3 "$msgdb" "DELETE FROM sessions WHERE group_folder='${folder}';" 2>/dev/null || true
+  rm -rf "${PROJECT_DIR}/groups/${folder}/.crm-sessions/"*.json 2>/dev/null || true
+
+  # Respawn: kill the live container; the next message spawns fresh, re-reading the new
+  # persona + tools + prompt (all cached at container startup, so a kill is required).
+  docker ps -aq --filter "name=nanoclaw-${folder}" | xargs -r docker rm -f >/dev/null 2>&1 || true
+
+  local result; result=$(sqlite3 "$crmdb" "SELECT nombre || '  (rol=' || rol || ')' FROM persona WHERE id='${pid}';")
+  echo -e "${GREEN}Group '${folder}' now mapped to: ${result}${NC}"
+  echo -e "${YELLOW}Session cleared + container killed. Takes effect on the next message (no @).${NC}"
 }
 
 # --- Hindsight (long-term memory sidecar) ---

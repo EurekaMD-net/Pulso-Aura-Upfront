@@ -18,6 +18,11 @@ crm.db
 groups/*/CLAUDE.md.tmp
 groups/*/.crm-sessions/
 groups/*/attachments/
+groups/*/logs/
+# Generated live persona folders (re-baked by sync:templates / crm-ctl set-persona).
+# The crm-test demo folder stays tracked as the reference.
+groups/*/CLAUDE.md
+!groups/crm-test/CLAUDE.md
 
 # Claude Code per-project state
 .claude/agent-memory/

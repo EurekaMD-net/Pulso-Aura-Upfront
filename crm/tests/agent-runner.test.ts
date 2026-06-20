@@ -200,9 +200,34 @@ describe("role-based tool filtering", () => {
     expect(tools.length).toBe(72);
   });
 
-  it("VP gets 64 tools", () => {
+  it("VP gets 70 tools", () => {
     const tools = getToolsForRole("vp");
-    expect(tools.length).toBe(64);
+    expect(tools.length).toBe(70);
+  });
+
+  it("VP sees the closing-intelligence read tools (C-level visibility)", () => {
+    const names = getToolsForRole("vp").map((t) => t.function.name);
+    for (const name of [
+      "consultar_metas_cierre",
+      "consultar_metas_portafolio",
+      "buscar_inteligencia_marca",
+      "armar_radiografia_marca",
+      "armar_radiografia_anunciante",
+      "mapa_poder_anunciante",
+    ]) {
+      expect(names, `VP missing read tool: ${name}`).toContain(name);
+    }
+  });
+
+  it("VP does NOT get operational closing/mutation tools", () => {
+    const names = getToolsForRole("vp").map((t) => t.function.name);
+    for (const name of [
+      "registrar_actividad",
+      "crear_propuesta",
+      "cerrar_propuesta",
+    ]) {
+      expect(names, `VP should not operate: ${name}`).not.toContain(name);
+    }
   });
 
   it("all roles have consultar_pipeline", () => {

@@ -2594,6 +2594,15 @@ const DIRECTOR_TOOLS: ToolDefinition[] = [
 ];
 
 const VP_TOOLS: ToolDefinition[] = [
+  // C-level observer: clears every RBAC floor (direccion_clevel), so it SEES the
+  // full closing-intelligence layer (read-only). It does NOT run the operational
+  // Modo Cierre coaching — that stays Gerente/Director/AE.
+  TOOL_BUSCAR_INTELIGENCIA_MARCA,
+  TOOL_ARMAR_RADIOGRAFIA_MARCA,
+  TOOL_ARMAR_RADIOGRAFIA_ANUNCIANTE,
+  TOOL_MAPA_PODER_ANUNCIANTE,
+  TOOL_CONSULTAR_METAS_CIERRE,
+  TOOL_CONSULTAR_METAS_PORTAFOLIO,
   TOOL_CONSULTAR_PIPELINE,
   TOOL_CONSULTAR_CUENTA,
   TOOL_CONSULTAR_CUENTAS,

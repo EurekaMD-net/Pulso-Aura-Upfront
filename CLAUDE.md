@@ -54,7 +54,7 @@ Agentic CRM for media ad sales. Agent runtime at `engine/` (originally subtree'd
 | `crm/groups/ae.md`               | AE persona template (51 tools)                                                                                                                         |
 | `crm/groups/manager.md`          | Manager persona template (55 tools)                                                                                                                    |
 | `crm/groups/director.md`         | Director persona template (66 tools, incl. 7 relationship + 4 email)                                                                                   |
-| `crm/groups/vp.md`               | VP persona template (64 tools, incl. 7 relationship + 4 email)                                                                                         |
+| `crm/groups/vp.md`               | VP persona template (70 tools; C-level observer — also sees the 6 closing-intelligence read tools)                                                     |
 
 ### Engine Hook Points (current CRM-touching surface)
 
@@ -129,7 +129,7 @@ If a future need arises to look at upstream for inspiration: clone shallow into 
 
 ```
 WhatsApp → engine (forked from NanoClaw) → Direct tools (73 CRM tools via inference adapter)
-                                    ├── Role-based tool filtering (AE:51, Ger:59, Dir:70, VP:64)
+                                    ├── Role-based tool filtering (AE:51, Ger:61, Dir:72, VP:70)
                                     ├── Google Workspace (Gmail, Drive, Calendar)
                                     ├── Hybrid RAG (vector + FTS5 keyword + RRF fusion)
                                     ├── Long-term memory (Hindsight or SQLite fallback)

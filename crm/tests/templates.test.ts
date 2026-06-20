@@ -291,7 +291,7 @@ describe("director.md -- tool references", () => {
 describe("vp.md -- tool references", () => {
   const vpTools = getToolsForRole("vp").map((t) => t.function.name);
 
-  it("references all 62 VP tools", () => {
+  it("references all 68 VP tools", () => {
     for (const name of vpTools) {
       expect(vpMd, `Missing VP tool: ${name}`).toContain(name);
     }
@@ -358,29 +358,41 @@ describe("Modo Cierre -- Preventa 2027 closing mode", () => {
     }
   }
 
-  // Gate: AE and VP must NOT carry the closing mode (Phase 1 = Ger/Dir only).
-  const gatedTemplates = [
-    { name: "ae.md", content: aeMd },
-    { name: "vp.md", content: vpMd },
-  ];
-  const GATED_OUT = [
+  // Gate: the OPERATIONAL closing mode (Modo Cierre coaching workflow + war-room
+  // slice) stays Gerente/Director-only — neither AE nor VP runs it. VP, however,
+  // is the C-level observer: as of 2026-06-20 it SEES the closing-intelligence
+  // read tools (visibility, not operation), so the read-tool NAMES are gated out
+  // of AE only, not VP.
+  const OPERATIONAL_GATED = [
     "Modo Cierre",
     "ARMAGEDDON",
     "STAKEHOLDERS",
     "(DARK)", // bound to closing-architecture context; bare "DARK" could collide
-    "buscar_inteligencia_marca", // prose mirror of the registry gate (Ger/Dir-only tool)
     "Sala Invisible", // P3.3 DARK war-room — never in AE/VP
     "Material interno de guerra", // P3.3 never-to-client gate — never in AE/VP
   ];
+  // Intelligence read-tool names AE must not even reference (AE has no
+  // intelligence layer). VP DOES hold these now, so they are intentionally NOT
+  // gated for VP.
+  const AE_ONLY_GATED = ["buscar_inteligencia_marca"];
 
-  for (const { name, content } of gatedTemplates) {
-    for (const token of GATED_OUT) {
-      it(`${name} does NOT carry closing-mode token: "${token}"`, () => {
+  for (const { name, content } of [
+    { name: "ae.md", content: aeMd },
+    { name: "vp.md", content: vpMd },
+  ]) {
+    for (const token of OPERATIONAL_GATED) {
+      it(`${name} does NOT carry operational closing-mode token: "${token}"`, () => {
         expect(content, `${name} should not contain: ${token}`).not.toContain(
           token,
         );
       });
     }
+  }
+
+  for (const token of AE_ONLY_GATED) {
+    it(`ae.md does NOT reference intelligence read tool: "${token}"`, () => {
+      expect(aeMd, `ae.md should not contain: ${token}`).not.toContain(token);
+    });
   }
 });
 
