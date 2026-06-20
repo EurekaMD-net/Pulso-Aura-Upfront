@@ -163,7 +163,11 @@ export function copyRoleTemplate(
   role: string,
   templatesDir: string,
 ): void {
-  const templatePath = path.join(templatesDir, `${role}.md`);
+  // The role enum uses "gerente" but the template file is "manager.md" (the
+  // template set names this role in English). Map it so gerente folders get the
+  // Manager persona (Modo Cierre coaching), not just global.md.
+  const templateName = role === "gerente" ? "manager" : role;
+  const templatePath = path.join(templatesDir, `${templateName}.md`);
   const globalPath = path.join(templatesDir, "global.md");
   const destClaude = path.join(groupDir, "CLAUDE.md");
 

@@ -8,6 +8,9 @@
 import Database from "better-sqlite3";
 import * as sqliteVec from "sqlite-vec";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 import { createCrmSchema } from "../src/schema.js";
 
 let testDb: InstanceType<typeof Database>;
@@ -35,6 +38,7 @@ const {
   resolveHierarchy,
   generateGroupFolder,
   registerTeam,
+  copyRoleTemplate,
 } = await import("../src/register.js");
 
 function setupDb() {
@@ -399,5 +403,28 @@ describe("registerTeam", () => {
     expect(registered[0].folder).toBe("vp-vp-test");
     expect(registered[0].name).toBe("VP Test");
     expect(registered[0].role).toBe("vp");
+  });
+});
+
+describe("copyRoleTemplate", () => {
+  it("maps role 'gerente' to manager.md (the template isn't named gerente.md)", () => {
+    const tpl = fs.mkdtempSync(path.join(os.tmpdir(), "tpl-"));
+    const grp = fs.mkdtempSync(path.join(os.tmpdir(), "grp-"));
+    fs.writeFileSync(path.join(tpl, "global.md"), "GLOBAL");
+    fs.writeFileSync(path.join(tpl, "manager.md"), "MANAGER-PERSONA");
+    copyRoleTemplate(grp, "gerente", tpl);
+    const out = fs.readFileSync(path.join(grp, "CLAUDE.md"), "utf-8");
+    expect(out).toContain("GLOBAL");
+    expect(out).toContain("MANAGER-PERSONA");
+  });
+
+  it("uses <role>.md directly for non-gerente roles", () => {
+    const tpl = fs.mkdtempSync(path.join(os.tmpdir(), "tpl-"));
+    const grp = fs.mkdtempSync(path.join(os.tmpdir(), "grp-"));
+    fs.writeFileSync(path.join(tpl, "global.md"), "GLOBAL");
+    fs.writeFileSync(path.join(tpl, "director.md"), "DIRECTOR-PERSONA");
+    copyRoleTemplate(grp, "director", tpl);
+    const out = fs.readFileSync(path.join(grp, "CLAUDE.md"), "utf-8");
+    expect(out).toContain("DIRECTOR-PERSONA");
   });
 });
