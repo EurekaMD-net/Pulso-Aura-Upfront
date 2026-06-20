@@ -20,6 +20,8 @@
     "sync:anunciante-map": "tsx scripts/sync-anunciante-map.ts",
     "backfill:cuenta-anunciante": "tsx scripts/backfill-cuenta-anunciante.ts",
     "seed:cuentas": "tsx scripts/seed-cuentas.ts",
+    "seed:metas": "tsx scripts/seed-metas.ts",
+    "sync:templates": "tsx scripts/sync-group-templates.ts",
     "simulate": "tsx scripts/simulator/index.ts",
     "simulate:regression": "tsx scripts/simulator/index.ts --mode regression",
     "simulate:morning": "tsx scripts/simulator/index.ts --mode morning",

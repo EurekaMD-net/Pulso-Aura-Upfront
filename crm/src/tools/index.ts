@@ -38,6 +38,10 @@ import {
   armar_radiografia_anunciante,
   mapa_poder_anunciante,
 } from "./aura.js";
+import {
+  consultar_metas_cierre,
+  consultar_metas_portafolio,
+} from "./cierre-tools.js";
 import { buscar_emails, leer_email, crear_borrador_email } from "./gmail.js";
 import {
   listar_archivos_drive,
@@ -981,6 +985,50 @@ const TOOL_MAPA_PODER_ANUNCIANTE: ToolDefinition = {
       },
       required: ["anunciante"],
     },
+  },
+};
+
+const TOOL_CONSULTAR_METAS_CIERRE: ToolDefinition = {
+  type: "function",
+  function: {
+    name: "consultar_metas_cierre",
+    description:
+      "Trae el ENCUADRE COMERCIAL de cierre de UNA cuenta/anunciante para la Preventa 2027: cuánto cerró " +
+      "en 2026 (CON Mundial), cuánto de eso fue MUNDIAL (halo que NO se repite), la base recurrente sin " +
+      "Mundial, y la META 2027. Devuelve además la 'fruta al alcance' (los medios que la cuenta YA compra, " +
+      "donde se defiende y crece la inversión primero) y el % de crecimiento requerido sobre la base.\n\n" +
+      "USAR en el Paso 1 del Modo Cierre, junto a la radiografía: la radiografía da el PORQUÉ (inteligencia " +
+      "de marca); esto da el CUÁNTO (la cifra en el contexto del vendedor). Clave para 2027 (año SIN Mundial): " +
+      "el argumento para retener inversión debe sostenerse en la base recurrente y en recuperar el gasto del " +
+      "Mundial en los medios que ya usan, no en el halo del Mundial. Cifras en MILLONES de MXN. Material " +
+      "interno de guerra: úsalo para coachear al vendedor, jamás lo reenvíes al cliente.",
+    parameters: {
+      type: "object",
+      properties: {
+        cuenta: {
+          type: "string",
+          description:
+            "Nombre de la cuenta o anunciante (p. ej. 'Colgate', 'Procter & Gamble', 'Bimbo').",
+        },
+      },
+      required: ["cuenta"],
+    },
+  },
+};
+
+const TOOL_CONSULTAR_METAS_PORTAFOLIO: ToolDefinition = {
+  type: "function",
+  function: {
+    name: "consultar_metas_portafolio",
+    description:
+      "Trae el ROLLUP de cierre de TODA tu cartera (Gerente: tus cuentas; Director/VP: las cuentas de tus " +
+      "gerentes): total 2026 cerrado, cuánto fue MUNDIAL, base recurrente, META 2027, % de crecimiento " +
+      "requerido, y el desglose por cuenta ordenado por meta 2027. Marca las cuentas MÁS EXPUESTAS al " +
+      "Mundial (las que más hay que defender en un año sin Mundial) y las de mayor crecimiento requerido.\n\n" +
+      "USAR al arrancar la planeación de la preventa o un 1:1, para ver el bosque antes que el árbol y " +
+      "priorizar dónde está el riesgo (brecha Mundial) y la oportunidad (crecimiento). Cifras en MILLONES " +
+      "de MXN. Material interno; no se comparte con el cliente.",
+    parameters: { type: "object", properties: {} },
   },
 };
 
@@ -2433,6 +2481,8 @@ const GERENTE_TOOLS: ToolDefinition[] = [
   TOOL_ARMAR_RADIOGRAFIA_MARCA,
   TOOL_ARMAR_RADIOGRAFIA_ANUNCIANTE,
   TOOL_MAPA_PODER_ANUNCIANTE,
+  TOOL_CONSULTAR_METAS_CIERRE,
+  TOOL_CONSULTAR_METAS_PORTAFOLIO,
   TOOL_CONSULTAR_PIPELINE,
   TOOL_CONSULTAR_CUENTA,
   TOOL_CONSULTAR_CUENTAS,
@@ -2494,6 +2544,8 @@ const DIRECTOR_TOOLS: ToolDefinition[] = [
   TOOL_ARMAR_RADIOGRAFIA_MARCA,
   TOOL_ARMAR_RADIOGRAFIA_ANUNCIANTE,
   TOOL_MAPA_PODER_ANUNCIANTE,
+  TOOL_CONSULTAR_METAS_CIERRE,
+  TOOL_CONSULTAR_METAS_PORTAFOLIO,
   TOOL_CONSULTAR_PIPELINE,
   TOOL_CONSULTAR_CUENTA,
   TOOL_CONSULTAR_CUENTAS,
@@ -2638,6 +2690,8 @@ const TOOL_HANDLERS: Record<string, ToolHandler> = {
   armar_radiografia_marca,
   armar_radiografia_anunciante,
   mapa_poder_anunciante,
+  consultar_metas_cierre,
+  consultar_metas_portafolio,
   buscar_web,
   consultar_clima,
   convertir_moneda,

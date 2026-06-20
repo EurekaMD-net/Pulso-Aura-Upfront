@@ -1,0 +1,14 @@
+gerente_code,cuenta_raw,escenario,medio,monto,es_mundial
+ACL,CCM,cierre_2026,tv,169.2,0
+ACL,CCM,cierre_2026,mundial_tv,16.8,1
+ACL,CCM,cierre_2026,mundial_radio,0.5,1
+ACL,CCM,cierre_2026,digital,7,0
+ACL,CCM,cierre_2026,ctv,13,0
+ACL,CCM,base_2026,tv,169.2,0
+ACL,CCM,base_2026,digital,7,0
+ACL,CCM,base_2026,ctv,13,0
+ACL,CCM,base_2026,roku,6,0
+ACL,CCM,meta_2027,tv,177.7,0
+ACL,CCM,meta_2027,digital,8.4,0
+ACL,CCM,meta_2027,ctv,14.95,0
+ACL,CCM,meta_2027,roku,6.9,0

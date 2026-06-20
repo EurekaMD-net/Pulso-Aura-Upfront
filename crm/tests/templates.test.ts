@@ -101,7 +101,11 @@ describe("global.md -- schema coverage", () => {
         t !== "crm_fts_embeddings" &&
         t !== "template_score" &&
         t !== "template_variant" &&
-        t !== "anunciante_marca",
+        t !== "anunciante_marca" &&
+        // Internal bridge tables reached via tools, not agent SQL.
+        t !== "anunciante_snowflake_map" &&
+        t !== "cierre_meta" &&
+        t !== "cierre_meta_linea",
     );
     for (const table of agentFacingTables) {
       expect(globalMd, `Missing table: ${table}`).toContain(table);
@@ -218,8 +222,8 @@ describe("global.md -- tool coverage", () => {
     }
   }
 
-  it("references all 75 tool names", () => {
-    expect(allToolNames.size).toBe(75); // unique tool names across all roles
+  it("references all 77 tool names", () => {
+    expect(allToolNames.size).toBe(77); // unique tool names across all roles
     for (const name of allToolNames) {
       expect(globalMd, `Missing tool: ${name}`).toContain(name);
     }
@@ -247,7 +251,7 @@ describe("ae.md -- tool references", () => {
 describe("manager.md -- tool references", () => {
   const gerenteTools = getToolsForRole("gerente").map((t) => t.function.name);
 
-  it("references all 59 gerente tools", () => {
+  it("references all 61 gerente tools", () => {
     for (const name of gerenteTools) {
       expect(managerMd, `Missing gerente tool: ${name}`).toContain(name);
     }
@@ -273,7 +277,7 @@ describe("manager.md -- tool references", () => {
 describe("director.md -- tool references", () => {
   const directorTools = getToolsForRole("director").map((t) => t.function.name);
 
-  it("references all 70 director tools", () => {
+  it("references all 72 director tools", () => {
     for (const name of directorTools) {
       expect(directorMd, `Missing director tool: ${name}`).toContain(name);
     }

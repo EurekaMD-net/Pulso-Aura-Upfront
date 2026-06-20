@@ -61,6 +61,8 @@ export const CRM_TABLES = [
   "template_variant",
   "anunciante_marca",
   "anunciante_snowflake_map",
+  "cierre_meta",
+  "cierre_meta_linea",
 ] as const;
 
 export type CrmTableName = (typeof CRM_TABLES)[number];
@@ -934,4 +936,101 @@ export function createCrmSchema(db: Database.Database): void {
   db.exec(
     "CREATE INDEX IF NOT EXISTS idx_anunciante_sf_id ON anunciante_snowflake_map(sf_anunciante_id)",
   );
+
+  // -- Phase 15: Upfront closing goal (Cierres 2026 / Metas 2027) --
+  // The closing companion needs each account's commercial frame: how much it
+  // closed in 2026 (incl. the World Cup / Mundial halo that won't recur), the
+  // recurring ex-Mundial base, and the 2027 target. Sourced from the operator's
+  // "Cierres 2026 A Semana 24" sheet (3 tabs -> 3 escenarios), loaded by
+  // loadCierreMetas, linked to cuenta by (gerente_code, normalized account name).
+  // Amounts are in MILLIONS of MXN. cierre_meta is the header (one row per
+  // account per escenario); cierre_meta_linea is the per-media breakdown, with
+  // es_mundial flagging the World-Cup-attributable lines (the non-Mundial-year
+  // gap the rep must defend/replace). UNIQUE(gerente_code, cuenta_norm,
+  // escenario) makes the loader idempotent.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS cierre_meta (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      cuenta_id TEXT REFERENCES cuenta(id) ON DELETE SET NULL,
+      gerente_code TEXT NOT NULL,
+      cuenta_raw TEXT NOT NULL,
+      cuenta_norm TEXT NOT NULL,
+      anunciante_norm TEXT,
+      escenario TEXT NOT NULL CHECK(escenario IN ('cierre_2026','base_2026','meta_2027')),
+      total REAL NOT NULL,
+      fuente TEXT,
+      fecha_carga TEXT DEFAULT (datetime('now')),
+      UNIQUE(gerente_code, cuenta_norm, escenario)
+    );
+  `);
+  db.exec(
+    "CREATE INDEX IF NOT EXISTS idx_cierre_meta_cuenta ON cierre_meta(cuenta_id)",
+  );
+  db.exec(
+    "CREATE INDEX IF NOT EXISTS idx_cierre_meta_anorm ON cierre_meta(anunciante_norm)",
+  );
+  db.exec(
+    "CREATE INDEX IF NOT EXISTS idx_cierre_meta_ger ON cierre_meta(gerente_code)",
+  );
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS cierre_meta_linea (
+      cierre_id INTEGER NOT NULL REFERENCES cierre_meta(id) ON DELETE CASCADE,
+      medio TEXT NOT NULL,
+      monto REAL NOT NULL,
+      es_mundial INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (cierre_id, medio)
+    );
+  `);
+
+  // Migration: cierre_meta.cuenta_id must be ON DELETE SET NULL so an org-trim
+  // that DELETEs a cuenta UNLINKS its closing history (cuenta_id -> NULL) instead
+  // of being RESTRICTed (foreign_keys=ON would block the parent delete). The
+  // loader already tolerates cuenta_id NULL (unmatched/non-pilot rows), so SET
+  // NULL matches the existing convention. Rebuild existing tables that still
+  // carry the original NO ACTION FK. id is preserved so cierre_meta_linea.cierre_id
+  // stays valid through the drop+rename.
+  const cierreSql = (
+    db
+      .prepare(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='cierre_meta'",
+      )
+      .get() as { sql: string } | undefined
+  )?.sql;
+  if (cierreSql && !cierreSql.includes("ON DELETE SET NULL")) {
+    db.pragma("foreign_keys = OFF");
+    db.exec("DROP TABLE IF EXISTS cierre_meta_new");
+    db.exec(`
+      CREATE TABLE cierre_meta_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cuenta_id TEXT REFERENCES cuenta(id) ON DELETE SET NULL,
+        gerente_code TEXT NOT NULL,
+        cuenta_raw TEXT NOT NULL,
+        cuenta_norm TEXT NOT NULL,
+        anunciante_norm TEXT,
+        escenario TEXT NOT NULL CHECK(escenario IN ('cierre_2026','base_2026','meta_2027')),
+        total REAL NOT NULL,
+        fuente TEXT,
+        fecha_carga TEXT DEFAULT (datetime('now')),
+        UNIQUE(gerente_code, cuenta_norm, escenario)
+      );
+    `);
+    db.exec(
+      `INSERT INTO cierre_meta_new
+         (id, cuenta_id, gerente_code, cuenta_raw, cuenta_norm, anunciante_norm, escenario, total, fuente, fecha_carga)
+       SELECT id, cuenta_id, gerente_code, cuenta_raw, cuenta_norm, anunciante_norm, escenario, total, fuente, fecha_carga
+       FROM cierre_meta`,
+    );
+    db.exec("DROP TABLE cierre_meta");
+    db.exec("ALTER TABLE cierre_meta_new RENAME TO cierre_meta");
+    db.exec(
+      "CREATE INDEX IF NOT EXISTS idx_cierre_meta_cuenta ON cierre_meta(cuenta_id)",
+    );
+    db.exec(
+      "CREATE INDEX IF NOT EXISTS idx_cierre_meta_anorm ON cierre_meta(anunciante_norm)",
+    );
+    db.exec(
+      "CREATE INDEX IF NOT EXISTS idx_cierre_meta_ger ON cierre_meta(gerente_code)",
+    );
+    db.pragma("foreign_keys = ON");
+  }
 }
