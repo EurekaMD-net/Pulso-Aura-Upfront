@@ -124,10 +124,45 @@ export function findCuentaId(nombre: string, ctx?: ToolContext): string | null {
 
 export function personaIdFromName(nombre: string): string | null {
   const db = getDatabase();
-  const row = db
+
+  // 1. Substring match (unchanged) — query equal to, or contained in, the stored name.
+  const direct = db
     .prepare("SELECT id FROM persona WHERE nombre LIKE ?")
-    .get(`%${nombre}%`) as any;
-  return row?.id ?? null;
+    .get(`%${nombre}%`) as { id: string } | undefined;
+  if (direct) return direct.id;
+
+  // Fallbacks — the same one-directional-LIKE gap swept into findCuentaId: a query
+  // that is a SUPERSET of the stored name ("Juan Carlos Gamba López" ⊇ "Juan Carlos
+  // Gamba") is missed by `nombre LIKE '%query%'`. Match name-variant-insensitively
+  // on the persona rows, resolving only on a UNIQUE match (no-guess — surname
+  // collisions stay ambiguous → null). No advertiser path (N/A for people).
+  const target = matchNorm(nombre);
+  if (!target) return null;
+  const rows = db.prepare("SELECT id, nombre FROM persona").all() as {
+    id: string;
+    nombre: string;
+  }[];
+
+  // 2. Loose exact — accent/punctuation-insensitive ("José Pérez" vs "Jose Perez").
+  let hits = rows.filter((r) => matchNorm(r.nombre) === target);
+
+  // 3. Whole-token subset — every token of the stored name appears in the query.
+  //    NOTE: this allows single-token names (cTokens.length > 0), unlike
+  //    findCuentaId / resolveCierreAccounts which require >= 2 tokens. People
+  //    legitimately have one-word names (mononyms) and there is no common-token
+  //    catalog (the >= 2 rule there guards against a generic lone token like
+  //    "AMAZON" over-matching) — here the unique-match guard below is sufficient.
+  //    Don't "fix" this to >= 2 to match the siblings.
+  if (hits.length === 0) {
+    const qTokens = new Set(target.split(" ").filter(Boolean));
+    hits = rows.filter((r) => {
+      const cTokens = matchNorm(r.nombre).split(" ").filter(Boolean);
+      return cTokens.length > 0 && cTokens.every((t) => qTokens.has(t));
+    });
+  }
+
+  const ids = [...new Set(hits.map((h) => h.id))];
+  return ids.length === 1 ? ids[0] : null;
 }
 
 /**

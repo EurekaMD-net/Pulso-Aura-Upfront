@@ -30,6 +30,7 @@ const {
   cierrePortafolio,
   cierreCoachingSummary,
   cierreMetasLoaded,
+  sellable2027Catalog,
 } = await import("../src/cierre/query.js");
 import type { CierreRow, Escenario } from "../src/cierre/types.js";
 
@@ -215,6 +216,26 @@ describe("frameForAccounts — coaching math", () => {
     expect(s).toContain("$135.0M"); // recurring base
     expect(s).toContain("$150.0M"); // 2027 target
     expect(s).toMatch(/sin Mundial/i);
+  });
+
+  it("bundles CTV + Roku into one CTV/Roku line in the low-hanging-fruit list", () => {
+    const f = frameForAccounts(resolveCierreAccounts("CCM").accounts)!;
+    const s = cierreCoachingSummary("CCM", f);
+    // Merged amounts (base 20+5=25, meta 22+6=28) — this exact string can only
+    // exist if the two were folded into one line.
+    expect(s).toContain("CTV/Roku (base $25.0M → meta $28.0M)");
+    // No standalone CTV entry (the bundle is "CTV/Roku (base", never "CTV (base").
+    expect(s).not.toContain("CTV (base");
+    // The point-of-use directive states the always-together rule.
+    expect(s).toMatch(/CTV y Roku se venden y presentan SIEMPRE juntos/);
+  });
+
+  it("sellable2027Catalog presents CTV/Roku as one bundled entry", () => {
+    const cat = sellable2027Catalog();
+    expect(cat).toContain("CTV/Roku");
+    // Not two separate catalog tokens.
+    expect(cat).not.toMatch(/(^|·\s*)CTV(\s*·|$)/);
+    expect(cat).not.toMatch(/(^|·\s*)Roku(\s*·|$)/);
   });
 });
 

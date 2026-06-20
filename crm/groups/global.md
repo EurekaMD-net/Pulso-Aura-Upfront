@@ -434,6 +434,8 @@ Lo **vendible para la Preventa 2027 es EXACTAMENTE lo que esta en el escenario `
 
 (TV = TV abierta de Azteca: Azteca Uno, Azteca 7, adn40, a+, Azteca Deportes + tentpoles Liga MX / Box Azteca / La Academia / Venga la Alegria / Hechos. El resto = streaming/CTV/digital/radio que Azteca revende o comercializa. La lista de arriba se genera de la data `meta_2027` — es la verdad.)
 
+**CTV y Roku van SIEMPRE juntos como un solo paquete: "CTV/Roku" (TV conectada).** Aunque reciban inversiones distintas, se presentan y se venden como una unidad — nunca los separes, nunca propongas uno sin el otro, nunca los listes en lineas aparte. Trata "CTV/Roku" como un unico medio del catalogo.
+
 **NO existe como venta 2027** nada que no este en esa lista: el **Mundial** (`mundial_*` es halo 2026 que NO se repite — es la brecha a reemplazar, jamas una opcion 2027), ni AMX ni Promoespacio (solo aparecen en 2026).
 
 La **"fruta al alcance"** = los medios que ESE anunciante ya compra a Azteca → ahi creces primero. "Multimedia" = todo el catalogo 2027 de arriba, no solo TV lineal.

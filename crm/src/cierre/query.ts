@@ -89,14 +89,16 @@ export function sellable2027Catalog(): string {
     medios = [];
   }
   if (medios.length === 0)
-    return "TV · Disney+ · Roku · CTV · Fox · Digital · Radio";
+    return "TV · Disney+ · CTV/Roku · Fox · Digital · Radio";
   const order = Object.keys(MEDIO_LABEL);
   medios.sort(
     (a, b) =>
       (order.indexOf(a) === -1 ? 999 : order.indexOf(a)) -
       (order.indexOf(b) === -1 ? 999 : order.indexOf(b)),
   );
-  return medios.map((m) => MEDIO_LABEL[m] ?? m).join(" · ");
+  return bundleConnectedTvLabels(medios.map((m) => MEDIO_LABEL[m] ?? m)).join(
+    " · ",
+  );
 }
 
 function emptyResumen(): EscenarioResumen {
@@ -426,7 +428,56 @@ function pct(n: number | null): string {
   return `${sign}${(n * 100).toFixed(1)}%`;
 }
 function medioLabel(m: string): string {
+  if (m === "ctv_roku") return "CTV/Roku";
   return MEDIO_LABEL[m] ?? m;
+}
+
+/**
+ * CTV and Roku are sold as ONE connected-TV bundle (operator rule): always
+ * presented together, even when their investment differs. Collapses the two
+ * catalog LABELS into a single "CTV/Roku" entry at CTV's position.
+ */
+function bundleConnectedTvLabels(labels: string[]): string[] {
+  if (!labels.includes("CTV") || !labels.includes("Roku")) return labels;
+  const out: string[] = [];
+  for (const l of labels) {
+    if (l === "CTV") out.push("CTV/Roku");
+    else if (l === "Roku")
+      continue; // folded into CTV/Roku
+    else out.push(l);
+  }
+  return out;
+}
+
+/**
+ * Same connected-TV bundle, applied to per-medio LINES ({medio, base, meta}):
+ * merges the `ctv` and `roku` rows into one synthetic `ctv_roku` line with summed
+ * amounts, placed at the first occurrence of either (preserving the higher rank).
+ */
+function bundleConnectedTvLines(
+  lines: { medio: string; base: number; meta: number }[],
+): { medio: string; base: number; meta: number }[] {
+  const ctv = lines.find((l) => l.medio === "ctv");
+  const roku = lines.find((l) => l.medio === "roku");
+  if (!ctv || !roku) return lines;
+  const merged = {
+    medio: "ctv_roku",
+    base: ctv.base + roku.base,
+    meta: ctv.meta + roku.meta,
+  };
+  const out: { medio: string; base: number; meta: number }[] = [];
+  let inserted = false;
+  for (const l of lines) {
+    if (l.medio === "ctv" || l.medio === "roku") {
+      if (!inserted) {
+        out.push(merged);
+        inserted = true;
+      }
+    } else {
+      out.push(l);
+    }
+  }
+  return out;
 }
 
 /**
@@ -436,7 +487,9 @@ function medioLabel(m: string): string {
  * retain investment must be strong on the base, not the Mundial halo.
  */
 export function cierreCoachingSummary(label: string, f: CierreFrame): string {
-  const lhf = f.lowHangingFruit
+  // Bundle CTV+Roku BEFORE the top-5 cut so the pair counts as one slot (a 6th
+  // medio can then surface) — they must always appear together.
+  const lhf = bundleConnectedTvLines(f.lowHangingFruit)
     .slice(0, 5)
     .map(
       (c) =>
@@ -502,6 +555,7 @@ export function cierreCoachingSummary(label: string, f: CierreFrame): string {
   // the tool output, where the model reasons about the recommendation.
   lines.push(
     `MEDIOS VENDIBLES 2027 (los UNICOS que puedes proponer): ${sellable2027Catalog()}. ` +
+      `CTV y Roku se venden y presentan SIEMPRE juntos como el paquete de TV conectada (CTV/Roku), aunque reciban inversiones distintas — nunca los separes ni propongas uno sin el otro. ` +
       `NO propongas NADA fuera de esa lista: YouTube, TikTok, Instagram, Amazon, Netflix, "influencers", "redes sociales", CTV/DTC genericos, etc. NO se venden — si aparecen en la radiografia son diagnostico (donde gasta HOY el anunciante = whitespace a capturar CON medios Azteca), jamas una opcion de compra.`,
   );
   return lines.join("\n");

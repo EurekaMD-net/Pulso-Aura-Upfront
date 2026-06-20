@@ -106,6 +106,13 @@ describe("global.md -- veracidad / anti-confabulation rule", () => {
   });
 });
 
+describe("global.md -- CTV/Roku connected-TV bundle rule", () => {
+  it("states CTV and Roku are always presented together", () => {
+    expect(globalMd).toContain("CTV y Roku van SIEMPRE juntos");
+    expect(globalMd).toContain("CTV/Roku");
+  });
+});
+
 // ---------------------------------------------------------------------------
 // global.md -- Schema coverage
 // ---------------------------------------------------------------------------

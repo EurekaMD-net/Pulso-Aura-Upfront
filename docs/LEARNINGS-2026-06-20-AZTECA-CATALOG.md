@@ -78,3 +78,30 @@ asked to "propose a strategy." Two fixes, layered:
 Put it in the tool output (point of use), and if the model still free-associates, the model
 is too weak — escalate. Don't keep re-wording a prompt a model can't follow (the 3-strike
 rule applies to prompt-tweaking too). → [[feedback_inference_provider_thinking_mode]].
+
+## Follow-up — CTV and Roku are ONE connected-TV bundle (2026-06-20)
+
+Operator: "Make the agent ALWAYS bundle CTV/Roku even if they receive different amounts
+of investment — they should be together." CTV and Roku are sold as a single connected-TV
+package; the agent was presenting them as two separate catalog items / two separate lines.
+
+Applied at the same point of use as the catalog guardrail (so a 32B model can't drift):
+
+- **`sellable2027Catalog()`** (`crm/src/cierre/query.ts`) — `bundleConnectedTvLabels()`
+  collapses the two labels into a single "CTV/Roku" entry at CTV's position. This flows
+  into BOTH the injected `{{CATALOGO_2027}}` prompt allowlist (now
+  `TV · Digital · CTV/Roku · Disney+ · Radio · Fox`) and the point-of-use "MEDIOS
+  VENDIBLES 2027" directive.
+- **`cierreCoachingSummary()`** — `bundleConnectedTvLines()` merges the `ctv` + `roku`
+  per-medio lines (`{medio, base, meta}`) into one synthetic `ctv_roku` line with **summed**
+  amounts, placed at the higher-ranked of the two, **before** the top-5 cut (so the pair
+  counts as one slot and a 6th medio can surface). The directive gained "CTV y Roku se
+  venden y presentan SIEMPRE juntos … nunca los separes".
+- **`global.md`** — the same rule in the shared catalog section.
+
+Both bundlers fire **only when BOTH ctv and roku are present** (single-medio safe) and never
+mutate the frame — only the rendered string changes. qa-auditor PASS (0 Critical/Warning).
+
+**Lesson:** a "these two are always sold together" product rule belongs in the same
+data-driven presentation layer as the catalog (labels + per-line merge), not just a prose
+nudge — so the bundling is structural in what the model sees, not a request it can ignore.

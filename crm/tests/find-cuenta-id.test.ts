@@ -25,7 +25,16 @@ const noopLogger = {
 };
 vi.mock("../src/logger.js", () => ({ logger: noopLogger }));
 
-const { findCuentaId } = await import("../src/tools/helpers.js");
+const { findCuentaId, personaIdFromName } =
+  await import("../src/tools/helpers.js");
+
+function persona(id: string, nombre: string): void {
+  testDb
+    .prepare(
+      "INSERT INTO persona (id, nombre, rol, reporta_a, activo) VALUES (?, ?, 'gerente', NULL, 1)",
+    )
+    .run(id, nombre);
+}
 
 function cuenta(
   id: string,
@@ -66,6 +75,12 @@ beforeEach(() => {
   // query, so only the anunciante_norm path (step 3) can resolve it.
   cuenta("cta-lala-mx", "OPERADORA LALA", "grupo lala");
   anuncianteMarca("leche-x", "Leche X", "GRUPO LALA", "grupo lala");
+  persona("per-gamba", "Juan Carlos Gamba");
+  persona("per-jose", "José Pérez");
+  persona("per-ana", "Ana López");
+  persona("per-juan-l", "Juan López");
+  persona("per-juan-p", "Juan Pérez"); // collides with Juan López on "Juan"
+  persona("per-mono", "Shakira"); // single-token (mononym) — exercises the > 0 path
 });
 
 describe("findCuentaId — exact / substring (unchanged behavior)", () => {
@@ -114,5 +129,35 @@ describe("findCuentaId — no-guess safety", () => {
   });
   it("does not over-match an unrelated single token", () => {
     expect(findCuentaId("Pepsi")).toBeNull();
+  });
+});
+
+describe("personaIdFromName — same name-variant sweep", () => {
+  it("resolves an exact name", () => {
+    expect(personaIdFromName("Juan Carlos Gamba")).toBe("per-gamba");
+  });
+  it("resolves a surname contained in the stored name (substring)", () => {
+    expect(personaIdFromName("Gamba")).toBe("per-gamba");
+  });
+  it("resolves an accent/punct variant (loose-exact)", () => {
+    // "Jose Perez" (no accents) — substring LIKE misses (é≠e), loose-exact resolves.
+    expect(personaIdFromName("Jose Perez")).toBe("per-jose");
+  });
+  it("resolves a SUPERSET query — the one-directional-LIKE gap", () => {
+    // "Juan Carlos Gamba Hernández" ⊇ "Juan Carlos Gamba"; no sibling is a subset.
+    expect(personaIdFromName("Juan Carlos Gamba Hernández")).toBe("per-gamba");
+  });
+  it("resolves a single-token (mononym) persona from a superset query", () => {
+    // The > 0 token-subset path (diverges from findCuentaId's >= 2): "Shakira"
+    // is a one-word name; the unique-match guard keeps it safe.
+    expect(personaIdFromName("Shakira en concierto")).toBe("per-mono");
+  });
+  it("returns null for an unknown name", () => {
+    expect(personaIdFromName("Persona Inexistente XYZ")).toBeNull();
+  });
+  it("returns null (ambiguous) when a superset query matches >1 persona", () => {
+    // "Juan López Pérez" ⊇ both "Juan López" and "Juan Pérez"; substring LIKE misses
+    // both, the token-subset step finds two → no-guess null.
+    expect(personaIdFromName("Juan López Pérez")).toBeNull();
   });
 });
