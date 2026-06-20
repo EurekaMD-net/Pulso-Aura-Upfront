@@ -89,6 +89,24 @@ const allTemplateNames = [
 ];
 
 // ---------------------------------------------------------------------------
+// global.md -- Anti-confabulation rule
+// ---------------------------------------------------------------------------
+
+describe("global.md -- veracidad / anti-confabulation rule", () => {
+  it("has the Veracidad de datos section", () => {
+    expect(globalMd).toContain("## Veracidad de datos");
+  });
+  it("forbids inventing tool results", () => {
+    expect(globalMd).toContain("NUNCA inventes ni simules datos");
+  });
+  it("forbids emitting raw JSON to the user", () => {
+    expect(globalMd).toContain(
+      "NUNCA escribas un objeto JSON crudo como tu mensaje",
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
 // global.md -- Schema coverage
 // ---------------------------------------------------------------------------
 

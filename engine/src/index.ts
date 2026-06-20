@@ -13,6 +13,7 @@ import {
 import { parseImageReferences } from './image.js';
 import { WhatsAppChannel } from './channels/whatsapp.js';
 import { bootstrapEngine } from './bootstrap.js';
+import { isRawToolResultLeak } from './delivery-guard.js';
 import { startContainerStatsLogger } from './container-stats-logger.js';
 import {
   ContainerOutput,
@@ -200,6 +201,10 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
   await channel.setTyping?.(chatJid, true);
   let hadError = false;
   let outputSentToUser = false;
+  // True when the most recent outbound chunk was a suppressed JSON leak (see
+  // delivery-guard). If the turn's FINAL deliverable was suppressed, the user is
+  // missing the answer and we must close with a clean fallback.
+  let lastChunkWasSuppressedLeak = false;
 
   const output = await runAgent(
     group,
@@ -225,8 +230,22 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
           `Agent output: ${raw.slice(0, 200)}`,
         );
         if (text) {
-          await channel.sendMessage(chatJid, text);
-          outputSentToUser = true;
+          // Confabulation guard: a reasoning model sometimes mimics the tool-result
+          // JSON in its context and emits it as its OWN message (observed: a fabricated
+          // {"error":"...no se encontró...","sugerencias":[...]} sent to WhatsApp while
+          // the tool had actually succeeded). A user message is never raw JSON — suppress
+          // it and let the turn close with a clean fallback instead of confabulated data.
+          if (isRawToolResultLeak(text)) {
+            lastChunkWasSuppressedLeak = true;
+            logger.warn(
+              { group: group.name, preview: text.slice(0, 120) },
+              'Suppressed raw tool-result JSON in outbound message (confabulation guard)',
+            );
+          } else {
+            await channel.sendMessage(chatJid, text);
+            outputSentToUser = true;
+            lastChunkWasSuppressedLeak = false;
+          }
         }
         // Only reset idle timer on final results, not streaming chunks or session-update markers
         if (!result.streaming) {
@@ -278,6 +297,18 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
     await channel.sendMessage(
       chatJid,
       'Disculpa, no pude generar una respuesta para eso. ¿Me lo reformulas o lo intentamos de otra forma?',
+    );
+  } else if (lastChunkWasSuppressedLeak) {
+    // The user got some text (e.g. an acknowledgment) but the turn's FINAL
+    // deliverable was a suppressed JSON leak — i.e. the actual answer was
+    // confabulated and withheld. Close cleanly so the user isn't left hanging.
+    logger.warn(
+      { group: group.name },
+      'Final deliverable was a suppressed JSON leak; sending clean fallback',
+    );
+    await channel.sendMessage(
+      chatJid,
+      'Disculpa, tuve un problema al entregarte ese resultado. ¿Me repites la consulta, por favor?',
     );
   }
 

@@ -8,6 +8,8 @@
  */
 
 import { getDatabase } from "../db.js";
+import { matchNorm } from "../aura-rbac.js";
+import { resolveAnunciante } from "../anunciante.js";
 import type { ToolContext } from "./index.js";
 
 // ---------------------------------------------------------------------------
@@ -57,17 +59,67 @@ export function estadoFilter(
 
 export function findCuentaId(nombre: string, ctx?: ToolContext): string | null {
   const db = getDatabase();
-  if (ctx) {
-    const ef = estadoFilter(ctx, "cuenta");
-    const row = db
-      .prepare(`SELECT id FROM cuenta WHERE nombre LIKE ? ${ef.where}`)
-      .get(`%${nombre}%`, ...ef.params) as any;
-    return row?.id ?? null;
+  const ef = ctx
+    ? estadoFilter(ctx, "cuenta")
+    : { where: "", params: [] as string[] };
+
+  // 1. Substring match — handles the query being equal to, or contained in, the
+  //    stored name ("Bayer" -> "BAYER", "Procter" -> "PROCTER & GAMBLE").
+  //    SQLite LIKE is case-insensitive for ASCII.
+  const direct = db
+    .prepare(`SELECT id FROM cuenta WHERE nombre LIKE ? ${ef.where}`)
+    .get(`%${nombre}%`, ...ef.params) as { id: string } | undefined;
+  if (direct) return direct.id;
+
+  // Fallbacks (the exact substring missed). The advertiser spelling
+  // ("Bayer de México") is a SUPERSET of the cartera account name ("BAYER") with
+  // extra/punctuation tokens, so a one-directional LIKE can't see it. Fetch the
+  // in-scope accounts once and match them hyphen/space/punct-insensitively.
+  // Mirrors resolveCierreAccounts (commit d2c0d71) — the same name-variant class.
+  const target = matchNorm(nombre);
+  if (!target) return null;
+
+  const rows = db
+    .prepare(
+      `SELECT id, nombre, anunciante_norm FROM cuenta WHERE 1=1 ${ef.where}`,
+    )
+    .all(...ef.params) as {
+    id: string;
+    nombre: string;
+    anunciante_norm: string | null;
+  }[];
+
+  // 2. Loose exact — same name, hyphen/space/punct-insensitive ("Coca-Cola" -> "COCA COLA").
+  let hits = rows.filter((r) => matchNorm(r.nombre) === target);
+
+  // 3. Advertiser path — resolve the query to an anunciante, match cuenta.anunciante_norm.
+  if (hits.length === 0) {
+    const adv = resolveAnunciante(nombre).anuncianteNorm;
+    if (adv) {
+      const advN = matchNorm(adv);
+      hits = rows.filter(
+        (r) => r.anunciante_norm && matchNorm(r.anunciante_norm) === advN,
+      );
+    }
   }
-  const row = db
-    .prepare("SELECT id FROM cuenta WHERE nombre LIKE ?")
-    .get(`%${nombre}%`) as any;
-  return row?.id ?? null;
+
+  // 4. Whole-token subset — every token of the account name appears in the query
+  //    ("Bayer de México" ⊇ "BAYER"). Whole-token, never substring. Single-token
+  //    accounts ARE allowed (brand names legitimately are one token: BAYER, NISSAN,
+  //    LG) because the unique-match guard below is the safety net: >1 distinct
+  //    account -> ambiguous -> null (no guess), so a common token can't over-match
+  //    to a single wrong result.
+  if (hits.length === 0) {
+    const qTokens = new Set(target.split(" ").filter(Boolean));
+    hits = rows.filter((r) => {
+      const cTokens = matchNorm(r.nombre).split(" ").filter(Boolean);
+      return cTokens.length > 0 && cTokens.every((t) => qTokens.has(t));
+    });
+  }
+
+  // Resolve only when unique — never guess between multiple candidates.
+  const ids = [...new Set(hits.map((h) => h.id))];
+  return ids.length === 1 ? ids[0] : null;
 }
 
 export function personaIdFromName(nombre: string): string | null {
