@@ -86,7 +86,11 @@ function createSchema(database: Database.Database): void {
       trigger_pattern TEXT NOT NULL,
       added_at TEXT NOT NULL,
       container_config TEXT,
-      requires_trigger INTEGER DEFAULT 1
+      -- Default 0: Aura is a per-rep closing companion, so it replies to every
+      -- message in its group without needing to be addressed by @name. Set to 1
+      -- per-group (or pass requiresTrigger:true at registration) for a group that
+      -- should only respond when mentioned.
+      requires_trigger INTEGER DEFAULT 0
     );
   `);
 
@@ -584,7 +588,7 @@ export function setRegisteredGroup(jid: string, group: RegisteredGroup): void {
     group.trigger,
     group.added_at,
     group.containerConfig ? JSON.stringify(group.containerConfig) : null,
-    group.requiresTrigger === undefined ? 1 : group.requiresTrigger ? 1 : 0,
+    group.requiresTrigger === undefined ? 0 : group.requiresTrigger ? 1 : 0,
   );
 }
 
