@@ -52,3 +52,29 @@ table is empty → no grounding.
   Fox). Confirm the catalog from the data before writing a denylist.
 - The unbounded directive lived in `manager.md`/`director.md` ("siempre multimedia"); the
   bound now lives in the shared `global.md` so it can't drift per role.
+
+## Follow-up — the guardrail didn't stick on qwen3-32b (model adherence)
+
+After deploying the catalog guardrail, the agent KEPT suggesting off-catalog channels —
+first YouTube, then TikTok/Instagram/Amazon/influencers. Verified: the guardrail WAS in the
+running container's prompt (deployment fine), and the radiografía data has **zero** YouTube
+mentions — the model was **free-associating the open-market playbook from its training**.
+
+**Root cause:** a guardrail buried in a ~45KB system prompt doesn't hold on a 32B model
+asked to "propose a strategy." Two fixes, layered:
+
+1. **Constraint at the POINT OF USE.** `cierreCoachingSummary` (returned by
+   `consultar_metas_cierre`) now ends with a hard line: _"MEDIOS VENDIBLES 2027 (los ÚNICOS
+   …): TV · Disney+ · … NO propongas NADA fuera: YouTube, TikTok, Instagram, Amazon …"_.
+   In the tool output (conversation), it's far more salient than a system-prompt rule.
+   Also bounded the `manager.md`/`director.md` "siempre multimedia" line explicitly.
+2. **Stronger model.** Inverted the providers — **primary → Fireworks `qwen3.7-plus`**,
+   fallback → Groq `qwen3-32b` (`scripts/set-inference-providers.ts fireworks`, now
+   parameterized; bumps `INFERENCE_MAX_TOKENS`→4000 for the reasoning). qwen3.7-plus had the
+   best instruction-following + synthesis in the benchmark; the latency cost (≈0.9s→4.2s) is
+   worth correct in-catalog behavior for a closing companion.
+
+**Lesson:** for a hard behavioral constraint, **a system-prompt rule is the weakest lever**.
+Put it in the tool output (point of use), and if the model still free-associates, the model
+is too weak — escalate. Don't keep re-wording a prompt a model can't follow (the 3-strike
+rule applies to prompt-tweaking too). → [[feedback_inference_provider_thinking_mode]].

@@ -497,5 +497,12 @@ export function cierreCoachingSummary(label: string, f: CierreFrame): string {
       `Encuadre del cierre: sin halo de Mundial, el argumento es 100% defensa y crecimiento de la base recurrente (${pct(f.crecimientoPct)}) en los medios que ya usan; sube el listón medio por medio antes de proponer medios nuevos.`,
     );
   }
+  // Hard guardrail AT THE POINT OF USE — the system-prompt rule alone wasn't enough
+  // for a 32B model that free-associates the open-market playbook. Listed right in
+  // the tool output, where the model reasons about the recommendation.
+  lines.push(
+    `MEDIOS VENDIBLES 2027 (los UNICOS que puedes proponer): ${sellable2027Catalog()}. ` +
+      `NO propongas NADA fuera de esa lista: YouTube, TikTok, Instagram, Amazon, Netflix, "influencers", "redes sociales", CTV/DTC genericos, etc. NO se venden — si aparecen en la radiografia son diagnostico (donde gasta HOY el anunciante = whitespace a capturar CON medios Azteca), jamas una opcion de compra.`,
+  );
   return lines.join("\n");
 }

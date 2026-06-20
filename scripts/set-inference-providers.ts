@@ -18,8 +18,12 @@ import fs from "fs";
 import path from "path";
 
 const ENV = path.resolve(".env");
-const NEW_PRIMARY_MODEL = "qwen/qwen3-32b";
-const NEW_FALLBACK_MODEL = "accounts/fireworks/models/qwen3p7-plus";
+const FW_MODEL = "accounts/fireworks/models/qwen3p7-plus";
+const GROQ_MODEL = "qwen/qwen3-32b";
+// Which provider leads. "fireworks" = qwen3.7-plus primary (stronger instruction
+// following — adheres to the Azteca-catalog guardrail). "groq" = qwen3-32b primary
+// (faster/leaner). Default fireworks.
+const PRIMARY_CHOICE = (process.argv[2] || "fireworks").toLowerCase();
 
 function parse(text: string): Map<string, string> {
   const m = new Map<string, string>();
@@ -105,13 +109,28 @@ async function reachable(
     process.exit(1);
   }
 
+  if (PRIMARY_CHOICE !== "fireworks" && PRIMARY_CHOICE !== "groq") {
+    console.error(
+      "Usage: set-inference-providers.ts <fireworks|groq>  (default: fireworks = qwen3.7-plus primary)",
+    );
+    process.exit(1);
+  }
+  const primaryFw = PRIMARY_CHOICE === "fireworks";
+  const primary = primaryFw ? fw : groq;
+  const fallback = primaryFw ? groq : fw;
+  const primaryModel = primaryFw ? FW_MODEL : GROQ_MODEL;
+  const fallbackModel = primaryFw ? GROQ_MODEL : FW_MODEL;
+  // qwen3.7-plus reasons more — give it token room so a deep synthesis doesn't truncate.
+  const maxTokens = primaryFw ? "4000" : "2048";
+
   const updates = {
-    INFERENCE_PRIMARY_URL: groq.url,
-    INFERENCE_PRIMARY_KEY: groq.key,
-    INFERENCE_PRIMARY_MODEL: NEW_PRIMARY_MODEL,
-    INFERENCE_FALLBACK_URL: fw.url,
-    INFERENCE_FALLBACK_KEY: fw.key,
-    INFERENCE_FALLBACK_MODEL: NEW_FALLBACK_MODEL,
+    INFERENCE_PRIMARY_URL: primary.url,
+    INFERENCE_PRIMARY_KEY: primary.key,
+    INFERENCE_PRIMARY_MODEL: primaryModel,
+    INFERENCE_FALLBACK_URL: fallback.url,
+    INFERENCE_FALLBACK_KEY: fallback.key,
+    INFERENCE_FALLBACK_MODEL: fallbackModel,
+    INFERENCE_MAX_TOKENS: maxTokens,
   };
 
   // Backup, then write.
@@ -121,22 +140,23 @@ async function reachable(
   fs.writeFileSync(ENV, setVars(original, updates));
   console.log(`Backed up .env -> ${path.basename(backup)}`);
   console.log("Wrote new provider config:");
-  console.log(`  PRIMARY  = ${new URL(groq.url).host} / ${NEW_PRIMARY_MODEL}`);
-  console.log(`  FALLBACK = ${new URL(fw.url).host} / ${NEW_FALLBACK_MODEL}`);
+  console.log(`  PRIMARY  = ${new URL(primary.url).host} / ${primaryModel}`);
+  console.log(`  FALLBACK = ${new URL(fallback.url).host} / ${fallbackModel}`);
+  console.log(`  INFERENCE_MAX_TOKENS = ${maxTokens}`);
 
-  // Validate BOTH new endpoints before going live (fallback set + checked first).
+  // Validate BOTH new endpoints before going live (fallback checked first).
   console.log("\nProbing new endpoints...");
   const okFallback = await reachable(
-    "FALLBACK (Qwen 3.7-plus)",
-    fw.url,
-    fw.key,
-    NEW_FALLBACK_MODEL,
+    "FALLBACK",
+    fallback.url,
+    fallback.key,
+    fallbackModel,
   );
   const okPrimary = await reachable(
-    "PRIMARY  (qwen3-32b)",
-    groq.url,
-    groq.key,
-    NEW_PRIMARY_MODEL,
+    "PRIMARY ",
+    primary.url,
+    primary.key,
+    primaryModel,
   );
 
   if (!okPrimary || !okFallback) {
