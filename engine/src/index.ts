@@ -213,8 +213,13 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
           typeof result.result === 'string'
             ? result.result
             : JSON.stringify(result.result);
-        // Strip <internal>...</internal> blocks — agent uses these for internal reasoning
-        const text = raw.replace(/<internal>[\s\S]*?<\/internal>/g, '').trim();
+        // Strip <internal>...</internal> (agent's internal reasoning) and any
+        // <think>...</think> a reasoning model leaks (e.g. Qwen on a provider that
+        // ignores the thinking-off knob) before sending to the user.
+        const text = raw
+          .replace(/<internal>[\s\S]*?<\/internal>/g, '')
+          .replace(/<think>[\s\S]*?<\/think>/g, '')
+          .trim();
         logger.info(
           { group: group.name, streaming: !!result.streaming },
           `Agent output: ${raw.slice(0, 200)}`,
@@ -260,6 +265,20 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
       'Agent error, rolled back message cursor for retry',
     );
     return false;
+  }
+
+  // Never go silent: a turn that succeeded but produced no deliverable text
+  // (e.g. a doom-loop wrap-up that returned empty, or an empty completion) must
+  // still get a reply — otherwise the user is left on "typing..." forever.
+  if (!outputSentToUser) {
+    logger.warn(
+      { group: group.name },
+      'Turn produced no output to user; sending fallback reply',
+    );
+    await channel.sendMessage(
+      chatJid,
+      'Disculpa, no pude generar una respuesta para eso. ¿Me lo reformulas o lo intentamos de otra forma?',
+    );
   }
 
   return true;

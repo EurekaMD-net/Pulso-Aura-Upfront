@@ -60,6 +60,18 @@ export function _resetProviderBreakers(): void {
   providerBreakers.clear();
 }
 
+/**
+ * Return `text` if it has visible content, else `fallback`. Guards the
+ * doom-loop wrap-up: `??` only catches null/undefined, so an EMPTY/whitespace
+ * model completion would otherwise be delivered as a silent (blank) reply.
+ */
+export function nonEmptyOr(
+  text: string | null | undefined,
+  fallback: string,
+): string {
+  return text && text.trim() ? text : fallback;
+}
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -226,8 +238,19 @@ async function callProvider(
     body.tools = request.tools;
     body.tool_choice = "auto";
   }
-  // Disable reasoning/thinking mode for faster responses (Qwen 3.5+, GLM-5+)
-  if (provider.model.startsWith("qwen3") || provider.model.startsWith("glm-")) {
+  // Disable reasoning/thinking mode for faster, clean responses. The knob differs
+  // by provider (each rejects the others), and model ids are provider-prefixed
+  // (e.g. "qwen/qwen3-32b", "accounts/fireworks/models/qwen3p6-plus"), so match on
+  // a substring and route by host:
+  //   - Groq reasoning models (qwen3-*): reasoning_effort:"none". They REJECT
+  //     enable_thinking and otherwise emit <think>…</think> into the content.
+  //   - Dashscope-style Qwen/GLM ids: enable_thinking:false.
+  if (/groq/i.test(provider.baseUrl) && /qwen3/i.test(provider.model)) {
+    body.reasoning_effort = "none";
+  } else if (
+    provider.model.startsWith("qwen3") ||
+    provider.model.startsWith("glm-")
+  ) {
     body.enable_thinking = false;
   }
 
@@ -709,12 +732,26 @@ export async function inferWithTools(
         { round, escalationLevel },
         "doom loop escalation: forcing wrap-up (no tools)",
       );
+      // Tell the model explicitly to answer in plain text now. Without this nudge
+      // some models (e.g. minimax-m2p7) return EMPTY content on the tool-less
+      // inference, which would otherwise be delivered as silence.
+      conversation.push({
+        role: "system" as const,
+        content:
+          "AVISO DEL SISTEMA: Detecte un bucle de herramientas y las desactive. " +
+          "Responde AHORA al usuario en texto plano y en espanol, resumiendo lo que ya encontraste. " +
+          "No intentes llamar herramientas.",
+      });
       const response = await infer({ messages: conversation }, onTextChunk);
       totalPrompt += response.usage.prompt_tokens;
       totalCompletion += response.usage.completion_tokens;
-      const content =
-        response.content ??
-        "[El sistema detectó un bucle y detuvo las llamadas de herramientas.]";
+      // `??` only catches null/undefined — an EMPTY/whitespace string slips through
+      // and becomes a silent reply. nonEmptyOr treats blank content as "no content".
+      const content = nonEmptyOr(
+        response.content,
+        "Disculpa, me enrede procesando eso y no pude terminar la respuesta. " +
+          "Lo intento de otra forma si me lo reformulas, o lo vemos por partes.",
+      );
       conversation.push({ role: "assistant", content });
       return buildResult(content, response.provider);
     }

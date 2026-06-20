@@ -8,8 +8,34 @@ vi.mock("../src/db.js", () => ({
   getDatabase: () => testDb,
 }));
 
-import { infer, _resetProviderBreakers } from "../src/inference-adapter.js";
+import {
+  infer,
+  _resetProviderBreakers,
+  nonEmptyOr,
+} from "../src/inference-adapter.js";
 import { _resetSchema } from "../src/budget.js";
+
+// Regression: the doom-loop wrap-up returned `response.content ?? fallback`, but
+// `??` lets an EMPTY/whitespace string through — which was delivered as silence
+// (the "agent went mute" bug). nonEmptyOr is the guard.
+describe("nonEmptyOr (doom-loop wrap-up blank guard)", () => {
+  const FB = "fallback";
+  it("returns fallback for empty string", () => {
+    expect(nonEmptyOr("", FB)).toBe(FB);
+  });
+  it("returns fallback for whitespace-only string", () => {
+    expect(nonEmptyOr("   \n\t ", FB)).toBe(FB);
+  });
+  it("returns fallback for null/undefined", () => {
+    expect(nonEmptyOr(null, FB)).toBe(FB);
+    expect(nonEmptyOr(undefined, FB)).toBe(FB);
+  });
+  it("returns the text when it has visible content", () => {
+    expect(nonEmptyOr("Cierre Colgate 2027: $127.7M", FB)).toBe(
+      "Cierre Colgate 2027: $127.7M",
+    );
+  });
+});
 
 /**
  * Regression coverage for the cost_ledger bug chain:
