@@ -80,3 +80,11 @@ pull."_ Omitting `role` gives a raw corpus-existence check (ops/debug).
 All green (scoped runs); `tsc --noEmit` clean; container rebuilt + verified
 (`agentic-crm-agent:latest` `449ceb50c33f` carries `corpusPresence` + `rol_minimo IN` +
 `sin_meta_cierre`).
+
+## Verified live — 2026-06-21
+
+Operator confirmed the live WhatsApp round-trip (the one thing tests couldn't cover): on the
+crm-test group, an advertiser with intelligence but no loaded closing meta now reads as
+_"anunciante conocido, sin meta de cierre cargada — ¿quieres la radiografía?"_ instead of
+_"no encontrada."_ The reconciliation closes the loop end-to-end: ledger diagnosis →
+response-layer fix → live behavior. Shipped in `f23e381`.
