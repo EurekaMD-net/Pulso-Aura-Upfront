@@ -8,7 +8,7 @@
 import { getDatabase } from "../db.js";
 import { classifyAndUpdate } from "../sentiment.js";
 import type { ToolContext } from "./index.js";
-import { getMxYear, getCurrentWeek } from "./helpers.js";
+import { getMxYear, getCurrentWeek, findCuentaId } from "./helpers.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -22,20 +22,22 @@ function now(): string {
   return new Date().toISOString();
 }
 
-/** Fuzzy match account name using LIKE with normalized comparison. */
+/**
+ * Resolve an account name to its row. Delegates to the shared, hardened
+ * `findCuentaId` (substring → loose-exact → advertiser-path → whole-token-subset,
+ * unique-match-only / no-guess) instead of a one-directional `LIKE` that missed
+ * advertiser supersets ("Bayer de México" ⊋ "BAYER") — a known account would
+ * otherwise read as unknown to registrar_actividad / crear_propuesta /
+ * actualizar_descarga.
+ */
 function findCuenta(
   nombre: string,
 ): { id: string; nombre: string } | undefined {
-  const db = getDatabase();
-  // Try exact first, then LIKE
-  const exact = db
-    .prepare("SELECT id, nombre FROM cuenta WHERE nombre = ?")
-    .get(nombre) as any;
-  if (exact) return exact;
-  const fuzzy = db
-    .prepare("SELECT id, nombre FROM cuenta WHERE nombre LIKE ?")
-    .get(`%${nombre}%`) as any;
-  return fuzzy;
+  const id = findCuentaId(nombre);
+  if (!id) return undefined;
+  return getDatabase()
+    .prepare("SELECT id, nombre FROM cuenta WHERE id = ?")
+    .get(id) as { id: string; nombre: string } | undefined;
 }
 
 /** Fuzzy match propuesta by title, optionally scoped to a cuenta. */

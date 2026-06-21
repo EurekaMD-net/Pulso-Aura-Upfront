@@ -307,11 +307,24 @@ export function consultar_cuenta(
   // Role-based scope: verify the caller has access to this account
   const scope = scopeFilter(ctx, "c.ae_id");
   const ef = estadoFilter(ctx, "c");
-  const cuenta = db
+  let cuenta = db
     .prepare(
       `SELECT c.* FROM cuenta c WHERE c.nombre LIKE ? ${scope.where} ${ef.where}`,
     )
     .get(`%${nombre}%`, ...scope.params, ...ef.params) as any;
+  // Name-variant fallback: the bare LIKE above is one-directional and misses
+  // advertiser supersets ("Bayer de México" ⊋ "BAYER"). findCuentaId has the
+  // hardened ladder; re-load by id under the SAME scope/estado so a known
+  // in-cartera account isn't reported as unknown (and RBAC still holds).
+  if (!cuenta) {
+    const id = findCuentaId(nombre, ctx);
+    if (id)
+      cuenta = db
+        .prepare(
+          `SELECT c.* FROM cuenta c WHERE c.id = ? ${scope.where} ${ef.where}`,
+        )
+        .get(id, ...scope.params, ...ef.params) as any;
+  }
   if (!cuenta) {
     return JSON.stringify({
       error: `No encontré la cuenta "${nombre}" o no tienes acceso.`,

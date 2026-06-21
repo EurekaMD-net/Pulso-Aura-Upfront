@@ -14,7 +14,7 @@ import {
 } from "../package-builder.js";
 import type { PackageConfig } from "../package-builder.js";
 import type { ToolContext } from "./index.js";
-import { scopeFilter } from "./helpers.js";
+import { scopeFilter, findCuentaId } from "./helpers.js";
 
 // ---------------------------------------------------------------------------
 // construir_paquete
@@ -29,9 +29,20 @@ export function construir_paquete(
 
   // Fuzzy match account by name — scoped to caller's hierarchy
   const scope = scopeFilter(ctx, "ae_id");
-  const cuenta = db
+  let cuenta = db
     .prepare(`SELECT id, nombre FROM cuenta WHERE nombre LIKE ? ${scope.where}`)
     .get(`%${cuentaNombre}%`, ...scope.params) as any;
+
+  // Name-variant fallback: bare LIKE misses advertiser supersets ("Bayer de
+  // México" ⊋ "BAYER"). Resolve with the hardened findCuentaId, then re-load
+  // under the same scope so a known in-cartera account isn't called unknown.
+  if (!cuenta) {
+    const id = findCuentaId(cuentaNombre);
+    if (id)
+      cuenta = db
+        .prepare(`SELECT id, nombre FROM cuenta WHERE id = ? ${scope.where}`)
+        .get(id, ...scope.params) as any;
+  }
 
   if (!cuenta) {
     return JSON.stringify({

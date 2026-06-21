@@ -179,11 +179,17 @@ export async function armar_radiografia_anunciante(
 
   const port = radiografiaForAnunciante(anunciante, ctx.rol);
   if (!port) {
+    // Defensive: radiografiaForAnunciante returns null only on the same
+    // unresolved/ambiguous condition already handled above, so this is
+    // unreachable for a resolved advertiser. If a refactor ever reaches it,
+    // the advertiser IS known (res.anunciante) — report it as such, never as
+    // unknown ("two meanings of empty"), and never fabricate a portfolio.
     return JSON.stringify({
-      anunciante,
-      encontrada: false,
+      anunciante: res.anunciante,
+      encontrada: true,
       marcas: [],
-      mensaje: `No se pudo armar el portafolio de "${anunciante}".`,
+      totales: { marcas: 0, con_diagnostico: 0, sin_inteligencia: 0 },
+      mensaje: `"${res.anunciante}" es un anunciante conocido, pero no se pudo armar su portafolio de inteligencia.`,
     });
   }
 

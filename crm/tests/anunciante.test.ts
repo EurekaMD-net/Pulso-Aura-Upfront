@@ -527,6 +527,22 @@ describe("tools — armar_radiografia_anunciante / mapa_poder_anunciante", () =>
     ]);
   });
 
+  it("armar_radiografia_anunciante reports a resolved advertiser with no intel as KNOWN (not unknown)", async () => {
+    // "Two meanings of empty" guard: a resolved advertiser whose brand carries
+    // no aura-kb intel must read as encontrada:true ("conocido, sin
+    // inteligencia"), never encontrada:false — a known advertiser is never unknown.
+    seedAnun("solo-marca", "Solo", "Solo Anunciante MX");
+    const out = JSON.parse(
+      await armar_radiografia_anunciante(
+        { anunciante: "Solo Anunciante MX" },
+        ctx("director"),
+      ),
+    );
+    expect(out.encontrada).toBe(true);
+    expect(out.anunciante).toBe("Solo Anunciante MX");
+    expect(out.totales.marcas).toBe(1);
+  });
+
   it("armar_radiografia_anunciante returns opciones when ambiguous", async () => {
     seedAnun("a1", "A1", "Grupo X Bebidas", "Grupo X");
     seedAnun("a2", "A2", "Grupo X Alimentos", "Grupo X");

@@ -11,7 +11,7 @@
 
 import { getDatabase } from "../db.js";
 import type { ToolContext } from "./index.js";
-import { scopeFilter } from "./helpers.js";
+import { scopeFilter, findCuentaId } from "./helpers.js";
 import { comparePeers } from "../analysis/peer-comparison.js";
 import {
   getAccountSentiment,
@@ -44,13 +44,23 @@ export function recomendar_crosssell(
 
   // Verify scope access
   const scope = scopeFilter(ctx, "c.ae_id");
-  const cuenta = db
+  const cols = `c.id, c.nombre, c.vertical, c.tipo, c.ae_id, c.años_relacion, c.es_fundador`;
+  let cuenta = db
     .prepare(
-      `SELECT c.id, c.nombre, c.vertical, c.tipo, c.ae_id, c.años_relacion, c.es_fundador
-       FROM cuenta c
-       WHERE c.nombre LIKE ? ${scope.where}`,
+      `SELECT ${cols} FROM cuenta c WHERE c.nombre LIKE ? ${scope.where}`,
     )
     .get(`%${cuentaNombre}%`, ...scope.params) as any;
+
+  // Name-variant fallback: bare LIKE misses advertiser supersets ("Bayer de
+  // México" ⊋ "BAYER"). Resolve with the hardened findCuentaId, then re-load
+  // under the same scope so a known in-cartera account isn't called unknown.
+  if (!cuenta) {
+    const id = findCuentaId(cuentaNombre);
+    if (id)
+      cuenta = db
+        .prepare(`SELECT ${cols} FROM cuenta c WHERE c.id = ? ${scope.where}`)
+        .get(id, ...scope.params) as any;
+  }
 
   if (!cuenta) {
     return JSON.stringify({

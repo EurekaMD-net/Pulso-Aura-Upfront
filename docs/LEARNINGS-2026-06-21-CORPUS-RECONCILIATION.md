@@ -88,3 +88,51 @@ crm-test group, an advertiser with intelligence but no loaded closing meta now r
 _"anunciante conocido, sin meta de cierre cargada — ¿quieres la radiografía?"_ instead of
 _"no encontrada."_ The reconciliation closes the loop end-to-end: ledger diagnosis →
 response-layer fix → live behavior. Shipped in `f23e381`.
+
+## Sweep follow-up — the SAME symptom, a DIFFERENT root cause (Pattern B)
+
+A `/sweep` for "other tools with the same empty-result gap" (4 parallel read-only lenses:
+closing-tools, aura-intelligence, broad-registry, tests) found the symptom recurs, but split
+into two root causes:
+
+- **Pattern A — cross-dataset reconciliation** (what `corpusPresence` fixed: the entity lives
+  in _another dataset_). **0 new live instances.** One latent: `armar_radiografia_anunciante`'s
+  `if(!port)` branch said `encontrada:false` for a (would-be) resolved advertiser — but it's
+  _dead_ code (`radiografiaForAnunciante` only returns null on the unresolved condition already
+  caught upstream). Hardened it to report known + added a regression test, so a refactor can't
+  resurrect it as a gap.
+
+- **Pattern B — weak name resolution (findCuentaId-bypass).** _Same user-visible symptom_ (a
+  known account reads as unknown) but a different cause: the account is in the _same_ `cuenta`
+  table, but the tool resolves it with a one-directional `nombre LIKE '%q%'` (or a weak local
+  `findCuenta`) instead of the hardened shared `findCuentaId` (substring → loose-exact →
+  advertiser-path → whole-token-subset, unique-match/no-guess). So "Bayer de México" ⊋ "BAYER"
+  misses → known account reads as unknown. **6 instances:** `registrar_actividad`,
+  `crear_propuesta`, `actualizar_descarga` (all via one weak local `findCuenta` in
+  `registro.ts` — fixed at the root by delegating it to `findCuentaId`); and `consultar_cuenta`,
+  `recomendar_crosssell`, `construir_paquete` (bare `LIKE` — fixed with an **additive fallback**:
+  keep the scoped query, fall back to `findCuentaId` then re-load by id **under the same scope**
+  so RBAC holds). `analizar_winloss` already used `findCuentaId` — no gap.
+
+### Lessons
+
+- **Same symptom ≠ same root cause.** "Known entity reads as unknown" had two causes
+  (cross-dataset reconciliation vs weak in-table matching). The sweep's value was _separating_
+  them — the fix differs (add a corpus check vs swap the resolver).
+- **A hardened shared resolver is only as good as its adoption.** `findCuentaId` was hardened in
+  a prior commit, but 6 tools bypassed it (bare `LIKE` / a weak local copy). Centralize the
+  resolver AND grep for bypasses — a fix in the shared helper doesn't reach tools that don't call it.
+- **Additive fallback preserves RBAC.** Routing a _scoped_ tool through a _global_ resolver
+  (`findCuentaId` ignores scope) must re-apply the scope on the id-load, or it leaks
+  out-of-scope accounts. The fallback keeps the original scoped query first (zero behavior change
+  for current matches) and re-ANDs scope into the fallback re-load. qa-auditor verified no
+  out-of-scope account can be returned.
+- **Known tradeoff (W1):** `findCuentaId` resolves globally + no-guess (null on >1 match), so a
+  name variant that collides across two scopes now resolves to null instead of silently picking
+  the in-scope one. This is a _strictly smaller_ miss than the prior bare-`LIKE` (which already
+  missed it) and leaks nothing; if cross-scope collisions prove common, scope-filter inside
+  `findCuentaId` via its `ctx` param.
+
+Shipped after the verified `f23e381` corpus fix; qa-auditor PASS (0 Critical); 47 tests in the
+two changed test files + 119 in handler-exercising files green; `tsc` clean; container rebuilt
+(`6c010b5182af`).
