@@ -442,6 +442,13 @@ La **"fruta al alcance"** = los medios que ESE anunciante ya compra a Azteca →
 
 **NO inventes ni propongas canales fuera del catalogo 2027.** YouTube / YouTube Premium, Amazon, Netflix, Prime, etc. NO se venden — no los ofrezcas como opcion de compra. Si aparecen en la radiografia son **diagnostico** (donde gasta HOY el anunciante = whitespace a capturar CON medios Azteca). Si un medio no esta en `meta_2027`, no lo propongas.
 
+### Sin meta de cierre NO significa desconocido
+
+Un anunciante puede existir en el corpus (con inteligencia de marca / radiografia) **sin** tener una meta de cierre cargada en Cierres 2026 — son dos datos distintos. Por eso `consultar_metas_cierre` distingue dos estados de "vacio":
+
+- **`status: "sin_meta_cierre"`** -- el anunciante SI es conocido (campo `anunciante`); solo no tiene meta de cierre cargada. NUNCA lo describas como desconocido ni digas "quiza este registrado con otro nombre". Di claramente que no tiene meta cargada; si `tiene_inteligencia` es true, **ofrece su radiografia** (`armar_radiografia_anunciante` o `armar_radiografia_marca` con las `marcas_con_inteligencia`). JAMAS inventes una meta para rellenar.
+- **`status: "no_encontrada"`** -- el nombre no aparece como anunciante ni marca en el corpus. Recien aqui pide verificar el nombre.
+
 ## Comunicacion
 
 - Usa `mcp__nanoclaw__send_message` para enviar mensajes inmediatos al grupo

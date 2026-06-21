@@ -156,6 +156,114 @@ export function marcasForAnunciante(
     .all(anuncianteNorm) as { brand_key: string; marca: string | null }[];
 }
 
+/** The aura-kb document source — the brand-intelligence corpus (radiografía cuerpos). */
+const AURA_INTEL_SOURCE = "aura-kb";
+
+export interface CorpusPresence {
+  /**
+   * The name is known to the corpus — as an advertiser, a brand with
+   * intelligence, or a CRM account — *independent of* whether it has a closing
+   * meta loaded. Lets the "no closing meta" path tell "known advertiser, no meta
+   * yet" apart from "unknown name", so the agent never calls a real advertiser
+   * unknown (and never invents a meta to compensate).
+   */
+  conocido: boolean;
+  anunciante: string | null;
+  /** >1 advertiser matched the name — known to the corpus, but ambiguous. */
+  candidatos: string[];
+  /** The resolved advertiser's brands that actually carry aura-kb intelligence. */
+  marcasConInteligencia: {
+    brand_key: string;
+    marca: string | null;
+    cuerpos: number;
+  }[];
+  /** Total aura-kb intelligence docs across the advertiser's brands. */
+  docsInteligencia: number;
+  /** CRM accounts linked to the advertiser (anunciante_norm), if any. */
+  cuentas: { id: string; nombre: string }[];
+}
+
+/**
+ * Does this free-text name exist anywhere in the corpus, even with no closing
+ * meta? Reconciles the three surfaces a name can live in — advertiser
+ * (`anunciante_marca` via resolveAnunciante), brand intelligence
+ * (`crm_documents` source='aura-kb'), and CRM accounts (`cuenta.anunciante_norm`)
+ * — into one verdict. The closing-goal tools call this on the "none" path so a
+ * researched advertiser without a loaded meta reads as `sin_meta_cierre`, not
+ * `no_encontrada`. No-guess: an ambiguous name resolves to `candidatos`, never a
+ * silently-picked advertiser.
+ *
+ * `role` makes the intelligence count role-aware (same `rol_minimo IN clearedFloors`
+ * filter as radiografiaForAnunciante): `tiene_inteligencia` then means "intel THIS
+ * persona can actually pull", so the closing tool never offers a radiografía that
+ * comes back empty for the caller. Omit `role` for a raw corpus-existence check.
+ */
+export function corpusPresence(input: string, role?: string): CorpusPresence {
+  const empty: CorpusPresence = {
+    conocido: false,
+    anunciante: null,
+    candidatos: [],
+    marcasConInteligencia: [],
+    docsInteligencia: 0,
+    cuentas: [],
+  };
+  if (!input || !input.trim()) return empty;
+  const db = getDatabase();
+  const res = resolveAnunciante(input);
+
+  // Known to the corpus, but >1 advertiser matches — surface the candidates.
+  if (!res.anunciante && res.candidates.length > 1)
+    return {
+      ...empty,
+      conocido: true,
+      candidatos: res.candidates.map((c) => c.anunciante),
+    };
+  if (!res.anunciante || !res.anuncianteNorm) return empty;
+
+  const cuentas = db
+    .prepare(`SELECT id, nombre FROM cuenta WHERE anunciante_norm = ?`)
+    .all(res.anuncianteNorm) as { id: string; nombre: string }[];
+  const known = (
+    marcas: { brand_key: string; marca: string | null; cuerpos: number }[],
+    docs: number,
+  ): CorpusPresence => ({
+    conocido: true,
+    anunciante: res.anunciante,
+    candidatos: [],
+    marcasConInteligencia: marcas,
+    docsInteligencia: docs,
+    cuentas,
+  });
+
+  // Role given but it clears no floor → the persona sees no intelligence at all.
+  const cleared = role ? (clearedFloors(role) as string[]) : null;
+  if (cleared && cleared.length === 0) return known([], 0);
+
+  const roleClause = cleared
+    ? ` AND rol_minimo IN (${cleared.map(() => "?").join(",")})`
+    : "";
+  const intelStmt = db.prepare(
+    `SELECT COUNT(DISTINCT cuerpo) AS cuerpos, COUNT(*) AS docs
+     FROM crm_documents
+     WHERE source = ? AND brand_key = ? AND cuerpo IS NOT NULL AND cuerpo <> ''${roleClause}`,
+  );
+  const roleParams = cleared ?? [];
+  let docsInteligencia = 0;
+  const marcasConInteligencia = marcasForAnunciante(res.anuncianteNorm)
+    .map((m) => {
+      const row = intelStmt.get(
+        AURA_INTEL_SOURCE,
+        m.brand_key,
+        ...roleParams,
+      ) as { cuerpos: number; docs: number };
+      docsInteligencia += row.docs;
+      return { brand_key: m.brand_key, marca: m.marca, cuerpos: row.cuerpos };
+    })
+    .filter((m) => m.cuerpos > 0);
+
+  return known(marcasConInteligencia, docsInteligencia);
+}
+
 export interface MarcaResumen {
   brand_key: string;
   marca: string | null;

@@ -45,6 +45,7 @@ const {
   committeeForAnunciante,
   anuncianteLinkForCuenta,
   backfillCuentaAnunciante,
+  corpusPresence,
 } = await import("../src/anunciante.js");
 const { syncAnuncianteMap } = await import("../src/anunciante-sync.js");
 const { armar_radiografia_anunciante, mapa_poder_anunciante } =
@@ -161,6 +162,112 @@ describe("resolveAnunciante", () => {
       normalizeMarca("Procter & Gamble México"),
     );
     expect(marcas.map((m) => m.brand_key).sort()).toEqual(["ariel", "pampers"]);
+  });
+});
+
+describe("corpusPresence — reconcile a name against the corpus", () => {
+  function seedCuenta(id: string, nombre: string, anunciante: string) {
+    testDb
+      .prepare(
+        `INSERT INTO cuenta (id, nombre, tipo, anunciante, anunciante_norm)
+         VALUES (?,?,'directo',?,?)`,
+      )
+      .run(id, nombre, anunciante, normalizeMarca(anunciante));
+  }
+
+  it("a researched advertiser (no meta) reads as known WITH intelligence", async () => {
+    // Mirrors the live Nissan case: advertiser spelled longer than the input,
+    // resolved via the LIKE path; brand carries aura-kb cuerpos.
+    seedAnun("nissan-automotriz", "Nissan", "Nissan Mexicana");
+    seedCuenta("cta-nissan", "NISSAN", "Nissan Mexicana");
+    await ingestCuerpo(
+      "nissan-automotriz",
+      "comercial_kam",
+      "buyer_personas",
+      "b",
+    );
+    await ingestCuerpo(
+      "nissan-automotriz",
+      "comercial_kam",
+      "diagnostico_9fuentes",
+      "d",
+    );
+
+    const p = corpusPresence("Nissan");
+    expect(p.conocido).toBe(true);
+    expect(p.anunciante).toBe("Nissan Mexicana");
+    expect(p.candidatos).toEqual([]);
+    expect(p.docsInteligencia).toBe(2);
+    expect(p.marcasConInteligencia).toHaveLength(1);
+    expect(p.marcasConInteligencia[0]).toMatchObject({
+      brand_key: "nissan-automotriz",
+      marca: "Nissan",
+      cuerpos: 2,
+    });
+    expect(p.cuentas).toEqual([{ id: "cta-nissan", nombre: "NISSAN" }]);
+  });
+
+  it("a known advertiser with no aura-kb docs reads as known WITHOUT intelligence", () => {
+    seedAnun("kia-mx", "Kia", "Kia México");
+    const p = corpusPresence("Kia México");
+    expect(p.conocido).toBe(true);
+    expect(p.anunciante).toBe("Kia México");
+    expect(p.docsInteligencia).toBe(0);
+    expect(p.marcasConInteligencia).toEqual([]);
+  });
+
+  it("an unknown name reads as not present (so the tool can say no_encontrada)", () => {
+    seedAnun("nissan-automotriz", "Nissan", "Nissan Mexicana");
+    const p = corpusPresence("Marca Inexistente XYZ");
+    expect(p.conocido).toBe(false);
+    expect(p.anunciante).toBeNull();
+    expect(p.candidatos).toEqual([]);
+  });
+
+  it("an ambiguous name is known to the corpus but returns candidates (no guess)", () => {
+    seedAnun("danette", "Danette", "Danone Internacional", "Danone");
+    seedAnun("bonafont", "Bonafont", "Danone México", "Danone");
+    const p = corpusPresence("Danone"); // grupo matches 2 anunciantes
+    expect(p.conocido).toBe(true);
+    expect(p.anunciante).toBeNull();
+    expect(p.candidatos.length).toBeGreaterThan(1);
+  });
+
+  it("ignores docs with a blank cuerpo (not a real radiografía body)", async () => {
+    seedAnun("nissan-automotriz", "Nissan", "Nissan Mexicana");
+    await ingestCuerpo("nissan-automotriz", "comercial_kam", "", "blank");
+    const p = corpusPresence("Nissan");
+    expect(p.conocido).toBe(true);
+    expect(p.docsInteligencia).toBe(0);
+    expect(p.marcasConInteligencia).toEqual([]);
+  });
+
+  it("role-scopes the intel count — never offers intel above the caller's floor", async () => {
+    // Symmetric guard: if tiene_inteligencia counted docs the persona can't read,
+    // the agent would offer a radiografía that comes back empty for that role.
+    seedAnun("nissan-automotriz", "Nissan", "Nissan Mexicana");
+    await ingestCuerpo(
+      "nissan-automotriz",
+      "comercial_kam",
+      "buyer_personas",
+      "b",
+    );
+    await ingestCuerpo(
+      "nissan-automotriz",
+      "direccion_clevel",
+      "diagnostico_9fuentes",
+      "d",
+    );
+    // No role → raw existence: both docs counted.
+    expect(corpusPresence("Nissan").docsInteligencia).toBe(2);
+    // Director clears up to restringido_senior → sees buyer_personas, not the C-level doc.
+    expect(corpusPresence("Nissan", "director").docsInteligencia).toBe(1);
+    // AE clears only comercial_kam → still sees the comercial_kam doc here.
+    expect(corpusPresence("Nissan", "ae").docsInteligencia).toBe(1);
+    // VP clears everything.
+    expect(corpusPresence("Nissan", "vp").docsInteligencia).toBe(2);
+    // Known regardless of role, even when the count is 0.
+    expect(corpusPresence("Nissan", "director").conocido).toBe(true);
   });
 });
 

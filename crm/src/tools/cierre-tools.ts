@@ -23,6 +23,7 @@ import {
   fmtM,
   type CierreFrame,
 } from "../cierre/query.js";
+import { corpusPresence } from "../anunciante.js";
 
 /** The gerente codes in this persona's scope (own code for a gerente; their gerentes for Dir/VP). */
 function scopeGerenteCodes(ctx: ToolContext): string[] {
@@ -124,12 +125,45 @@ export async function consultar_metas_cierre(
     fueraDeCartera = res.status !== "none";
   }
 
-  if (res.status === "none")
+  if (res.status === "none") {
+    // No closing meta — but is this a known advertiser/brand in the corpus?
+    // Reconcile against the intelligence corpus so a researched advertiser
+    // without a loaded meta reads as "sin meta de cierre", never as unknown,
+    // and the agent never invents a meta to compensate.
+    const presence = corpusPresence(raw, ctx.rol);
+    if (presence.conocido && presence.candidatos.length > 1)
+      return JSON.stringify({
+        cuenta: raw,
+        status: "sin_meta_cierre",
+        ambigua: true,
+        mensaje: `"${raw}" no tiene meta de cierre cargada y coincide con varios anunciantes del corpus. ¿A cuál te refieres? No inventes una meta.`,
+        opciones: presence.candidatos,
+      });
+    if (presence.conocido) {
+      const marcas = presence.marcasConInteligencia.map(
+        (m) => m.marca ?? m.brand_key,
+      );
+      const tieneInteligencia = presence.docsInteligencia > 0;
+      return JSON.stringify({
+        cuenta: raw,
+        anunciante: presence.anunciante,
+        status: "sin_meta_cierre",
+        tiene_inteligencia: tieneInteligencia,
+        marcas_con_inteligencia: marcas,
+        mensaje:
+          `"${presence.anunciante}" es un anunciante CONOCIDO en el corpus, pero no tiene meta de cierre cargada en Cierres 2026. ` +
+          (tieneInteligencia
+            ? `Sí cuentas con su inteligencia de marca (${marcas.length} marca${marcas.length === 1 ? "" : "s"}: ${marcas.join(", ")}). Ofrece armar la radiografía (armar_radiografia_anunciante "${presence.anunciante}", o armar_radiografia_marca por marca). `
+            : `Aún no hay inteligencia de marca cargada para este anunciante. `) +
+          `NO lo describas como desconocido ni inventes una meta de cierre.`,
+      });
+    }
     return JSON.stringify({
       cuenta: raw,
       status: "no_encontrada",
-      mensaje: `No hay metas de cierre para "${raw}".`,
+      mensaje: `No hay metas de cierre para "${raw}", y no aparece como anunciante ni marca en el corpus. Verifica el nombre.`,
     });
+  }
   if (res.status === "ambiguous")
     return JSON.stringify({
       cuenta: raw,

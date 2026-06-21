@@ -113,6 +113,18 @@ describe("global.md -- CTV/Roku connected-TV bundle rule", () => {
   });
 });
 
+describe("global.md -- sin meta de cierre != desconocido rule", () => {
+  it("distinguishes sin_meta_cierre from no_encontrada", () => {
+    expect(globalMd).toContain("Sin meta de cierre NO significa desconocido");
+    expect(globalMd).toContain("sin_meta_cierre");
+    expect(globalMd).toContain("no_encontrada");
+  });
+  it("tells the agent to offer the radiografía and never invent a meta", () => {
+    expect(globalMd).toMatch(/ofrece su radiograf/i);
+    expect(globalMd).toMatch(/JAMAS inventes una meta/i);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // global.md -- Schema coverage
 // ---------------------------------------------------------------------------

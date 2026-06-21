@@ -32,7 +32,10 @@ const {
   cierreMetasLoaded,
   sellable2027Catalog,
 } = await import("../src/cierre/query.js");
+const { consultar_metas_cierre } = await import("../src/tools/cierre-tools.js");
+const { normalizeMarca } = await import("../src/aura-rbac.js");
 import type { CierreRow, Escenario } from "../src/cierre/types.js";
+import type { ToolContext } from "../src/tools/index.js";
 
 function persona(
   id: string,
@@ -423,5 +426,80 @@ describe("cierreMetasLoaded", () => {
     expect(cierreMetasLoaded()).toBe(false);
     loadCierreMetas(ccmRows());
     expect(cierreMetasLoaded()).toBe(true);
+  });
+});
+
+describe("consultar_metas_cierre — reconcile empty against the corpus", () => {
+  // Director with empty teams → the tool searches the closing portfolio globally.
+  const dirCtx: ToolContext = {
+    persona_id: "p-dir",
+    rol: "director",
+    team_ids: [],
+    full_team_ids: [],
+  };
+  function seedAnunMarca(brand_key: string, marca: string, anunciante: string) {
+    testDb
+      .prepare(
+        `INSERT INTO anunciante_marca (brand_key, marca, anunciante, anunciante_norm, grupo, grupo_norm, confianza, basis)
+         VALUES (?,?,?,?,NULL,NULL,'alta','finding')`,
+      )
+      .run(brand_key, marca, anunciante, normalizeMarca(anunciante));
+  }
+  function seedIntelDoc(brand_key: string, cuerpo: string) {
+    testDb
+      .prepare(
+        `INSERT INTO crm_documents (id, source, titulo, tipo_doc, brand_key, cuerpo, rol_minimo)
+         VALUES (?,?,?,?,?,?,?)`,
+      )
+      .run(
+        `doc-${brand_key}-${cuerpo}`,
+        "aura-kb",
+        `${brand_key} ${cuerpo}`,
+        "aura-finding",
+        brand_key,
+        cuerpo,
+        "estrategia_research", // a floor the Director/VP closing audience clears
+      );
+  }
+
+  beforeEach(() => loadCierreMetas(ccmRows())); // CCM loaded; Nissan never is
+
+  it("a researched advertiser with NO meta → sin_meta_cierre, NOT no_encontrada", async () => {
+    seedAnunMarca("nissan-automotriz", "Nissan", "Nissan Mexicana");
+    seedIntelDoc("nissan-automotriz", "diagnostico_9fuentes");
+    const out = JSON.parse(
+      await consultar_metas_cierre({ cuenta: "Nissan" }, dirCtx),
+    );
+    expect(out.status).toBe("sin_meta_cierre");
+    expect(out.anunciante).toBe("Nissan Mexicana");
+    expect(out.tiene_inteligencia).toBe(true);
+    expect(out.marcas_con_inteligencia).toContain("Nissan");
+    expect(out.mensaje).toMatch(/radiograf/i);
+    // The directive frames it as CONOCIDO (and tells the agent not to call it
+    // unknown) — never reports the advertiser itself as not-found.
+    expect(out.mensaje).toMatch(/conocido/i);
+  });
+
+  it("a known advertiser with no intel → sin_meta_cierre, tiene_inteligencia false", async () => {
+    seedAnunMarca("kia-mx", "Kia", "Kia México");
+    const out = JSON.parse(
+      await consultar_metas_cierre({ anunciante: "Kia México" }, dirCtx),
+    );
+    expect(out.status).toBe("sin_meta_cierre");
+    expect(out.tiene_inteligencia).toBe(false);
+  });
+
+  it("a name absent from the corpus → no_encontrada", async () => {
+    const out = JSON.parse(
+      await consultar_metas_cierre({ cuenta: "Marca Inexistente XYZ" }, dirCtx),
+    );
+    expect(out.status).toBe("no_encontrada");
+  });
+
+  it("an account WITH a loaded meta still resolves ok (happy path intact)", async () => {
+    const out = JSON.parse(
+      await consultar_metas_cierre({ cuenta: "CCM" }, dirCtx),
+    );
+    expect(out.status).toBe("ok");
   });
 });
