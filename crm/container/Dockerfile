@@ -29,6 +29,11 @@ RUN npm run build
 # --- Runtime stage: no build tools ---
 FROM nanoclaw-agent:latest
 
+# Survive the daily docker-image-prune (/etc/cron.d/docker-image-prune keeps
+# label=keep=true). Agent containers run --rm, so between WhatsApp messages this
+# image is "unused" and would otherwise be reaped after 24h, breaking the bot.
+LABEL keep="true"
+
 USER root
 
 # Only runtime dependency: sqlite3 CLI (no python3, make, g++)
