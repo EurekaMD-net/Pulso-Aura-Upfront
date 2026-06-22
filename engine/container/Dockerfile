@@ -3,6 +3,12 @@
 
 FROM node:22-slim
 
+# Survive the daily docker-image-prune (/etc/cron.d/docker-image-prune keeps
+# label=keep=true). This image is the base of agentic-crm-agent and is run --rm,
+# so it looks "unused" between spawns and would be reaped after 24h — which then
+# breaks any manual `docker build` of the CRM image (FROM nanoclaw-agent:latest).
+LABEL keep="true"
+
 # Install system dependencies (no Chromium — Lightpanda replaces it)
 RUN apt-get update && apt-get install -y \
     curl \
